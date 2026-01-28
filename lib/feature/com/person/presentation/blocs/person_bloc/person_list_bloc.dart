@@ -4,17 +4,16 @@ import 'package:bloc/bloc.dart';
 import 'package:erp_app/feature/com/person/presentation/blocs/person_bloc/person_list_state.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meta/meta.dart';
+import 'package:micro_app_commons/app_notifier.dart';
 import 'package:services_package/com/person/person_service.dart';
 import 'package:shared_core/data/com/person/request.dart' as prefix0;
 import 'package:shared_core/data/com/person/response.dart' as prefix0;
-
-import '../../../../../../page_cache_provider.dart';
 
 part 'person_list_event.dart';
 
 class PersonListBloc extends Bloc<PersonListEvent, PersonListState> {
   final PersonService personService;
-  final pageCacheProvider = GetIt.instance<PageCacheProvider>();
+  final pageCacheProvider = GetIt.instance<AppNotifier>();
   PersonListBloc({required this.personService})
     : super(PersonListInitialState()) {
     on<LoadPersonListEvent>(_onLoadPersonList);

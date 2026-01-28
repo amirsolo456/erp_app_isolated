@@ -1,13 +1,13 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:micro_app_commons/app_notifier.dart';
+import 'package:models_package/index.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_core/data/auth/menu/response_data.dart' as prefix0;
 import 'package:ui_components_package/erp_app_componenets/common/loadings/circle_loading.dart';
 
-import '../../../../page_cache_provider.dart';
+import '../../../../index.dart';
 import '../bloc/menu_bloc.dart';
 import '../bloc/menu_state.dart';
 
@@ -65,7 +65,7 @@ class _MenuPageState extends State<MenuPage> {
       body: BlocBuilder<MenuBloc, MenuState>(
         builder: (context, state) {
           if (state is MenuTokenNeedState) {
-            final notifier = Provider.of<PageCacheProvider>(context);
+            final notifier = sl<AppNotifier>();
             notifier.signOut(context, force: true);
 
             return const Center(child: Text('لطفا دوباره وارد شوید!'));
@@ -150,7 +150,7 @@ class _MenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasChildren = item.subMenus.isNotEmpty;
-    final notifier = Provider.of<PageCacheProvider>(context);
+    final notifier = Provider.of<AppNotifier>(context);
     final Widget titleWidget = Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -178,7 +178,7 @@ class _MenuTile extends StatelessWidget {
           title: titleWidget,
           onTap: () {
             final link = item.appLink ?? item.webLink ?? '';
-            final cleanLink = link.startsWith('/') ? link.substring(1) : link;
+            // final cleanLink = link.startsWith('/') ? link.substring(1) : link;
             notifier.changePage(
               PageType.listGenerator,
               route: '/GenericList/${link}',

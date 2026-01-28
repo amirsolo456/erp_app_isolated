@@ -1,7 +1,9 @@
 // ignore_for_file: library_prefixes
 
+import 'package:erp_app/index.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:micro_app_commons/app_notifier.dart';
 import 'package:redux/redux.dart';
 import 'package:services_package/Interfaces/front_helper_services/isnackbar_service.dart'
     as snack_bar;
@@ -15,7 +17,6 @@ import 'package:services_package/default/com/select/year_service.dart';
 import 'package:services_package/default/mng/select/language_service.dart';
 import 'package:services_package/default/mng/select/place_service.dart';
 import 'package:services_package/default/trh/select/cashier_service.dart';
-import 'package:services_package/device_token_service.dart';
 import 'package:services_package/extension/exception_handler_service.dart';
 import 'package:services_package/login_service.dart';
 import 'package:services_package/otp_service.dart';
@@ -48,8 +49,6 @@ import '../../feature/redux/generic_lists/erp_store/middleware/api_middleware.da
 import '../../feature/redux/generic_lists/erp_store/models/generic_list_entity_state.dart';
 import '../../feature/redux/generic_lists/erp_store/reducers/list_reducer.dart';
 import '../list_generic/presentation/features/generic_page.dart';
-import '../messengers_services/exception_helper_service.dart';
-import '../messengers_services/snackbar_service.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -66,6 +65,9 @@ class InjectionContainer {
     // -------------------------
     // 1. UseCases (singletons)
     // -------------------------
+
+    sl.registerSingleton<AppNotifier>(AppNotifier());
+
     if (!sl.isRegistered<SecureStorageUseCase>()) {
       final secure = SecureStorageUseCase();
       sl.registerSingleton<SecureStorageUseCase>(secure);
@@ -151,15 +153,6 @@ class InjectionContainer {
     if (!sl.isRegistered<UserExistService>()) {
       sl.registerLazySingleton<UserExistService>(
         () => UserExistService(apiClientr: sl<ApiClient>()),
-      );
-    }
-
-    if (!sl.isRegistered<NotificationService>()) {
-      sl.registerLazySingleton<NotificationService>(
-        () => NotificationService(
-          storage: sl<StorageService>(),
-          refreshInterval: Duration(minutes: 5),
-        ),
       );
     }
 

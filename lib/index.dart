@@ -20,11 +20,3 @@ export 'feature/default_page/pages/default_page.dart'; // placeholder - اگر �
 // redux UI helper
 export 'feature/redux/generic_lists/ui/generic_list_page.dart';
 
-// ===== Usage notes =====
-// - این barrel برای export کردن بخش‌های کلیدی و صفحاتِ سطح بالا ساخته شده تا در سایر بسته‌ها
-//   یا در قسمت‌های دیگر اپ راحت import شوند.
-// - برای فایل‌های feature-specific (مثلاً blocها، مدل‌های محلی یا DTOها) توصیه می‌شود
-//   آن‌ها را مستقیماً با مسیر package: یا relative و در همان فایل مصرف‌کننده import کنید تا
-//   از مشکلات ambiguous import یا unused import جلوگیری شود.
-// - اگر خواستی این فایل را دقیقاً روی فایل‌های موجود پروژهٔ تو تطبیق بدهم (حذف یا اضافه خطوط)،
-//   نام فایل‌هایی که می‌خواهی export/عدم‌export شوند را بگو تا همان‌جا ویرایش کنم.

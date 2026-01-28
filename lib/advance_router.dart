@@ -1,16 +1,16 @@
 // lib/core/router/advanced_router.dart
 // ignore_for_file: unused_element, unused_local_variable
 
-import 'package:erp_app/page_cache_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:micro_app_commons/app_notifier.dart';
 import 'package:models_package/base/enums.dart';
 import 'package:navigation_builder/navigation_builder.dart';
-import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Components/erp_appbar.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Components/erp_not_found.dart';
 
 import 'components/mainlayout/main_layout.dart';
+import 'core/network/injection_container.dart';
 import 'feature/com/person/presentation/features/person_list_page.dart';
 
 class AdvancedRouter {
@@ -47,7 +47,7 @@ class AdvancedRouter {
 
   static Widget _handlePersonList(RouteData data, BuildContext context) {
     // اگر می‌خواهید navigation notifier را به‌روز کنید
-    final notifier = Provider.of<PageCacheProvider>(context, listen: false);
+    final notifier = sl<AppNotifier>();
     notifier.changePage(
       PageType.tabBar,
       route: null,
@@ -69,7 +69,7 @@ class AdvancedRouter {
       final entity = segments[2];
 
       // به‌روزرسانی navigation notifier
-      final notifier = Provider.of<PageCacheProvider>(context, listen: false);
+      final notifier = sl<AppNotifier>();
       notifier.changePage(PageType.listGenerator, route: data.path, tab: null);
 
       // بازگشت صفحه مناسب
@@ -99,35 +99,6 @@ class AdvancedRouter {
 }
 
 typedef RouteHandler = Widget Function(RouteData data, BuildContext context);
-
-// Router با قابلیت دسترسی به context
-// final erpNavigator = NavigationBuilder.create(
-//   routes: {
-//
-//     '/*': (RouteData data) {
-//       return Builder(
-//         builder: (context) {
-//           return AdvancedRouter.buildPage(data, context);
-//         },
-//       );
-//     },
-//   },
-//   ignoreUnknownRoutes: true,
-//   initialLocation: '/',
-//   shouldUseCupertinoPage: true,
-//   unknownRoute: (route) =>
-//       Scaffold(
-//         appBar: AppBar(),
-//         body: const Center(child: Text('صفحه مورد نظر یافت نشد')),
-//       ),
-//   builder: (Widget outlet) {
-//     return Scaffold(appBar: _getDynamicAppBar(outlet), body: outlet);
-//   },
-//   transitionsBuilder: (context, anim, secAnim, child) =>
-//       FadeTransition(opacity: anim, child: child),
-//   transitionDuration: const Duration(milliseconds: 500),
-//   debugPrintWhenRouted: true,
-// );
 
 PreferredSizeWidget _getDynamicAppBar(Widget outlet) {
   // منطق تشخیص نوع AppBar براساس صفحه فعلی

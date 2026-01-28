@@ -1,3 +1,4 @@
+/*
 // ignore_for_file: dead_code, unused_element
 
 import 'dart:async';
@@ -5,7 +6,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:models_package/base/enums.dart';
 import 'package:services_package/page_cache_manager.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:ui_components_package/erp_app_componenets/common/loadings/circle_loading.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Components/erp_appbar.dart';
 
@@ -17,8 +17,6 @@ import 'feature/dashboard_page/page/dashboard.dart';
 import 'feature/default_page/pages/default_page.dart';
 import 'feature/open_page/open_page.dart';
 import 'feature/profile/profile.dart';
-
-enum PageType { listGenerator, formGenerator, tabBar }
 
 class PageCacheProvider extends ChangeNotifier {
   late final PageCacheManager _cacheManager = PageCacheManager(
@@ -35,7 +33,6 @@ class PageCacheProvider extends ChangeNotifier {
   bool _isSignOut = false;
   bool _isProcessingSignOut = false;
   static final Map<String, bool> _defValue = {'first': false};
-
   final List<Completer<void>> _pendingOperations = [];
   final List<Timer> _activeTimers = [];
   final List<StreamSubscription> _activeSubscriptions = [];
@@ -176,7 +173,9 @@ class PageCacheProvider extends ChangeNotifier {
     });
 
     _skeletonTimers[tabValue] = timer;
-    /*    _registerTimer(timer); // ثبت برای کنسل کردن در خروج*/
+    */
+/*    _registerTimer(timer); // ثبت برای کنسل کردن در خروج*/ /*
+
   }
 
   void setSkeletion() {
@@ -303,6 +302,7 @@ class PageCacheProvider extends ChangeNotifier {
   }
 
   void unregisterTimer(Timer timer) {
+  void unregisterTimer(Timer timer) {
     _activeTimers.remove(timer);
   }
 
@@ -377,9 +377,11 @@ class PageCacheProvider extends ChangeNotifier {
   void _cancelAllSubscriptions() {
     if (_activeSubscriptions.isEmpty) return;
 
-    /*    GetIt.instance<AppNotifier>().notifyInfo(
+    */
+/*    GetIt.instance<AppNotifier>().notifyInfo(
       'Cancelling ${_activeSubscriptions.length} active subscriptions',
-    );*/
+    );*/ /*
+
 
     for (final subscription in _activeSubscriptions) {
       subscription.cancel();
@@ -503,3 +505,4 @@ class PageCacheProvider extends ChangeNotifier {
     super.dispose();
   }
 }
+*/

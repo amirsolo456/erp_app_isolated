@@ -1,19 +1,19 @@
-// ignore_for_file: library_prefixes
+// ignore_for_file: library_prefixes, unused_local_variable
 
 import 'dart:io';
 
 import 'package:erp_app/index.dart';
-import 'package:erp_app/page_cache_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:models_package/base/enums.dart';
+import 'package:micro_app_commons/app_notifier.dart';
+import 'package:models_package/Base/enums.dart';
 import 'package:models_package/base/language_model.dart';
 import 'package:models_package/base/login_module.dart';
 import 'package:provider/provider.dart';
+import 'package:resources_package/l10n/app_localizations.dart';
 import 'package:services_package/api_client_service.dart';
-import 'package:services_package/com/person/person_service.dart';
 import 'package:services_package/default/com/select/currency_service.dart';
 import 'package:services_package/default/com/select/year_service.dart';
 import 'package:services_package/default/mng/select/language_service.dart';
@@ -27,7 +27,6 @@ import 'content_wrapper.dart';
 import 'feature/auth/menu/bloc/menu_bloc.dart';
 import 'feature/auth/menu/bloc/menu_event.dart';
 import 'feature/com/person/domain/repositories/person_repository.dart';
-import 'feature/com/person/presentation/blocs/person_bloc/person_list_bloc.dart';
 import 'feature/com/person/presentation/blocs/search_person_bloc/search_person_bloc.dart';
 import 'feature/default_page/Language/bloc/language_bloc.dart';
 import 'feature/default_page/cashier/bloc/cashier_bloc.dart';
@@ -42,8 +41,176 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
 
-  final appNotifier = PageCacheProvider();
+  // Inject.initialize();
   await InjectionContainer.init();
+
+  usePathUrlStrategy(); // برای وب
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: sl<AppNotifier>()),
+        Provider<LoginService>(
+          create: (_) => LoginService(client: sl<ApiClient>()),
+        ),
+        Provider<PlaceBloc>(
+          create: (_) => PlaceBloc(getPlaceUseCase: sl<PlaceService>()),
+        ),
+        Provider<CashierBloc>(
+          create: (_) => CashierBloc(getCashierUseCase: sl<CashierService>()),
+        ),
+        Provider<CurrencyBloc>(
+          create: (_) =>
+              CurrencyBloc(getSelectCurrencyUseCase: sl<CurrencyService>()),
+        ),
+        Provider<YearBloc>(
+          create: (_) => YearBloc(getSelectYearUseCase: sl<YearService>()),
+        ),
+        BlocProvider(
+          create: (_) =>
+              LanguageBloc(getLanguageUseCase: sl<LanguageService>()),
+        ),
+        BlocProvider(create: (_) => sl<MenuBloc>()..add(LoadMenuEvent())),
+        BlocProvider(create: (_) => ProfileBloc()),
+        BlocProvider(create: (_) => SearchPersonBloc(sl<PersonRepository>())),
+      ],
+      child: MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        theme: ThemeData(
+          scaffoldBackgroundColor: Colors.white,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+        ),
+        showSemanticsDebugger: false,
+        title: 'ERP App',
+        debugShowCheckedModeBanner: false,
+
+        darkTheme: ThemeData.dark(),
+        themeMode: ThemeMode.system,
+        home: buildERPApp(loginData: {}),
+      ),
+    ),
+  );
+}
+
+Widget buildERPApp({required Map<String, dynamic> loginData}) {
+  if (loginData.isEmpty) return const SizedBox();
+
+  if (loginData[SessionKeysExt(SessionKeys.language).key] == null) {
+    loginData[SessionKeysExt(SessionKeys.language).key] = LanguageModel(
+      languageCode: 'fa',
+      smallName: 'fa',
+      id: 0,
+      bigName: 'IR',
+      completeName: 'fa_IR',
+    );
+  }
+
+  usePathUrlStrategy();
+  final loginModuleResult = LoginModuleResult.success(
+    userDto: prefix0.UserDto(
+      id: 0,
+      refreshToken: '',
+      firstName: 'a',
+      fullName: 'a',
+      lastName: 'a',
+      token: '',
+      type: 'user',
+      password: '12',
+      userName: '12',
+    ),
+    token: loginData[SessionKeysExt(SessionKeys.token).key],
+    deviceToken: loginData[SessionKeysExt(SessionKeys.deviceToken).key],
+    networkMode: loginData[SessionKeysExt(SessionKeys.networkType).key] ?? 0,
+    cachedKey: 'a',
+    language: LanguageModel(
+      id: 0,
+      bigName: 'fa',
+      completeName: 'fa',
+      languageCode: 'fa',
+    ),
+    managementAccount: [],
+    success: loginData[SessionKeysExt(SessionKeys.success).key] ?? false,
+    error: loginData[SessionKeysExt(SessionKeys.error).key] as String?,
+    timestamp: loginData[SessionKeysExt(SessionKeys.timeStamp).key] != null
+        ? DateTime.fromMillisecondsSinceEpoch(
+            loginData[SessionKeysExt(SessionKeys.timeStamp).key] as int,
+          )
+        : DateTime.now(),
+    selectedManagementAccount: prefix0.ManagementAccounts(
+      packageId: 0,
+      managementAccountDesc: 'AMIR',
+      expireDate: '',
+      inActive: true,
+      credit: 0,
+      managementAccountId: 0,
+    ),
+  );
+
+  final storageService = sl<StorageService>();
+
+  storageService.saveLoginSessionModel(loginModuleResult);
+
+  final placeService = sl<PlaceService>();
+  final getCashierUseCase = sl<CashierService>();
+  final getCurrencyUseCase = sl<CurrencyService>();
+  final getYearUseCase = sl<YearService>();
+  final getLanguageUseCase = sl<LanguageService>();
+
+  try {
+    return MultiProvider(
+      providers: [
+        // ChangeNotifierProvider.value(value: sl<PageCacheProvider>()),
+        Provider<LoginService>(
+          create: (_) => LoginService(client: sl<ApiClient>()),
+        ),
+        Provider<PlaceBloc>(
+          create: (_) => PlaceBloc(getPlaceUseCase: placeService),
+        ),
+        Provider<CashierBloc>(
+          create: (_) => CashierBloc(getCashierUseCase: getCashierUseCase),
+        ),
+        Provider<CurrencyBloc>(
+          create: (_) =>
+              CurrencyBloc(getSelectCurrencyUseCase: getCurrencyUseCase),
+        ),
+        Provider<YearBloc>(
+          create: (_) => YearBloc(getSelectYearUseCase: getYearUseCase),
+        ),
+        BlocProvider(
+          create: (_) => LanguageBloc(getLanguageUseCase: getLanguageUseCase),
+        ),
+        BlocProvider(create: (_) => sl<MenuBloc>()..add(LoadMenuEvent())),
+        BlocProvider(create: (_) => ProfileBloc()),
+        // BlocProvider(
+        //   create: (_) => PersonListBloc(personService: sl<PersonService>()),
+        // ),
+        BlocProvider(create: (_) => SearchPersonBloc(sl<PersonRepository>())),
+      ],
+      child: ErpContentWrapper(notifier: sl<AppNotifier>()),
+    );
+  } catch (e) {
+    return Center(child: Text(e.toString()));
+  }
+}
+
+/*
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
+
+  final appNotifier = PageCacheProvider();
+  try {
+    await Future.wait(<Future<void>>[InjectionContainer.init()]);
+  } catch (e, stackTrace) {
+    debugPrintStack(stackTrace: stackTrace);
+  }
+  // await InjectionContainer.init();
 
   sl.registerSingleton(appNotifier);
   // baseApp.BaseApp().initialiseRouting();
@@ -60,8 +227,6 @@ void main() async {
   runApp(
     ChangeNotifierProvider.value(
       value: appNotifier,
-      // lazy: false,
-      // create: (context) => PageCacheProvider(),
       child: Consumer<PageCacheProvider>(
         builder: (context, value, child) {
           return MaterialApp(
@@ -118,9 +283,14 @@ class _MainAppScreenState extends State<MainAppScreen> {
   @override
   Widget build(BuildContext context) {
     final notifier = Provider.of<PageCacheProvider>(context);
+    // return Navigator(
+    //   key: navigatorKey,
+    //   onGenerateRoute: super.widget.generateRoute,
+    //   initialRoute: Routes.signIn.value,
+    // );
     return Directionality(
       textDirection: TextDirection.ltr,
-      child: ContentWrapper(notifier: notifier),
+      child: ErpContentWrapper(notifier: notifier),
     );
   }
 }
@@ -346,11 +516,11 @@ class _MainAppScreenState extends State<MainAppScreen> {
 //   }
 // }
 
-Widget buildERPApp({required Map<String, dynamic> loginDatas}) {
-  if (loginDatas.isEmpty) return const SizedBox();
+Widget buildERPApp({required Map<String, dynamic> loginData}) {
+  if (loginData.isEmpty) return const SizedBox();
 
-  if (loginDatas[SessionKeysExt(SessionKeys.language).key] == null) {
-    loginDatas[SessionKeysExt(SessionKeys.language).key] = LanguageModel(
+  if (loginData[SessionKeysExt(SessionKeys.language).key] == null) {
+    loginData[SessionKeysExt(SessionKeys.language).key] = LanguageModel(
       languageCode: 'fa',
       smallName: 'fa',
       id: 0,
@@ -358,9 +528,7 @@ Widget buildERPApp({required Map<String, dynamic> loginDatas}) {
       completeName: 'fa_IR',
     );
   }
-  // prefix0.UserDto.fromJson(
-  //   loginDatas[loginDatas[SessionKeysExt(SessionKeys.user).key]],)
-  //     ??
+
   usePathUrlStrategy();
   final loginModuleResult = LoginModuleResult.success(
     userDto: prefix0.UserDto(
@@ -375,9 +543,9 @@ Widget buildERPApp({required Map<String, dynamic> loginDatas}) {
       userName: '12',
     ),
 
-    token: loginDatas[SessionKeysExt(SessionKeys.token).key],
-    deviceToken: loginDatas[SessionKeysExt(SessionKeys.deviceToken).key],
-    networkMode: loginDatas[SessionKeysExt(SessionKeys.networkType).key] ?? 0,
+    token: loginData[SessionKeysExt(SessionKeys.token).key],
+    deviceToken: loginData[SessionKeysExt(SessionKeys.deviceToken).key],
+    networkMode: loginData[SessionKeysExt(SessionKeys.networkType).key] ?? 0,
     cachedKey: 'a',
     language: LanguageModel(
       id: 0,
@@ -385,19 +553,12 @@ Widget buildERPApp({required Map<String, dynamic> loginDatas}) {
       completeName: 'fa',
       languageCode: 'fa',
     ),
-    // language: LanguageModel.fromJson(
-    //   loginDatas[SessionKeysExt(SessionKeys.language).key],
-    // ),
     managementAccount: [],
-    // (loginDatas[SessionKeysExt(SessionKeys.managementAccount).key]
-    //         as List<dynamic>)
-    //     .map((e) => prefix0.ManagementAccounts.fromJson(e))
-    //     .toList(),
-    success: loginDatas[SessionKeysExt(SessionKeys.success).key] ?? false,
-    error: loginDatas[SessionKeysExt(SessionKeys.error).key] as String?,
-    timestamp: loginDatas[SessionKeysExt(SessionKeys.timeStamp).key] != null
+    success: loginData[SessionKeysExt(SessionKeys.success).key] ?? false,
+    error: loginData[SessionKeysExt(SessionKeys.error).key] as String?,
+    timestamp: loginData[SessionKeysExt(SessionKeys.timeStamp).key] != null
         ? DateTime.fromMillisecondsSinceEpoch(
-            loginDatas[SessionKeysExt(SessionKeys.timeStamp).key] as int,
+            loginData[SessionKeysExt(SessionKeys.timeStamp).key] as int,
           )
         : DateTime.now(),
     selectedManagementAccount: prefix0.ManagementAccounts(
@@ -408,20 +569,9 @@ Widget buildERPApp({required Map<String, dynamic> loginDatas}) {
       credit: 0,
       managementAccountId: 0,
     ),
-    // selectedManagementAccount: prefix0.ManagementAccounts.fromJson(
-    //   loginDatas[SessionKeysExt(SessionKeys.selectedManagement).key],
-    // ),
-    // .fromJson(
-    //   loginDatas[SessionKeysExt(SessionKeys.selectedManagement).key],
-    // ),
   );
 
   final storageService = sl<StorageService>();
-
-  // if ((loginDatas[LoginRouter.isLoginModuleModel] ?? false) as bool == true &&
-  //     loginDatas[LoginRouter.loginNavigator] != null &&
-  //     loginDatas[LoginRouter.loginNavigator] is GuardedNavigationBuilder) {
-  // } else {}
 
   storageService.saveLoginSessionModel(loginModuleResult);
 
@@ -431,47 +581,45 @@ Widget buildERPApp({required Map<String, dynamic> loginDatas}) {
   final getYearUseCase = sl<YearService>();
   final getLanguageUseCase = sl<LanguageService>();
 
-  // final a = storageService.sqlLoadLoginSessionModel().then(
-  //   (value) => {print('b')},
-  // );
-  // final b = storageService.getDbPath().then(
-  //   (isok) => {
-  //     {print('')},
-  //   },
-  // );
-  return MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => PageCacheProvider()),
-      Provider<LoginService>(
-        create: (_) => LoginService(client: sl<ApiClient>()),
-      ),
-      Provider<PlaceBloc>(
-        create: (_) => PlaceBloc(getPlaceUseCase: placeService),
-      ),
-      Provider<CashierBloc>(
-        create: (_) => CashierBloc(getCashierUseCase: getCashierUseCase),
-      ),
-      Provider<CurrencyBloc>(
-        create: (_) =>
-            CurrencyBloc(getSelectCurrencyUseCase: getCurrencyUseCase),
-      ),
-      Provider<YearBloc>(
-        create: (_) => YearBloc(getSelectYearUseCase: getYearUseCase),
-      ),
-      BlocProvider(
-        create: (_) => LanguageBloc(getLanguageUseCase: getLanguageUseCase),
-      ),
-      BlocProvider(create: (_) => sl<MenuBloc>()..add(LoadMenuEvent())),
-      BlocProvider(create: (_) => ProfileBloc()),
-      BlocProvider(
-        create: (_) => PersonListBloc(personService: sl<PersonService>()),
-      ),
-      BlocProvider(create: (_) => SearchPersonBloc(sl<PersonRepository>())),
-    ],
-    child: MainAppScreen(
-      // initialLanguage:
-      //     loginModuleResult.language ?? LanguageModel(languageCode: 'fa'),
-      // messengerService: sl<ExceptionHelperService>(),
-    ),
-  );
+  try {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: sl<PageCacheProvider>()),
+        Provider<LoginService>(
+          create: (_) => LoginService(client: sl<ApiClient>()),
+        ),
+        Provider<PlaceBloc>(
+          create: (_) => PlaceBloc(getPlaceUseCase: placeService),
+        ),
+        Provider<CashierBloc>(
+          create: (_) => CashierBloc(getCashierUseCase: getCashierUseCase),
+        ),
+        Provider<CurrencyBloc>(
+          create: (_) =>
+              CurrencyBloc(getSelectCurrencyUseCase: getCurrencyUseCase),
+        ),
+        Provider<YearBloc>(
+          create: (_) => YearBloc(getSelectYearUseCase: getYearUseCase),
+        ),
+        BlocProvider(
+          create: (_) => LanguageBloc(getLanguageUseCase: getLanguageUseCase),
+        ),
+        BlocProvider(create: (_) => sl<MenuBloc>()..add(LoadMenuEvent())),
+        BlocProvider(create: (_) => ProfileBloc()),
+        // BlocProvider(
+        //   create: (_) => PersonListBloc(personService: sl<PersonService>()),
+        // ),
+        BlocProvider(create: (_) => SearchPersonBloc(sl<PersonRepository>())),
+      ],
+      child: ErpContentWrapper(notifier: sl<PageCacheProvider>()),
+      // MainAppScreen(
+      //   // initialLanguage:
+      //   //     loginModuleResult.language ?? LanguageModel(languageCode: 'fa'),
+      //   // messengerService: sl<ExceptionHelperService>(),
+      // ),
+    );
+  } catch (e) {
+    return Center(child: Text(e.toString()));
+  }
 }
+*/

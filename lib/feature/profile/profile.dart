@@ -2,6 +2,7 @@ import 'package:erp_app/feature/profile/profile_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:micro_app_commons/app_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:resources_package/l10n/app_localizations.dart';
 import 'package:resources_package/l10n/app_localizations_en.dart';
@@ -10,7 +11,6 @@ import 'package:services_package/storage/domain/usecases/storage_service.dart';
 import 'package:ui_components_package/erp_app_componenets/common/loadings/circle_loading.dart';
 
 import '../../core/network/injection_container.dart';
-import '../../page_cache_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -184,11 +184,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> onSignoutPressed(BuildContext context) async {
-    final cacheProvider = Provider.of<PageCacheProvider>(
-      context,
-      listen: false,
-    );
-   await cacheProvider.signOut(context,force: true);
+    final cacheProvider = Provider.of<AppNotifier>(context, listen: false);
+    await cacheProvider.signOut(context, force: true);
 
     // clearToken();
 

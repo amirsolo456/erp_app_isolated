@@ -1,55 +1,55 @@
-import 'package:erp_app/index.dart';
-import 'package:erp_app/page_cache_provider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:micro_app_core/services/custom_event_bus/custom_event_bus.dart';
-import 'package:micro_app_core/services/routing/routes.dart';
-import 'package:micro_app_core/src/base_app.dart';
-import 'package:micro_app_core/src/micro_app.dart';
-import 'package:micro_app_core/src/micro_core_utils.dart';
+import 'package:micro_app_commons/app_notifier.dart';
+import 'package:models_package/base/enums.dart';
+import 'package:provider/provider.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/Components/erp_appbar.dart';
 
-class ContentWrapper extends StatefulWidget with BaseApp {
-  final PageCacheProvider notifier;
+import 'feature/navigation_button/presentation/widget/app_navigation_button.dart';
 
-  ContentWrapper({super.key, required this.notifier}) {
-    initialiseRouting();
-  }
+class ErpContentWrapper extends StatefulWidget {
+  final AppNotifier notifier;
 
-  @override
-  State<ContentWrapper> createState() => _WrapperTestState();
+  const ErpContentWrapper({super.key, required this.notifier});
 
   @override
-  Map<String, WidgetBuilderArgs> get baseRoutes =>
-      <String, WidgetBuilderArgs>{};
-
-  @override
-  List<MicroApp> get microApps => <MicroApp>[ErpResolver()];
+  State<ErpContentWrapper> createState() => _ErpContentWrapperState();
 }
 
-class _WrapperTestState extends State<ContentWrapper> {
+class _ErpContentWrapperState extends State<ErpContentWrapper> {
+  double menuWidth = 0;
+
   @override
   Widget build(BuildContext context) {
-    // return const Center(child: Text('a'),);
-    return Navigator(
-      key: navigatorKey,
-      onGenerateRoute: super.widget.generateRoute,
-      initialRoute: Routes.erpApp.value,
+    return Positioned.fill(
+      child: Consumer<AppNotifier>(
+        builder: (context, notifier, child) {
+          return _buildMainContent(context, notifier);
+        },
+      ),
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-
-    CustomEventBus.on<ErpShownEvent>((event) {
-      navigatorKey.currentState?.pushNamed(
-        Routes.erpApp.value,
-        arguments: event,
-      );
-    });
-
-    CustomEventBus.on<ErpCloseEvent>((event) {
-      navigatorKey.currentState?.pop();
-    });
+  Widget _buildMainContent(BuildContext context, AppNotifier notifier) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: ErpAppBar(mode: AppBarsMode.erpDefaultMode),
+      body: Column(
+        children: [
+          // if (notifier.errorMessages.length > 1) _buildErrorWidget(notifier),
+          Expanded(
+            child: Consumer<AppNotifier>(
+              builder: (context, navNotifier, child) {
+                return navNotifier.getPage(notifier.selectedTab);
+              },
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: AppNavigationButton(
+        selectedTab: notifier.selectedTab,
+        onTabSelected: (value) =>
+            notifier.changePage(PageType.tabBar, route: null, tab: value),
+      ),
+    );
   }
 }

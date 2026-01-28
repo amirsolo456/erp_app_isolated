@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:provider/provider.dart';
+import 'package:micro_app_commons/app_notifier.dart';
+import 'package:models_package/index.dart';
 import 'package:services_package/Repo_ViewId/repo_view_id.dart';
 import 'package:services_package/com/person/person_service.dart';
 import 'package:shared_core/data/com/person/request.dart' as prefix0;
@@ -11,11 +12,10 @@ import 'package:ui_components_package/erp_app_componenets/mobile/Components/list
 import 'package:ui_components_package/erp_app_componenets/mobile/Expanders/list_datas_expander.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Headers/list_head_actionbar.dart';
 
-import '../../../../../page_cache_provider.dart';
+import '../../../../../index.dart';
 import '../../../../navigation_button/presentation/widget/app_navigation_button.dart';
 import '../../../../redux/generic_lists/erp_store/models/field_display_config.dart';
 import '../../../../redux/generic_lists/erp_store/models/generic_list_entity_state.dart';
-import '../../../../redux/generic_lists/ui/generic_list_page.dart';
 
 class PersonListPage extends StatefulWidget {
   final bool refreshData;
@@ -78,10 +78,7 @@ class _PersonListPageState extends State<PersonListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final cacheProvider = Provider.of<PageCacheProvider>(
-      context,
-      listen: false,
-    );
+    final cacheProvider = sl<AppNotifier>();
 
     if (_isLoading) {
       return const Center(child: CircleLoading());
@@ -205,7 +202,7 @@ class _PersonListPageState extends State<PersonListPage> {
                       route: null,
                       tab: tab,
                     );
-                    cacheProvider.clearPageCache(tab);
+                    cacheProvider.clearPageCache();
                   }),
                 },
               ),

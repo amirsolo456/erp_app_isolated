@@ -1,10 +1,10 @@
 // main_layout_page.dart
 import 'package:flutter/material.dart';
+import 'package:micro_app_commons/app_notifier.dart';
 import 'package:models_package/base/enums.dart';
 import 'package:provider/provider.dart';
 
 import '../../feature/navigation_button/presentation/widget/app_navigation_button.dart';
-import '../../page_cache_provider.dart';
 
 class MainLayoutPage extends StatefulWidget {
   final NavButtonTabBarMode initialTab;
@@ -21,7 +21,7 @@ class _MainLayoutPageState extends State<MainLayoutPage> {
     super.initState();
     // مقداردهی اولیه notifier با تب اولیه
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final notifier = context.read<PageCacheProvider>();
+      final notifier = context.read<AppNotifier>();
       notifier.changePage(
         PageType.tabBar,
         route: null,
@@ -30,15 +30,15 @@ class _MainLayoutPageState extends State<MainLayoutPage> {
     });
   }
 
-  void _onTabSelected(NavButtonTabBarMode tab, PageCacheProvider notifier) {
+  void _onTabSelected(NavButtonTabBarMode tab, AppNotifier notifier) {
     notifier.changePage(PageType.tabBar, route: null, tab: tab);
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => PageCacheProvider())],
-      child: Consumer<PageCacheProvider>(
+      providers: [ChangeNotifierProvider(create: (_) => AppNotifier())],
+      child: Consumer<AppNotifier>(
         builder: (context, cacheProvider, child) {
           return Scaffold(
             body: SafeArea(
