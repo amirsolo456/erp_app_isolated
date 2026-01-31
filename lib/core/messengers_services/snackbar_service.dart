@@ -5,9 +5,9 @@ import 'package:resources_package/Resources/Assets/assets_manager.dart';
 import 'package:resources_package/Resources/Assets/icons_manager.dart';
 import 'package:services_package/Interfaces/front_helper_services/isnackbar_service.dart';
 
-class SnackBarService implements ISnackbarService {
-  static final GlobalKey<ScaffoldMessengerState> messengerKey =
-      GlobalKey<ScaffoldMessengerState>();
+class SnackBarService implements ISnackBarService {
+  // static final GlobalKey<ScaffoldMessengerState> messengerKey =
+  // GlobalKey<ScaffoldMessengerState>();
 
   static Color successColor = const Color(0XFFE8F4E6);
   static Color infoColor = const Color(0XFFF2F8FF);
@@ -15,6 +15,7 @@ class SnackBarService implements ISnackbarService {
   static Color questionBoxColor = const Color(0XFFF9F9F9);
 
   void _show(
+    BuildContext context,
     String message, {
     required MessageMode mode,
     required List<QuestionButton> buttons,
@@ -44,7 +45,7 @@ class SnackBarService implements ISnackbarService {
           break;
       }
 
-      messengerKey.currentState?.showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: bg,
           behavior: SnackBarBehavior.floating,
@@ -89,11 +90,13 @@ class SnackBarService implements ISnackbarService {
 
   @override
   void showSuccess(
+    BuildContext context,
     String msg, {
     Duration? duration,
     List<QuestionButton>? buttons,
   }) {
     _show(
+      context,
       msg,
       mode: MessageMode.successMode,
       buttons: buttons ?? const [],
@@ -103,11 +106,13 @@ class SnackBarService implements ISnackbarService {
 
   @override
   void showError(
+    BuildContext context,
     String msg, {
     Duration? duration,
     List<QuestionButton>? buttons,
   }) {
     _show(
+      context,
       msg,
       mode: MessageMode.errorMode,
       buttons: buttons ?? const [],
@@ -117,11 +122,13 @@ class SnackBarService implements ISnackbarService {
 
   @override
   void showInfo(
+    BuildContext context,
     String msg, {
     Duration? duration,
     List<QuestionButton>? buttons,
   }) {
     _show(
+      context,
       msg,
       mode: MessageMode.infoMode,
       buttons: buttons ?? const [],
@@ -131,11 +138,13 @@ class SnackBarService implements ISnackbarService {
 
   @override
   void showQuestionBox(
+    BuildContext context,
     String msg, {
     Duration? duration,
     required List<QuestionButton> buttons,
   }) {
     _show(
+      context,
       msg,
       mode: MessageMode.questionBoxMode,
       buttons: buttons,

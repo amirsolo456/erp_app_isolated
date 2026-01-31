@@ -3,6 +3,7 @@
 import 'package:erp_app/index.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:login_module/bloc/login_bloc.dart';
 import 'package:micro_app_commons/app_notifier.dart';
 import 'package:redux/redux.dart';
 import 'package:services_package/Interfaces/front_helper_services/isnackbar_service.dart'
@@ -172,8 +173,8 @@ class InjectionContainer {
     final messengerService = sl<ExceptionHelperService>();
     AppErrorHandler.registerMessengerService(messengerService);
 
-    if (!sl.isRegistered<snack_bar.ISnackbarService>()) {
-      sl.registerLazySingleton<snack_bar.ISnackbarService>(
+    if (!sl.isRegistered<snack_bar.ISnackBarService>()) {
+      sl.registerLazySingleton<snack_bar.ISnackBarService>(
         () => SnackBarService(),
       );
     }
@@ -183,6 +184,7 @@ class InjectionContainer {
         () => LoginService(client: sl<ApiClient>()),
       );
     }
+
 
     // -------------------------
     // 7. Generic ApiService registrations (fix factory)
