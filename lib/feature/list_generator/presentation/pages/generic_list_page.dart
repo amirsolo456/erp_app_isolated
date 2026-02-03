@@ -1,8 +1,9 @@
+import 'package:erp_app/feature/list_generator/data/models/field_display_config.dart';
+import 'package:erp_app/feature/list_generator/data/models/generic_list_entity_state.dart';
 import 'package:flutter/material.dart';
-import '../erp_store/models/field_display_config.dart';
-import '../erp_store/models/generic_list_entity_state.dart';
 
-class GenericEntityScreen<D> extends StatefulWidget {
+
+class  GenericListPage<D> extends StatefulWidget {
   final List<FieldDisplayConfig<D>> fieldConfigs;
   final String screenTitle;
   final Widget Function(D item)? customItemBuilder;
@@ -11,7 +12,7 @@ class GenericEntityScreen<D> extends StatefulWidget {
   final bool enableSorting;
   final Future<GenericListEntityState> Function()? onFetchData;
 
-  const GenericEntityScreen({
+  const GenericListPage({
     Key? key,
     required this.fieldConfigs,
     this.screenTitle = 'لیست داده‌ها',
@@ -26,7 +27,7 @@ class GenericEntityScreen<D> extends StatefulWidget {
   _GenericEntityScreenState<D> createState() => _GenericEntityScreenState<D>();
 }
 
-class _GenericEntityScreenState<D> extends State<GenericEntityScreen<D>> {
+class _GenericEntityScreenState<D> extends State<GenericListPage<D>> {
   GenericListEntityState? _state;
   bool _isLoading = false;
   String? _error;

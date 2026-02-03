@@ -24,7 +24,7 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     emit(const PlaceLoading());
     try {
       final places = await getPlaceUseCase.get(
-        prefix0.Request(repoViewId: AppConstants().PlaceRepoViewId),
+        prefix0.Request(repoViewId: AppConstants().placeRepoViewId),
         (json) => prefix0.Response.fromJson(json),
       );
 

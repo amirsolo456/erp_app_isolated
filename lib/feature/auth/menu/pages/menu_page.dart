@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:micro_app_commons/app_notifier.dart';
 import 'package:models_package/index.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_core/data/auth/menu/response_data.dart' as prefix0;
+import 'package:shared_core/data/auth/menu/response_data.dart';
 import 'package:ui_components_package/erp_app_componenets/common/loadings/circle_loading.dart';
 
 import '../../../../index.dart';
@@ -20,7 +20,7 @@ class MenuPage extends StatefulWidget {
 
 class _MenuPageState extends State<MenuPage> {
   TextEditingController searchController = TextEditingController();
-  List<prefix0.ResponseData> filteredMenus = [];
+  List<ResponseData> filteredMenus = [];
 
   bool isFocused = false;
   final FocusNode searchFocusNode = FocusNode();
@@ -36,25 +36,25 @@ class _MenuPageState extends State<MenuPage> {
     });
   }
 
-  void filterMenus(List<prefix0.ResponseData> menus, String query) {
+  void filterMenus(List<ResponseData> menus, String query) {
     filteredMenus = menus
         .map((menu) => _filterMenu(menu, query))
         .where((e) => e != null)
-        .cast<prefix0.ResponseData>()
+        .cast<ResponseData>()
         .toList();
     setState(() {});
   }
 
-  prefix0.ResponseData? _filterMenu(prefix0.ResponseData menu, String query) {
+  ResponseData? _filterMenu(ResponseData menu, String query) {
     final matches = menu.menuDesc!.contains(query);
     final subMenusFiltered = menu.subMenus
         .map((e) => _filterMenu(e, query))
         .where((e) => e != null)
-        .cast<prefix0.ResponseData>()
+        .cast<ResponseData>()
         .toList();
 
     if (matches || subMenusFiltered.isNotEmpty) {
-      return prefix0.ResponseData().copyWith(subMenus: subMenusFiltered);
+      return ResponseData().copyWith(subMenus: subMenusFiltered);
     }
     return null;
   }
@@ -143,7 +143,7 @@ class _MenuPageState extends State<MenuPage> {
 }
 
 class _MenuTile extends StatelessWidget {
-  final prefix0.ResponseData item;
+  final ResponseData item;
 
   const _MenuTile(this.item);
 

@@ -17,6 +17,7 @@ import 'package:provider/provider.dart';
 import 'package:resources_package/l10n/app_localizations.dart';
 import 'package:services_package/api_client_service.dart';
 import 'package:services_package/auth/menu/menu_service.dart';
+import 'package:services_package/com/person/person_service.dart';
 import 'package:services_package/default/com/select/currency_service.dart';
 import 'package:services_package/default/com/select/year_service.dart';
 import 'package:services_package/default/mng/select/language_service.dart';
@@ -24,14 +25,13 @@ import 'package:services_package/default/mng/select/place_service.dart';
 import 'package:services_package/default/trh/select/cashier_service.dart';
 import 'package:services_package/login_service.dart';
 import 'package:services_package/storage/domain/usecases/storage_service.dart';
-import 'package:shared_core/index.dart'  ;
 import 'package:toastification/toastification.dart';
 import 'package:ui_components_package/erp_app_componenets/common/toast/toast.dart';
-
 
 import 'feature/auth/menu/bloc/menu_bloc.dart';
 import 'feature/auth/menu/bloc/menu_event.dart';
 import 'feature/com/person/domain/repositories/person_repository.dart';
+import 'feature/com/person/presentation/blocs/person_bloc/person_list_bloc.dart';
 import 'feature/com/person/presentation/blocs/search_person_bloc/search_person_bloc.dart';
 import 'feature/default_page/Language/bloc/language_bloc.dart';
 import 'feature/default_page/cashier/bloc/cashier_bloc.dart';
@@ -103,7 +103,6 @@ void main() async {
 }
 
 Widget buildERPApp({required Map<String, dynamic> loginData}) {
-
   if (loginData.isEmpty) return const SizedBox();
 
   if (loginData[SessionKeysExt(SessionKeys.language).key] == null) {
@@ -116,7 +115,12 @@ Widget buildERPApp({required Map<String, dynamic> loginData}) {
     );
   }
   if (!sl.isRegistered<MenuBloc>()) {
-    sl.registerFactory(() => MenuBloc(getMenuUseCase: sl<MenuService>(),onErrorEven: loginBlocOnError));
+    sl.registerFactory(
+      () => MenuBloc(
+        getMenuUseCase: sl<MenuService>(),
+        onErrorEven: loginBlocOnError,
+      ),
+    );
   }
   usePathUrlStrategy();
   final loginModuleResult = LoginModuleResult.fromJson(loginData);
@@ -124,7 +128,7 @@ Widget buildERPApp({required Map<String, dynamic> loginData}) {
   final storageService = sl<StorageService>();
 
   storageService.saveLoginSessionModel(loginModuleResult);
-  
+
   final placeService = sl<PlaceService>();
   final getCashierUseCase = sl<CashierService>();
   final getCurrencyUseCase = sl<CurrencyService>();
@@ -156,9 +160,9 @@ Widget buildERPApp({required Map<String, dynamic> loginData}) {
         ),
         BlocProvider(create: (_) => sl<MenuBloc>()..add(LoadMenuEvent())),
         BlocProvider(create: (_) => ProfileBloc()),
-        // BlocProvider(
-        //   create: (_) => PersonListBloc(personService: sl<PersonService>()),
-        // ),
+        BlocProvider(
+          create: (_) => PersonListBloc(personService: sl<PersonService>()),
+        ),
         BlocProvider(create: (_) => SearchPersonBloc(sl<PersonRepository>())),
       ],
       child: ErpContentWrapper(notifier: sl<ErpAppNotifier>()),
@@ -166,16 +170,17 @@ Widget buildERPApp({required Map<String, dynamic> loginData}) {
   } catch (e) {
     return Center(child: Text(e.toString()));
   }
-
 }
 
-void loginBlocOnError(BuildContext context,String? title, String? description) {
-
-
+void loginBlocOnError(
+  BuildContext context,
+  String? title,
+  String? description,
+) {
   ModernToast().showToast(
     context,
     Text(title ?? 'خطا'),
     Text(description ?? 'مشکلی رخ داده'),
-            ToastificationType.warning ,
+    ToastificationType.warning,
   );
 }

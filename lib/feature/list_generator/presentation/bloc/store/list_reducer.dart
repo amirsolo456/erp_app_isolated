@@ -1,17 +1,17 @@
 // list_reducer.dart
-import 'package:shared_core/index.dart' as prefix0;
+import 'package:erp_app/feature/list_generator/data/models/field_display_config.dart';
+import 'package:shared_core/index.dart';
 import 'package:services_package/api_service.dart';
 
-import '../actions/generic_list_entity_actions.dart';
-import '../actions/list_actions.dart';
-import '../models/field_display_config.dart';
-import '../models/generic_list_entity_state.dart';
+import '../../../data/models/generic_list_entity_actions.dart';
+import '../../../data/models/list_actions.dart';
+import '../../../data/models/generic_list_entity_state.dart';
 
 // reducer
 GenericListEntityState<T, D, C> genericEntityReducer<
-  T extends prefix0.BaseResponse<D>,
+  T extends BaseResponse<D>,
   D,
-  C extends prefix0.BaseRequest
+  C extends BaseRequest
 >(GenericListEntityState<T, D, C> state, GenericEntityAction action) {
   if (action is StartLoadingAction) {
     return state.copyWith(loading: true, error: null);
@@ -37,9 +37,9 @@ GenericListEntityState<T, D, C> genericEntityReducer<
 }
 
 class InitializeEntityAction<
-  T extends prefix0.BaseResponse<D>,
+  T extends BaseResponse<D>,
   D,
-  C extends prefix0.BaseRequest
+  C extends BaseRequest
 >
     extends GenericEntityAction {
   final String entityKey;
@@ -61,9 +61,9 @@ class InitializeEntityAction<
 
 class GenericEntityReducer {
   static ErpStoreState<T, D, C> reduce<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, GenericEntityAction action) {
     if (action is InitializeEntityAction<T, D, C>) {
       return _initializeEntity(state, action);
@@ -107,9 +107,9 @@ class GenericEntityReducer {
   // ========== Private Reducer Methods ==========
 
   static ErpStoreState<T, D, C> _initializeEntity<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, InitializeEntityAction<T, D, C> action) {
     final newEntity = GenericListEntityState<T, D, C>(
       request: action.request,
@@ -124,9 +124,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _fetchData<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, FetchDataAction<T, D, C> action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null) return state;
@@ -143,9 +143,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _fetchDataSuccess<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, FetchDataSuccessAction<T, D, C> action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null) return state;
@@ -165,9 +165,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _fetchDataFailure<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, FetchDataFailureAction action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null) return state;
@@ -180,9 +180,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _createData<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, CreateDataAction<D> action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null) return state;
@@ -199,9 +199,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _updateData<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, UpdateDataAction<D> action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null || action.index >= entity.fetchData.length) return state;
@@ -217,9 +217,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _deleteData<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, DeleteDataAction action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null || action.index >= entity.fetchData.length) return state;
@@ -238,9 +238,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _setLoading<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, SetLoadingAction action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null) return state;
@@ -253,9 +253,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _setError<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, SetErrorAction action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null) return state;
@@ -268,9 +268,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _updateRequest<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, UpdateRequestAction<C> action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null) return state;
@@ -283,9 +283,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _updateDisplayFields<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, UpdateDisplayFieldsAction action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null) return state;
@@ -298,9 +298,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _addDisplayField<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, AddDisplayFieldAction action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null) return state;
@@ -317,9 +317,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _removeDisplayField<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, RemoveDisplayFieldAction action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null) return state;
@@ -335,9 +335,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _clearEntity<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, ClearEntityAction action) {
     final entity = state.getEntity(action.entityKey);
     if (entity == null) return state;
@@ -355,9 +355,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _addEntity<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, AddEntityAction<T, D, C> action) {
     return state.copyWith(
       entities: {...state.entities, action.entityKey: action.entityState},
@@ -365,9 +365,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _removeEntity<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state, RemoveEntityAction action) {
     final newEntities = Map<String, GenericListEntityState<T, D, C>>.from(
       state.entities,
@@ -378,9 +378,9 @@ class GenericEntityReducer {
   }
 
   static ErpStoreState<T, D, C> _clearStore<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >(ErpStoreState<T, D, C> state) {
     return ErpStoreState<T, D, C>();
   }

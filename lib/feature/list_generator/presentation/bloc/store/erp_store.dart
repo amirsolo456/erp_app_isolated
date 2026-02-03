@@ -1,20 +1,22 @@
 // ==================== Store ====================
-import 'package:shared_core/index.dart' as prefix0;
-import 'package:erp_app/feature/redux/generic_lists/erp_store/reducers/list_reducer.dart';
+import 'package:erp_app/feature/list_generator/data/data_source/erp_generic_middleware.dart';
+import 'package:shared_core/index.dart';
+import 'package:erp_app/feature/list_generator/presentation/bloc/store/list_reducer.dart';
+import '../../../data/models/generic_list_entity_actions.dart';
+import '../../../data/models/list_actions.dart';
+import '../../../data/models/generic_list_entity_state.dart';
 
-
-import 'actions/generic_list_entity_actions.dart';
-import 'actions/list_actions.dart';
-import 'middleware/optimistic_middleware.dart';
-import 'models/generic_list_entity_state.dart';
-
-class GenericEntityStore<T extends prefix0.BaseResponse<D>, D, C extends prefix0.BaseRequest> {
+class GenericEntityStore<
+  T extends BaseResponse<D>,
+  D,
+  C extends BaseRequest
+> {
   ErpStoreState<T, D, C> _state;
-  final List<GenericEntityMiddleware<T, D, C>> _middlewares;
+  final List<ErpGenericMiddleware<T, D, C>> _middlewares;
 
   GenericEntityStore({
     required ErpStoreState<T, D, C> initialState,
-    List<GenericEntityMiddleware<T, D, C>> middlewares = const [],
+    List<ErpGenericMiddleware<T, D, C>> middlewares = const [],
   }) : _state = initialState,
        _middlewares = middlewares;
 

@@ -22,7 +22,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     emit(const CurrencyLoading());
     try {
       final selectCurrencys = await getSelectCurrencyUseCase.get(
-        prefix0.Request(repoViewId: AppConstants().YearRepoViewId, showMode: 10),
+        prefix0.Request(repoViewId: AppConstants().yearRepoViewId, showMode: 10),
         (json) => prefix0.Response.fromJson(json),
       );
 

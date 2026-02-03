@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:shared_core/index.dart' as prefix0;
+import 'package:shared_core/index.dart';
 import 'package:services_package/api_service.dart';
 
-import '../../../../../core/network/injection_container.dart';
+import '../../../../core/network/injection_container.dart';
 import 'field_display_config.dart';
 
 class GenericListEntityState<
-  T extends prefix0.BaseResponse<D>,
+  T extends BaseResponse<D>,
   D,
-  C extends prefix0.BaseRequest
+  C extends BaseRequest
 >
     extends ChangeNotifier {
   C _request;
@@ -44,13 +44,21 @@ class GenericListEntityState<
 
   // Getters
   C get request => _request;
+
   T? get response => _response;
+
   List<D> get fetchData => _fetchData;
+
   int get totalCount => _totalCount;
+
   bool get loading => _loading;
+
   String? get error => _error;
+
   DateTime? get lastFetched => _lastFetched;
+
   List<FieldDisplayConfig> get fields => _fields;
+
   Map<String, dynamic> get displayFields => _displayFields;
 
   // Setters with notifyListeners
@@ -191,7 +199,7 @@ class GenericListEntityState<
   }
 }
 
-class ErpStoreState<T extends prefix0.BaseResponse<D>, D, C extends prefix0.BaseRequest> {
+class ErpStoreState<T extends BaseResponse<D>, D, C extends BaseRequest> {
   final Map<String, GenericListEntityState<T, D, C>> _entities;
 
   ErpStoreState({Map<String, GenericListEntityState<T, D, C>>? entities})

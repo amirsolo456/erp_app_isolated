@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:micro_app_commons/app_notifier.dart';
 import 'package:micro_app_core/index.dart';
-import 'package:micro_app_core/services/routing/route_events.dart';
 import 'package:models_package/base/enums.dart';
 import 'package:navigation_builder/navigation_builder.dart';
 import 'package:restart_app/restart_app.dart';

@@ -25,7 +25,7 @@ class CashierBloc extends Bloc<CashierEvent, CashierState> {
     emit(const CashierLoading());
     try {
       final Cashier = await getCashierUseCase.get(
-        prefix0.Request(repoViewId: AppConstants().CashierRepoViewId),
+        prefix0.Request(repoViewId: AppConstants().cashierRepoViewId),
         (json) => prefix0.Response.fromJson(json),
       );
 

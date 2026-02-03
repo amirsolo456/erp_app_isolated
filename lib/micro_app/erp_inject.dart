@@ -7,10 +7,10 @@ import 'package:redux/redux.dart';
 import 'package:services_package/api_client_service.dart';
 import 'package:shared_core/index.dart' as prefix0;
 
-import '../feature/redux/generic_lists/erp_store/actions/generic_list_entity_actions.dart';
-import '../feature/redux/generic_lists/erp_store/middleware/api_middleware.dart';
-import '../feature/redux/generic_lists/erp_store/models/generic_list_entity_state.dart';
-import '../feature/redux/generic_lists/erp_store/reducers/list_reducer.dart';
+import '../feature/list_generator/data/data_source/api_middleware.dart';
+import '../feature/list_generator/data/models/generic_list_entity_actions.dart';
+import '../feature/list_generator/data/models/generic_list_entity_state.dart';
+import '../feature/list_generator/presentation/bloc/store/list_reducer.dart';
 
 class Inject {
   static void initialize() {

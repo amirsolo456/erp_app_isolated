@@ -1,7 +1,7 @@
 // list_actions.dart
-import 'package:shared_core/index.dart' as prefix0;
+import 'package:shared_core/index.dart' ;
 
-import '../models/generic_list_entity_state.dart';
+import 'generic_list_entity_state.dart';
 import 'generic_list_entity_actions.dart';
 
 class CreateItem<T> {
@@ -90,7 +90,7 @@ class LoadEntityFailure {
 }
 
 // Fetch Actions
-class FetchDataAction<T extends prefix0.BaseResponse<D>, D, C extends prefix0.BaseRequest>
+class FetchDataAction<T extends BaseResponse<D>, D, C extends BaseRequest>
     extends GenericEntityAction {
   final String entityKey;
   final C request;
@@ -100,21 +100,21 @@ class FetchDataAction<T extends prefix0.BaseResponse<D>, D, C extends prefix0.Ba
 
 class UpdatePaging {
   final String key;
-  final prefix0.PagingInfo paging;
+  final PagingInfo paging;
 
   UpdatePaging(this.key, this.paging);
 }
 
 class UpdateFilters {
   final String key;
-  final prefix0.Filters filters;
+  final Filters filters;
 
   UpdateFilters(this.key, this.filters);
 }
 
 class UpdateSorting {
   final String key;
-  final List<prefix0.OrderInfo> orderInfo;
+  final List<OrderInfo> orderInfo;
 
   UpdateSorting(this.key, this.orderInfo);
 }
@@ -130,7 +130,7 @@ class LoadEntitySuccess<D> {
 enum RandomTypes { Numbers, Alphabets }
 
 // Store Actions
-class AddEntityAction<T extends prefix0.BaseResponse<D>, D, C extends prefix0.BaseRequest>
+class AddEntityAction<T extends BaseResponse<D>, D, C extends BaseRequest>
     extends GenericEntityAction {
   final String entityKey;
   final GenericListEntityState<T, D, C> entityState;

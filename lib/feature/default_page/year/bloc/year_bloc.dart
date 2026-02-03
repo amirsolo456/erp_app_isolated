@@ -30,7 +30,7 @@ class YearBloc extends Bloc<SelectYearEvent, YearState> {
     try {
       final selectYears = await getSelectYearUseCase.get(
         prefix0.Request(
-          repoViewId: AppConstants().YearRepoViewId,
+          repoViewId: AppConstants().yearRepoViewId,
           showMode: ShowMode ?? 10,
         ),
         (json) => prefix0.Response.fromJson(json),

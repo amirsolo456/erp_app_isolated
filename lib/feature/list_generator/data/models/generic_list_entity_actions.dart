@@ -1,21 +1,20 @@
-
 import 'package:services_package/api_service.dart';
-import 'package:shared_core/index.dart' as prefix0;
-import '../models/field_display_config.dart';
+import 'package:shared_core/index.dart';
+
+import 'field_display_config.dart';
 
 abstract class GenericEntityAction {}
 
 // action برای شروع لودینگ
 class StartLoadingAction extends GenericEntityAction {}
 
-// action برای پایان لودینگ
 class EndLoadingAction extends GenericEntityAction {}
 
-// action برای دریافت داده با موفقیت
+
 class FetchDataSuccessAction<
-  T extends prefix0.BaseResponse<D>,
+  T extends BaseResponse<D>,
   D,
-  C extends prefix0.BaseRequest
+  C extends BaseRequest
 >
     extends GenericEntityAction {
   final String entityKey;
@@ -80,7 +79,7 @@ class SetErrorAction extends GenericEntityAction {
   SetErrorAction({required this.entityKey, required this.error});
 }
 
-class UpdateRequestAction<C extends prefix0.BaseRequest> extends GenericEntityAction {
+class UpdateRequestAction<C extends BaseRequest> extends GenericEntityAction {
   final String entityKey;
   final C request;
 
@@ -123,9 +122,9 @@ class ClearEntityAction extends GenericEntityAction {
 }
 
 class InitializeEntityAction<
-  T extends prefix0.BaseResponse<D>,
+  T extends BaseResponse<D>,
   D,
-  C extends prefix0.BaseRequest
+  C extends BaseRequest
 >
     extends GenericEntityAction {
   final String entityKey;

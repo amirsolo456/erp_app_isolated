@@ -33,7 +33,6 @@ import 'package:shared_core/data/auth/menu/response_data.dart' as prefixMenu;
 import 'package:shared_core/data/com/person/request.dart' as prefixPerson;
 import 'package:shared_core/data/com/person/response.dart' as prefixPerson;
 import 'package:shared_core/data/com/person/response_data.dart' as prefixPerson;
-import 'package:shared_core/index.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Buttons/absoluted_button.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Expanders/list_datas_expander.dart';
 
@@ -45,10 +44,9 @@ import '../../feature/default_page/cashier/bloc/cashier_bloc.dart';
 import '../../feature/default_page/currency/bloc/currency_bloc.dart';
 import '../../feature/default_page/place/bloc/place_bloc.dart';
 import '../../feature/default_page/year/bloc/year_bloc.dart';
-import '../../feature/redux/generic_lists/erp_store/actions/generic_list_entity_actions.dart';
-import '../../feature/redux/generic_lists/erp_store/middleware/api_middleware.dart';
-import '../../feature/redux/generic_lists/erp_store/models/generic_list_entity_state.dart';
-import '../../feature/redux/generic_lists/erp_store/reducers/list_reducer.dart';
+import '../../feature/list_generator/data/models/generic_list_entity_actions.dart';
+import '../../feature/list_generator/data/models/generic_list_entity_state.dart';
+import '../../feature/list_generator/presentation/bloc/store/list_reducer.dart';
 import '../list_generic/presentation/features/generic_page.dart';
 
 final GetIt sl = GetIt.instance;
@@ -267,7 +265,7 @@ class InjectionContainer {
       sl.registerFactory<LanguageService>(
         () => LanguageService(
           sl<ApiClient>(),
-          repoViewId: AppConstants().LanguageRepoViewId,
+          repoViewId: AppConstants().languageRepoViewId,
         ),
       );
     }
@@ -281,7 +279,7 @@ class InjectionContainer {
       sl.registerFactory<CashierService>(
         () => CashierService(
           sl<ApiClient>(),
-          repoViewId: AppConstants().CashierRepoViewId,
+          repoViewId: AppConstants().cashierRepoViewId,
         ),
       );
     }

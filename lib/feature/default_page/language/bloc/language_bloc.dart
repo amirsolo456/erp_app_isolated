@@ -1,9 +1,9 @@
 // ignore_for_file: unused_import
 
 import 'package:bloc/bloc.dart';
-import 'package:shared_core/data/default/mng/select/language/response_data.dart' as prefix0;
-import 'package:shared_core/data/default/mng/select/language/response.dart' as prefix0;
-import 'package:shared_core/data/default/mng/select/language/request.dart' as prefix0;
+import 'package:shared_core/data/default/mng/select/language/response_data.dart';
+import 'package:shared_core/data/default/mng/select/language/response.dart';
+import 'package:shared_core/data/default/mng/select/language/request.dart';
 import 'package:services_package/Repo_ViewId/repo_view_id.dart';
 import 'package:services_package/default/mng/select/language_service.dart';
 
@@ -25,8 +25,8 @@ class LanguageBloc extends Bloc<LanguageEvent, LanguageState> {
     emit(const LanguageLoading());
     try {
       final languages = await getLanguageUseCase.get(
-        prefix0.Request(repoViewId: AppConstants().LanguageRepoViewId),
-        (json) => prefix0.Response.fromJson(json),
+        Request(repoViewId: AppConstants().languageRepoViewId),
+        (json) => Response.fromJson(json),
       );
 
       if (languages == null || languages.data == null) {

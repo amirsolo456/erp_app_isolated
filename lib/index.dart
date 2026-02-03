@@ -18,6 +18,7 @@ export 'feature/dashboard_page/page/dashboard.dart';
 export 'feature/form_generator/bloc/base_bloc/erp_form_generator_resolver.dart';
 export 'feature/default_page/pages/default_page.dart'; // placeholder - اگر وجود نداره حذفش کنید
 
-export 'feature/redux/generic_lists/ui/generic_list_page.dart';
 export 'package:erp_app/feature/form_generator/widgets/dynamic_form_generator.dart';
+export 'package:erp_app/feature/list_generator/data/data_source/erp_generic_middleware.dart';
+export 'package:erp_app/feature/list_generator/data/data_source/api_middleware.dart';
 

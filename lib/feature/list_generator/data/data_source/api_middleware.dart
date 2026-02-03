@@ -1,13 +1,14 @@
 // ignore_for_file: unused_local_variable
 
- import 'package:shared_core/index.dart' as prefix0;
+ import 'package:erp_app/feature/list_generator/data/models/generic_list_entity_state.dart';
+import 'package:erp_app/feature/list_generator/data/models/list_actions.dart';
+import 'package:shared_core/index.dart';
 import 'package:redux/redux.dart';
 import 'package:services_package/api_client_service.dart';
 
-import '../actions/list_actions.dart';
-import '../models/generic_list_entity_state.dart';
 
-class ErpApiMiddleware<T extends prefix0.BaseResponse<D>, D, C extends prefix0.BaseRequest>
+
+class ErpApiMiddleware<T extends BaseResponse<D>, D, C extends BaseRequest>
     implements MiddlewareClass<ErpStoreState> {
   final C? request;
   final ApiClient api;
@@ -17,7 +18,7 @@ class ErpApiMiddleware<T extends prefix0.BaseResponse<D>, D, C extends prefix0.B
     required this.api,
     required this.request,
     required this.fromJsonD,
-    required prefix0.BaseRequest Function() requestFactory,
+    required BaseRequest Function() requestFactory,
   });
 
   @override

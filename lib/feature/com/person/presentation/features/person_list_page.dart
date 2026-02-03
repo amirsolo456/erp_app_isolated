@@ -1,3 +1,5 @@
+import 'package:erp_app/feature/list_generator/data/models/field_display_config.dart';
+import 'package:erp_app/feature/list_generator/presentation/pages/generic_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:micro_app_commons/app_notifier.dart';
@@ -14,8 +16,7 @@ import 'package:ui_components_package/erp_app_componenets/mobile/Headers/list_he
 
 import '../../../../../index.dart';
 import '../../../../navigation_button/presentation/widget/app_navigation_button.dart';
-import '../../../../redux/generic_lists/erp_store/models/field_display_config.dart';
-import '../../../../redux/generic_lists/erp_store/models/generic_list_entity_state.dart';
+import '../../../../list_generator/data/models/generic_list_entity_state.dart';
 
 class PersonListPage extends StatefulWidget {
   final bool refreshData;
@@ -34,7 +35,7 @@ class _PersonListPageState extends State<PersonListPage> {
   @override
   void initState() {
     super.initState();
-    repoViewId = AppConstants().PersonListRepoViewId;
+    repoViewId = AppConstants().personListRepoViewId;
     _fetchData();
   }
 
@@ -42,7 +43,7 @@ class _PersonListPageState extends State<PersonListPage> {
     setState(() => _isLoading = true);
 
     try {
-      final response = await GetIt.instance<PersonService>().get(
+      final response = await sl<PersonService>().get(
         prefix0.Request(repoViewId: repoViewId),
         (json) => prefix0.Response.fromJson(json),
       );
@@ -145,7 +146,7 @@ class _PersonListPageState extends State<PersonListPage> {
               ),
             ),
             Expanded(
-              child: GenericEntityScreen<prefix0.ResponseData>(
+              child: GenericListPage<prefix0.ResponseData>(
                 screenTitle: 'لیست اشخاص',
                 fieldConfigs: [
                   FieldDisplayConfig(

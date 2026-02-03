@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:micro_app_commons/app_notifier.dart';
-import 'package:micro_app_core/index.dart';
-import 'package:micro_app_core/services/routing/routes.dart';
 import 'package:models_package/base/enums.dart';
 import 'package:provider/provider.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Components/erp_appbar.dart';
 
-import '../feature/form_generator/bloc/base_bloc/erp_form_generator_events.dart';
 import '../feature/navigation_button/presentation/widget/app_navigation_button.dart';
 import 'erp_notifier.dart';
 
@@ -41,9 +37,6 @@ class _ErpContentWrapperState extends State<ErpContentWrapper> {
   void initState() {
     super.initState();
 
-    // CustomEventBus.on<ErpFormGeneratorShownEvent>((event) {
-    //   navigatorKey.currentState?.pushNamed(Routes.erpApp.value);
-    // });
   }
 
   Widget _buildMainContent(BuildContext context, ErpAppNotifier notifier) {

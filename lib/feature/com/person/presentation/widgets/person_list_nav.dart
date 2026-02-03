@@ -1,5 +1,6 @@
 // ignore_for_file: library_prefixes
 
+import 'package:erp_app/feature/list_generator/data/models/field_display_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_core/data/com/person/request.dart' as prefix0;
@@ -8,8 +9,8 @@ import 'package:shared_core/data/com/person/response_data.dart' as prefix0;
 import 'package:shared_core/index.dart' as prefixBase;
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../redux/generic_lists/erp_store/models/field_display_config.dart';
-import '../../../../redux/generic_lists/erp_store/models/generic_list_entity_state.dart';
+
+import '../../../../list_generator/data/models/generic_list_entity_state.dart';
 
 class Person extends ChangeNotifier {
   final int id;
