@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:micro_app_commons/app_notifier.dart';
+import 'package:micro_app_core/index.dart';
+import 'package:micro_app_core/services/routing/routes.dart';
 import 'package:models_package/base/enums.dart';
 import 'package:provider/provider.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Components/erp_appbar.dart';
 
-import 'feature/navigation_button/presentation/widget/app_navigation_button.dart';
+import '../feature/form_generator/bloc/base_bloc/erp_form_generator_events.dart';
+import '../feature/navigation_button/presentation/widget/app_navigation_button.dart';
+import 'erp_notifier.dart';
 
 class ErpContentWrapper extends StatefulWidget {
-  final AppNotifier notifier;
+  final ErpAppNotifier notifier;
 
   const ErpContentWrapper({super.key, required this.notifier});
 
@@ -20,16 +24,29 @@ class _ErpContentWrapperState extends State<ErpContentWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned.fill(
-      child: Consumer<AppNotifier>(
-        builder: (context, notifier, child) {
-          return _buildMainContent(context, notifier);
-        },
-      ),
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Consumer<ErpAppNotifier>(
+            builder: (context, notifier, child) {
+              return _buildMainContent(context, notifier);
+            },
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildMainContent(BuildContext context, AppNotifier notifier) {
+  @override
+  void initState() {
+    super.initState();
+
+    // CustomEventBus.on<ErpFormGeneratorShownEvent>((event) {
+    //   navigatorKey.currentState?.pushNamed(Routes.erpApp.value);
+    // });
+  }
+
+  Widget _buildMainContent(BuildContext context, ErpAppNotifier notifier) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: ErpAppBar(mode: AppBarsMode.erpDefaultMode),
@@ -37,9 +54,9 @@ class _ErpContentWrapperState extends State<ErpContentWrapper> {
         children: [
           // if (notifier.errorMessages.length > 1) _buildErrorWidget(notifier),
           Expanded(
-            child: Consumer<AppNotifier>(
+            child: Consumer<ErpAppNotifier>(
               builder: (context, navNotifier, child) {
-                return navNotifier.getPage(notifier.selectedTab);
+                return navNotifier.getErpPage(notifier.selectedTab);
               },
             ),
           ),

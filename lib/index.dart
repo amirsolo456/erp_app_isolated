@@ -15,8 +15,9 @@ export 'feature/add_new/add-new_page.dart';
 export 'feature/auth/menu/pages/menu_page.dart';
 export 'feature/com/person/presentation/features/person_list_page.dart';
 export 'feature/dashboard_page/page/dashboard.dart';
-// default page entry (convenience)
+export 'feature/form_generator/bloc/base_bloc/erp_form_generator_resolver.dart';
 export 'feature/default_page/pages/default_page.dart'; // placeholder - اگر وجود نداره حذفش کنید
-// redux UI helper
+
 export 'feature/redux/generic_lists/ui/generic_list_page.dart';
+export 'package:erp_app/feature/form_generator/widgets/dynamic_form_generator.dart';
 

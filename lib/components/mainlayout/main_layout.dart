@@ -42,7 +42,7 @@ class _MainLayoutPageState extends State<MainLayoutPage> {
         builder: (context, cacheProvider, child) {
           return Scaffold(
             body: SafeArea(
-              child: cacheProvider.getPage(cacheProvider.selectedTab),
+              child: cacheProvider.createRawPage(cacheProvider.selectedTab),
             ),
             bottomNavigationBar: AppNavigationButton(
               selectedTab: cacheProvider.selectedTab,

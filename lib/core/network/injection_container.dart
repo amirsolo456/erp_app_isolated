@@ -1,10 +1,11 @@
 // ignore_for_file: library_prefixes
 
 import 'package:erp_app/index.dart';
+import 'package:erp_app/src/erp_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:login_module/bloc/login_bloc.dart';
 import 'package:micro_app_commons/app_notifier.dart';
+import 'package:models_package/index.dart';
 import 'package:redux/redux.dart';
 import 'package:services_package/Interfaces/front_helper_services/isnackbar_service.dart'
     as snack_bar;
@@ -32,11 +33,10 @@ import 'package:shared_core/data/auth/menu/response_data.dart' as prefixMenu;
 import 'package:shared_core/data/com/person/request.dart' as prefixPerson;
 import 'package:shared_core/data/com/person/response.dart' as prefixPerson;
 import 'package:shared_core/data/com/person/response_data.dart' as prefixPerson;
-import 'package:shared_core/index.dart' as prefix0;
+import 'package:shared_core/index.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Buttons/absoluted_button.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Expanders/list_datas_expander.dart';
 
-import '../../feature/auth/menu/bloc/menu_bloc.dart';
 import '../../feature/com/person/domain/repositories/person_repository.dart';
 import '../../feature/com/person/presentation/blocs/person_bloc/person_list_bloc.dart';
 import '../../feature/com/person/presentation/blocs/search_person_bloc/search_person_bloc.dart';
@@ -68,7 +68,7 @@ class InjectionContainer {
     // -------------------------
 
     sl.registerSingleton<AppNotifier>(AppNotifier());
-
+    sl.registerSingleton<ErpAppNotifier>(ErpAppNotifier());
     if (!sl.isRegistered<SecureStorageUseCase>()) {
       final secure = SecureStorageUseCase();
       sl.registerSingleton<SecureStorageUseCase>(secure);
@@ -87,16 +87,16 @@ class InjectionContainer {
     // -------------------------
     // 2. Defaults & ApiSettings
     // -------------------------
-    if (!sl.isRegistered<prefix0.Defaults>()) {
-      final defaults = prefix0.Defaults(
+    if (!sl.isRegistered<Defaults>()) {
+      final defaults = Defaults(
         placeId: 1,
         yearId: 1403,
         languageId: 2,
         managementAccountId: 1,
         currencyId: 0,
-        cashierId: 0,
+        cashierId: 72,
       );
-      sl.registerLazySingleton<prefix0.Defaults>(() => defaults);
+      sl.registerLazySingleton<Defaults>(() => defaults);
     }
 
     if (!sl.isRegistered<ApiSettings>()) {
@@ -105,13 +105,13 @@ class InjectionContainer {
           baseUrl: 'https://bff.ariansystem.net',
           loginUrl: 'api/auth/login',
           timeOut: Duration(seconds: 40),
-          appDefaults: prefix0.Defaults(
-            placeId: sl<prefix0.Defaults>().placeId,
-            languageId: sl<prefix0.Defaults>().languageId,
-            cashierId: sl<prefix0.Defaults>().cashierId,
-            currencyId: sl<prefix0.Defaults>().currencyId,
-            managementAccountId: sl<prefix0.Defaults>().managementAccountId,
-            yearId: sl<prefix0.Defaults>().yearId,
+          appDefaults: Defaults(
+            placeId: sl<Defaults>().placeId,
+            languageId: sl<Defaults>().languageId,
+            cashierId: sl<Defaults>().cashierId,
+            currencyId: sl<Defaults>().currencyId,
+            managementAccountId: sl<Defaults>().managementAccountId,
+            yearId: sl<Defaults>().yearId,
           ),
         ),
       );
@@ -130,7 +130,7 @@ class InjectionContainer {
       );
     }
 
-    final storageService = sl<StorageService>();
+    sl<StorageService>();
 
     // -------------------------
     // 4. ApiClient
@@ -153,7 +153,7 @@ class InjectionContainer {
 
     if (!sl.isRegistered<UserExistService>()) {
       sl.registerLazySingleton<UserExistService>(
-        () => UserExistService(apiClientr: sl<ApiClient>()),
+        () => UserExistService( apiClient: sl<ApiClient>()),
       );
     }
 
@@ -244,9 +244,7 @@ class InjectionContainer {
       sl.registerFactory<MenuService>(() => MenuService(sl<ApiClient>()));
     }
 
-    if (!sl.isRegistered<MenuBloc>()) {
-      sl.registerFactory(() => MenuBloc(getMenuUseCase: sl<MenuService>()));
-    }
+
 
     // Defaults: Place / Year / Language / Cashier / Currency
     if (!sl.isRegistered<PlaceService>()) {
@@ -412,9 +410,9 @@ class InjectionContainer {
   }
 
   static Store<ErpStoreState<T, D, C>> getStore<
-    T extends prefix0.BaseResponse<D>,
+    T extends BaseResponse<D>,
     D,
-    C extends prefix0.BaseRequest
+    C extends BaseRequest
   >({
     required C Function() requestFactory,
     required T Function(Map<String, dynamic>) fromJsonD,

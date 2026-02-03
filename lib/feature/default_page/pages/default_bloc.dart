@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:services_package/api_client_service.dart';
-
+import 'package:models_package/index.dart';
 import 'default_event.dart';
 import 'default_state.dart';
 

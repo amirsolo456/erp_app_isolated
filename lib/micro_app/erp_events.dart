@@ -1,3 +1,4 @@
+import 'package:micro_app_core/index.dart';
 import 'package:micro_app_core/services/routing/route_events.dart';
 
 /// * Micro App Events
@@ -17,4 +18,25 @@ class ErpCloseEvent extends RouteEvent {}
 class ErpCustomEvents extends RouteEvent {
   RouteEvent erpShownEvent = ErpShownEvent();
   RouteEvent erpCloseEvent = ErpCloseEvent();
+}
+class ErpEvents {
+  static ErpShownEvent shown() => ErpShownEvent();
+  static ErpCloseEvent close() => ErpCloseEvent();
+
+  static OpenErpModuleEvent openModule({
+    required ErpAppsCoreEnum module,
+    dynamic payload,
+  }) {
+    return OpenErpModuleEvent(module: module, payload: payload);
+  }
+}
+
+class OpenErpModuleEvent extends RouteEvent {
+  final ErpAppsCoreEnum module;
+  final dynamic payload;
+
+  OpenErpModuleEvent({
+    required this.module,
+    this.payload,
+  });
 }

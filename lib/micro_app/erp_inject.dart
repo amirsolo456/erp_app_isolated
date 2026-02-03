@@ -19,11 +19,6 @@ class Inject {
     //   MicroAppNotifier<ErpCoreModel, ErpAppsCoreEnum>(ErpCoreModel()),
     // );
     final manager = MicroAppManager.instance;
-    final erpCoreModel = ErpCoreModel();
-
-    final notifier = MicroAppNotifier<ErpCoreModel, ErpAppsCoreEnum>(
-      erpCoreModel,
-    );
     MicroAppFactories.registerResolverFactory(
       MicroAppsName.erpApp,
       () => ErpResolver(), // یا بدون پارامتر اگر امکان دارد

@@ -3,15 +3,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:micro_app_commons/app_notifier.dart';
+import 'package:micro_app_core/index.dart';
+import 'package:micro_app_core/services/routing/route_events.dart';
 import 'package:models_package/base/enums.dart';
 import 'package:navigation_builder/navigation_builder.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Components/erp_appbar.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Components/erp_not_found.dart';
 
-import 'components/mainlayout/main_layout.dart';
-import 'core/network/injection_container.dart';
-import 'feature/com/person/presentation/features/person_list_page.dart';
+import '../components/mainlayout/main_layout.dart';
+import '../core/network/injection_container.dart';
+import '../feature/com/person/presentation/features/person_list_page.dart';
 
 class AdvancedRouter {
   static final Map<String, RouteHandler> _routes = {
@@ -105,3 +107,13 @@ PreferredSizeWidget _getDynamicAppBar(Widget outlet) {
   // می‌توانید از یک provider مخصوص برای این کار استفاده کنید
   return ErpAppBar(mode: AppBarsMode.erpGenericList);
 }
+abstract class ErpChildMicroApp {
+  ErpAppsCoreEnum get key;
+  Widget getPage();
+  void injectionsRegister();
+  Widget build(BuildContext context, dynamic payload);
+  void onOpen(dynamic payload) {}
+  void onClose() {}
+}
+
+
