@@ -46,3 +46,10 @@ class LanguageChanged extends DefaultEvent {
   @override
   List<Object?> get props => [languageId];
 }
+class DefaultChanged extends DefaultEvent {
+  final int def;
+  const DefaultChanged(this.def);
+
+  @override
+  List<Object?> get props => [def];
+}

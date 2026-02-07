@@ -1,4 +1,3 @@
-import 'package:erp_app/core/network/injection_container.dart';
 import 'package:erp_app/feature/list_generator/data/models/field_display_config.dart';
 import 'package:erp_app/feature/list_generator/presentation/pages/generic_list_page.dart';
 import 'package:erp_app/src/advance_router.dart';
@@ -6,47 +5,69 @@ import 'package:erp_app/src/erp_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:micro_app_core/index.dart';
 import 'package:navigation_builder/navigation_builder.dart';
+import 'package:shared_core/data/com/person/response.dart';
+
+import '../../../../com/person/presentation/widgets/person_list_nav.dart';
 
 class ErpListGeneratorResolver extends ErpChildMicroApp {
   Map<String, WidgetBuilderArgs> get routes => {
-    '/erp/list': (context, payload) => GenericListPage(
-      fieldConfigs: payload != null && payload is List<FieldDisplayConfig>
-          ? payload
-          : [],
-    ),
+    // routes should point to a bootstrap page that normalizes the incoming payload
+    '/erp/list': (context, payload) => ErpListGenBootstrapPage(),
   };
 
   @override
   Widget build(BuildContext context, payload) {
-    // TODO: implement build
-    throw UnimplementedError();
+    // simple default build that delegates to the route entry
+    final builder = routes['/erp/list'];
+    if (builder != null) return builder(context, payload);
+    return ErpListGenBootstrapPage();
   }
 
   @override
   Widget getPage() {
-    // TODO: implement getPage
-    throw UnimplementedError();
+    return PersonsScreen();
+    // if your framework expects a root page for the micro app, return one here
+    // return FutureBuilder<FieldDisplayConfig<Response>>(
+    //   future: getFieldConfigs(),
+    //   builder: (context, snapshot) {
+    //     if (snapshot.connectionState == ConnectionState.waiting) {
+    //       return const Center(child: CircularProgressIndicator());
+    //     }
+    //
+    //     if (snapshot.hasError) {
+    //       return Center(child: Text(snapshot.error.toString()));
+    //     }
+    //
+    //     final data = snapshot.data;
+    //     if (data == null) {
+    //       return const Center(child: Text('No field configuration provided'));
+    //     }
+    //
+    //     return GenericListPage<D>(fieldConfigs: data);
+    //   },
+    // );
   }
 
   @override
   void injectionsRegister() {
-    // TODO: implement injectionsRegister
+    // register your dependencies here if necessary
   }
 
   @override
-  // TODO: implement key
+  // keep this unimplemented if you don't know the correct enum value yet;
+  // implementing it incorrectly may produce a runtime/compile-time error.
   ErpAppsCoreEnum get key => throw UnimplementedError();
 }
 
 class ErpListGenBootstrapPage<D> extends StatelessWidget {
-  final FieldDisplayConfig<dynamic> payload;
+  // accept a dynamic payload from the router and normalize it in getFieldConfigs
 
-  const ErpListGenBootstrapPage({super.key, required this.payload});
+  const ErpListGenBootstrapPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<FieldDisplayConfig>>(
-      future: getFieldConfigs(payload),
+    return FutureBuilder<FieldDisplayConfig<D>>(
+      future: getFieldConfigs(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -56,68 +77,60 @@ class ErpListGenBootstrapPage<D> extends StatelessWidget {
           return Center(child: Text(snapshot.error.toString()));
         }
 
-        return GenericListPage(fieldConfigs: snapshot!.data!);
+        final data = snapshot.data;
+        if (data == null) {
+          return const Center(child: Text('No field configuration provided'));
+        }
+
+        return GenericListPage<D>(fieldConfigs: data);
       },
     );
   }
 
-  // List<FieldDisplayConfig<D>> getFieldConfigs(FieldDisplayConfig<dynamic> payload) {
-  //   if (payload == null) return [];
-  //   if (payload is List) {
-  //     // چک کنیم که همه عناصر از نوع FieldDisplayConfig هستند
-  //     if (payload.every((element) => element is FieldDisplayConfig)) {
-  //       return payload.cast<FieldDisplayConfig>();
-  //     }
-  //   }
-  //   // اگر payload یک Map باشد و کلیدی به نام 'fieldConfigs' داشته باشد
-  //   if (payload is Map && payload.containsKey('fieldConfigs')) {
-  //     final configs = payload['fieldConfigs'];
-  //     if (configs is List &&
-  //         configs.every((element) => element is FieldDisplayConfig)) {
-  //       return configs.cast<FieldDisplayConfig>();
-  //     }
-  //   }
-  //   return [];
-  // }
+  /// Normalize the incoming `payload` into a single `FieldDisplayConfig<D>`
+  /// This function is intentionally defensive: the router may send a single
+  /// config, a list of configs, or a map that contains `fieldConfigs`.
+  Future<FieldDisplayConfig<D>> getFieldConfigs() async {
+    // direct correct type
+    // if (payload is FieldDisplayConfig<D>) return payload;
 
-  // سپس در routes:
-  Map<String, WidgetBuilderArgs> get routes => {
-    '/erp/form': (context, payload) => GenericListPage(
-      fieldConfigs: buildContent(context, sl<ErpAppNotifier>()),
-    ),
-  };
+    Object payload = personFieldConfigs;
+    // non-generic FieldDisplayConfig at runtime (try to cast)
+    if (payload is FieldDisplayConfig) return payload as FieldDisplayConfig<D>;
 
+    // a list containing one or more FieldDisplayConfig objects
+    if (payload is List<FieldDisplayConfig<D>> && payload.isNotEmpty) {
+      // common pattern: router may pass a list of configs; pick the first
+      return payload.first;
+    }
+
+    if (payload is List &&
+        payload.isNotEmpty &&
+        payload.first is FieldDisplayConfig) {
+      return payload.first as FieldDisplayConfig<D>;
+    }
+
+    // sometimes payload can be a Map that wraps the real configs
+    if (payload is Map && payload['fieldConfigs'] != null) {
+      final configs = payload['fieldConfigs'];
+      if (configs is FieldDisplayConfig<D>) return configs;
+      if (configs is List &&
+          configs.isNotEmpty &&
+          configs.first is FieldDisplayConfig) {
+        return configs.first as FieldDisplayConfig<D>;
+      }
+    }
+
+    // fallback: if nothing matches, throw a descriptive error so the caller
+    // (and developer) know what went wrong at runtime.
+    throw Exception(
+      'Unsupported payload type for FieldDisplayConfig: ${payload?.runtimeType}',
+    );
+  }
+
+  // helper functions you had in the original file
   Widget buildContent(BuildContext context, ErpAppNotifier notifier) {
-    // if (notifier.isErrorState) {
-    //   return _buildErrorWidget(notifier);
-    // }
-    //
-    // if (notifier.isSkeletonActive) {
-    //   return notifier.getPage(NavButtonTabBarMode.skeletion);
-    // }
     return _buildListGeneratorContent(notifier, context);
-    // switch (notifier.pageType  ) {
-    //   case PageType.listGenerator:
-    //     final isListGeneratorActive =
-    //         (notifier.isListGeneratorActive?.values.last) ?? false;
-    //     if (isListGeneratorActive) {
-    //       return _buildListGeneratorContent(notifier, context);
-    //     }
-    //     return ErpNotFound();
-    //   case PageType.formGenerator:
-    //     final isFormGeneratorActive =
-    //         notifier.isFormGeneratorActive?.values.first ?? false;
-    //     if (isFormGeneratorActive) {
-    //       return _buildFormGeneratorContent();
-    //     }
-    //     return ErpNotFound();
-    //   case PageType.tabBar:
-    //     return _buildMainContent(context, notifier);
-    //   default:
-    //     return ErpNotFound();
-    // }
-
-    // حالت فرم جنریک فعال
   }
 
   Widget _buildListGeneratorContent(
@@ -137,29 +150,6 @@ class ErpListGenBootstrapPage<D> extends StatelessWidget {
         navigatorKey: navigatorKey,
       ),
       context,
-    ); // یا return YourListGeneratorWidget();
-  }
-
-  Widget _buildFormGeneratorContent() {
-    // محتوای فرم جنریک
-    return SizedBox(child: Text('Form Generator'));
-  }
-
-  Widget _buildErrorWidget(ErpAppNotifier notifier) {
-    return Scaffold(
-      backgroundColor: Colors.red.withOpacity(0.1),
-
-      body: Row(
-        children: [
-          const Icon(Icons.error, color: Colors.red),
-          const SizedBox(width: 8),
-          // Expanded(child: Text(notifier.errorMessages.last ?? 'a')),
-          // IconButton(
-          //   onPressed: notifier.clearError,
-          //   icon: const Icon(Icons.close),
-          // ),
-        ],
-      ),
     );
   }
 }

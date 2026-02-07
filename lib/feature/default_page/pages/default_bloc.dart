@@ -36,5 +36,10 @@ class DefaultBloc extends Bloc<DefaultEvent, DefaultState> {
       apiSettings.appDefaults.currencyId = event.currencyId;
       emit(newState);
     });
+
+    on<DefaultChanged>((event, emit) {
+      final newState = state.copyWith(yearId: event.def);
+      emit(newState);
+    });
   }
 }

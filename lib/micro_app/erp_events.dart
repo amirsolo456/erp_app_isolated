@@ -10,6 +10,7 @@ import 'package:micro_app_core/services/routing/route_events.dart';
 class ErpShownEvent extends RouteEvent {}
 
 class ErpCloseEvent extends RouteEvent {}
+class ErpFormGenericShownEvent extends RouteEvent {}
 
 ///
 /// Exports the events in a class so we dont need to import
@@ -18,6 +19,7 @@ class ErpCloseEvent extends RouteEvent {}
 class ErpCustomEvents extends RouteEvent {
   RouteEvent erpShownEvent = ErpShownEvent();
   RouteEvent erpCloseEvent = ErpCloseEvent();
+  RouteEvent erpFormGenericShownEvent = ErpFormGenericShownEvent();
 }
 class ErpEvents {
   static ErpShownEvent shown() => ErpShownEvent();

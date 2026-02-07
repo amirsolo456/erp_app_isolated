@@ -3,12 +3,9 @@
 import 'package:erp_app/feature/list_generator/data/models/field_display_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_core/data/com/person/request.dart' as prefix0;
-import 'package:shared_core/data/com/person/response.dart' as prefix0;
-import 'package:shared_core/data/com/person/response_data.dart' as prefix0;
-import 'package:shared_core/index.dart' as prefixBase;
+import 'package:shared_core/data/com/person/person.dart' as person;
+import 'package:shared_core/index.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 
 import '../../../../list_generator/data/models/generic_list_entity_state.dart';
 
@@ -86,51 +83,44 @@ class PersonsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<
       GenericListEntityState<
-        prefix0.Response,
-        prefix0.ResponseData,
-        prefix0.Request
+        person.Response,
+        person.ResponseData,
+        person.Request
       >
     >(
       create: (context) =>
           GenericListEntityState<
-            prefix0.Response,
-            prefix0.ResponseData,
-            prefix0.Request
+            person.Response,
+            person.ResponseData,
+            person.Request
           >(
             totalCount: 0,
-            request: prefix0.Request(repoViewId: 0),
+            request: person.Request(repoViewId: 0),
             loading: false,
             response: null,
             fields: [],
           ),
-      child:
-          Consumer<
-            GenericListEntityState<
-              prefixBase.BaseResponse<Person>,
-              Person,
-              prefixBase.BaseRequest
-            >
-          >(
-            builder: (context, state, child) {
-              // حالا می‌توانید state را به GenericEntityScreen پاس دهید.
-              // اما GenericEntityScreen ما در نسخه‌ی جدید state را از طریق پارامتر نمی‌گیرد، بلکه از طریق Provider می‌گیرد.
-              // بنابراین، باید GenericEntityScreen را طوری تغییر دهیم که state را از طریق Provider بگیرد.
-              // من یک نسخه جدید از GenericEntityScreen می‌نویسم که state را از طریق Provider می‌خواند.
-              // اما اگر می‌خواهید state را از بیرون بگیرد، می‌توانید آن را به عنوان پارامتر بفرستید.
-              // من فرض می‌کنیم که می‌خواهید از Provider استفاده کنید و state را از Consumer بگیرید.
-              // در این صورت، نیازی به پاس دادن state به GenericEntityScreen نیست.
-              // بلکه در داخل GenericEntityScreen از Consumer یا Provider.of استفاده می‌کنیم.
-              // اما از آنجایی که GenericEntityScreen جنریک است، کمی پیچیده می‌شود.
-              // پیشنهاد من این است که یک کلاس جداگانه برای صفحه‌های خاص بسازید و از GenericEntityScreen استفاده نکنید.
-              // اما اگر اصرار دارید، می‌توانید type parameterها را به GenericEntityScreen پاس دهید.
-              // من یک راه ساده‌تر پیشنهاد می‌دهم: یک Widget به نام _GenericEntityScreenInternal بسازید که state را از طریق پارامتر بگیرد.
-              // و در Consumer، آن را فراخوانی کنید.
-              return _GenericEntityScreenInternal<Person>(
-                state: state,
-                fieldConfigs: personFieldConfigs,
-              );
-            },
-          ),
+      child: Consumer<GenericListEntityState<BaseResponse<Person>, Person, BaseRequest>>(
+        builder: (context, state, child) {
+          // حالا می‌توانید state را به GenericEntityScreen پاس دهید.
+          // اما GenericEntityScreen ما در نسخه‌ی جدید state را از طریق پارامتر نمی‌گیرد، بلکه از طریق Provider می‌گیرد.
+          // بنابراین، باید GenericEntityScreen را طوری تغییر دهیم که state را از طریق Provider بگیرد.
+          // من یک نسخه جدید از GenericEntityScreen می‌نویسم که state را از طریق Provider می‌خواند.
+          // اما اگر می‌خواهید state را از بیرون بگیرد، می‌توانید آن را به عنوان پارامتر بفرستید.
+          // من فرض می‌کنیم که می‌خواهید از Provider استفاده کنید و state را از Consumer بگیرید.
+          // در این صورت، نیازی به پاس دادن state به GenericEntityScreen نیست.
+          // بلکه در داخل GenericEntityScreen از Consumer یا Provider.of استفاده می‌کنیم.
+          // اما از آنجایی که GenericEntityScreen جنریک است، کمی پیچیده می‌شود.
+          // پیشنهاد من این است که یک کلاس جداگانه برای صفحه‌های خاص بسازید و از GenericEntityScreen استفاده نکنید.
+          // اما اگر اصرار دارید، می‌توانید type parameterها را به GenericEntityScreen پاس دهید.
+          // من یک راه ساده‌تر پیشنهاد می‌دهم: یک Widget به نام _GenericEntityScreenInternal بسازید که state را از طریق پارامتر بگیرد.
+          // و در Consumer، آن را فراخوانی کنید.
+          return _GenericEntityScreenInternal<Person>(
+            state: state,
+            fieldConfigs: personFieldConfigs,
+          );
+        },
+      ),
     );
   }
 }

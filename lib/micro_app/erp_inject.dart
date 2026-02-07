@@ -5,9 +5,16 @@ import 'package:micro_app_commons/app_notifier.dart';
 import 'package:micro_app_core/index.dart';
 import 'package:redux/redux.dart';
 import 'package:services_package/api_client_service.dart';
+import 'package:services_package/default/com/select/currency_service.dart';
+import 'package:services_package/default/com/select/year_service.dart';
+import 'package:services_package/default/mng/select/place_service.dart';
+import 'package:services_package/default/trh/select/cashier_service.dart';
 import 'package:shared_core/index.dart' as prefix0;
 
-import '../feature/list_generator/data/data_source/api_middleware.dart';
+import '../feature/default_page/cashier/bloc/cashier_bloc.dart';
+import '../feature/default_page/currency/bloc/currency_bloc.dart';
+import '../feature/default_page/place/bloc/place_bloc.dart';
+import '../feature/default_page/year/bloc/year_bloc.dart';
 import '../feature/list_generator/data/models/generic_list_entity_actions.dart';
 import '../feature/list_generator/data/models/generic_list_entity_state.dart';
 import '../feature/list_generator/presentation/bloc/store/list_reducer.dart';
@@ -23,6 +30,9 @@ class Inject {
       MicroAppsName.erpApp,
       () => ErpResolver(), // یا بدون پارامتر اگر امکان دارد
     );
+
+
+
 
     // 3. به Manager بگو که بعداً resolver را ایجاد کند
     _deferredRegistration(manager, MicroAppsName.erpApp);

@@ -105,112 +105,167 @@ class _PersonListPageState extends State<PersonListPage> {
 
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        floatingActionButton: FloatingActionButton(
-          onPressed: _fetchData,
-          isExtended: false,
-
-          backgroundColor: Colors.black,
-          tooltip: 'افزودن',
-          child: const Icon(Icons.add, color: Colors.white),
+      child: GenericListPage<prefix0.ResponseData>(
+        screenTitle: 'لیست اشخاص',
+        fieldConfigs: FieldDisplayConfig(
+          label: 'نام',
+          valueGetter: (p) => p.displayName ?? '',
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        appBar: AppBar(
-          centerTitle: false,
-          title: Text('لیست اشخاص'),
-          toolbarHeight: 60,
-          backgroundColor: Colors.white,
-          actionsPadding: EdgeInsetsGeometry.only(left: 10),
-          titleSpacing: 25,
-          leadingWidth: 14,
-          shadowColor: Colors.transparent,
-          scrolledUnderElevation: 0,
-          actions: [
-            IconButton(onPressed: () => {}, icon: Icon(Icons.search)),
-            IconButton(onPressed: () => {}, icon: Icon(Icons.more_vert)),
-          ],
-          leading: IconButton(
-            onPressed: () => {},
-            icon: Icon(Icons.arrow_back),
-          ),
-        ),
+        // [
+        //   FieldDisplayConfig(
+        //     label: 'نام',
+        //     valueGetter: (p) => p.displayName ?? '',
+        //   ),
+        //   FieldDisplayConfig(
+        //     label: 'ایمیل',
+        //     valueGetter: (p) => p.firstName ?? p.firstName ?? '',
+        //   ),
+        // ],
+        enableSearch: true,
+        enableSorting: true,
+        enablePagination: true,
+        customItemBuilder: (person) {
+          return PersonExpander(person: person);
+        },
+        onFetchData: () async {
+          final response = await GetIt.instance<PersonService>().get(
+            prefix0.Request(repoViewId: repoViewId),
+            (json) => prefix0.Response.fromJson(json),
+          );
 
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsetsGeometry.only(left: 15, right: 0),
-              child: const Row(
-                children: [ListPagination(), Spacer(), ButtonPanel()],
+          return GenericListEntityState<
+            prefix0.Response,
+            prefix0.ResponseData,
+            prefix0.Request
+          >(
+            request: prefix0.Request(repoViewId: repoViewId),
+            response: response,
+            fetchData: response?.data ?? [],
+            fields: [
+              FieldDisplayConfig(
+                label: 'نام',
+                valueGetter: (p) => p.displayName ?? '',
               ),
-            ),
-            Expanded(
-              child: GenericListPage<prefix0.ResponseData>(
-                screenTitle: 'لیست اشخاص',
-                fieldConfigs: [
-                  FieldDisplayConfig(
-                    label: 'نام',
-                    valueGetter: (p) => p.displayName ?? '',
-                  ),
-                  FieldDisplayConfig(
-                    label: 'ایمیل',
-                    valueGetter: (p) => p.firstName ?? p.firstName ?? '',
-                  ),
-                ],
-                enableSearch: true,
-                enableSorting: true,
-                enablePagination: true,
-                customItemBuilder: (person) {
-                  return PersonExpander(person: person);
-                },
-                onFetchData: () async {
-                  final response = await GetIt.instance<PersonService>().get(
-                    prefix0.Request(repoViewId: repoViewId),
-                    (json) => prefix0.Response.fromJson(json),
-                  );
-
-                  return GenericListEntityState<
-                    prefix0.Response,
-                    prefix0.ResponseData,
-                    prefix0.Request
-                  >(
-                    request: prefix0.Request(repoViewId: repoViewId),
-                    response: response,
-                    fetchData: response?.data ?? [],
-                    fields: [
-                      FieldDisplayConfig(
-                        label: 'نام',
-                        valueGetter: (p) => p.displayName ?? '',
-                      ),
-                      FieldDisplayConfig(
-                        label: 'ایمیل',
-                        valueGetter: (p) => p.email ?? p.firstName ?? '',
-                      ),
-                    ],
-                  );
-                },
+              FieldDisplayConfig(
+                label: 'ایمیل',
+                valueGetter: (p) => p.email ?? p.firstName ?? '',
               ),
-            ),
-            Directionality(
-              textDirection: TextDirection.rtl,
-              child: AppNavigationButton(
-                selectedTab: cacheProvider.selectedTab,
-                onTabSelected: (tab) => {
-                  setState(() {
-                    cacheProvider.changePage(
-                      PageType.tabBar,
-                      route: null,
-                      tab: tab,
-                    );
-                    cacheProvider.clearPageCache();
-                  }),
-                },
-              ),
-            ),
-          ],
-        ),
+            ],
+          );
+        },
       ),
+      // child: Scaffold(
+      //   backgroundColor: Colors.white,
+      //   floatingActionButton: FloatingActionButton(
+      //     onPressed: _fetchData,
+      //     isExtended: false,
+      //
+      //     backgroundColor: Colors.black,
+      //     tooltip: 'افزودن',
+      //     child: const Icon(Icons.add, color: Colors.white),
+      //   ),
+      //   floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      //   // appBar: AppBar(
+      //   //   centerTitle: false,
+      //   //   title: Text('لیست اشخاص'),
+      //   //   toolbarHeight: 60,
+      //   //   backgroundColor: Colors.white,
+      //   //   actionsPadding: EdgeInsetsGeometry.only(left: 10),
+      //   //   titleSpacing: 25,
+      //   //   leadingWidth: 14,
+      //   //   shadowColor: Colors.transparent,
+      //   //   scrolledUnderElevation: 0,
+      //   //   actions: [
+      //   //     IconButton(onPressed: () => {}, icon: Icon(Icons.search)),
+      //   //     IconButton(onPressed: () => {}, icon: Icon(Icons.more_vert)),
+      //   //   ],
+      //   //   leading: IconButton(
+      //   //     onPressed: () => {},
+      //   //     icon: Icon(Icons.arrow_back),
+      //   //   ),
+      //   // ),
+      //
+      //   body: Column(
+      //     mainAxisAlignment: MainAxisAlignment.start,
+      //     children: [
+      //       Padding(
+      //         padding: EdgeInsetsGeometry.only(left: 15, right: 0),
+      //         child: const Row(
+      //           children: [ListPagination(), Spacer(), ButtonPanel()],
+      //         ),
+      //       ),
+      //       Expanded(
+      //         child:
+      //
+      //         GenericListPage<prefix0.ResponseData>(
+      //           screenTitle: 'لیست اشخاص',
+      //           fieldConfigs: FieldDisplayConfig(
+      //             label: 'نام',
+      //             valueGetter: (p) => p.displayName ?? '',
+      //           ),
+      //           // [
+      //           //   FieldDisplayConfig(
+      //           //     label: 'نام',
+      //           //     valueGetter: (p) => p.displayName ?? '',
+      //           //   ),
+      //           //   FieldDisplayConfig(
+      //           //     label: 'ایمیل',
+      //           //     valueGetter: (p) => p.firstName ?? p.firstName ?? '',
+      //           //   ),
+      //           // ],
+      //           enableSearch: true,
+      //           enableSorting: true,
+      //           enablePagination: true,
+      //           customItemBuilder: (person) {
+      //             return PersonExpander(person: person);
+      //           },
+      //           onFetchData: () async {
+      //             final response = await GetIt.instance<PersonService>().get(
+      //               prefix0.Request(repoViewId: repoViewId),
+      //               (json) => prefix0.Response.fromJson(json),
+      //             );
+      //
+      //             return GenericListEntityState<
+      //               prefix0.Response,
+      //               prefix0.ResponseData,
+      //               prefix0.Request
+      //             >(
+      //               request: prefix0.Request(repoViewId: repoViewId),
+      //               response: response,
+      //               fetchData: response?.data ?? [],
+      //               fields: [
+      //                 FieldDisplayConfig(
+      //                   label: 'نام',
+      //                   valueGetter: (p) => p.displayName ?? '',
+      //                 ),
+      //                 FieldDisplayConfig(
+      //                   label: 'ایمیل',
+      //                   valueGetter: (p) => p.email ?? p.firstName ?? '',
+      //                 ),
+      //               ],
+      //             );
+      //           },
+      //         ),
+      //       ),
+      //       Directionality(
+      //         textDirection: TextDirection.rtl,
+      //         child: AppNavigationButton(
+      //           selectedTab: cacheProvider.selectedTab,
+      //           onTabSelected: (tab) => {
+      //             setState(() {
+      //               cacheProvider.changePage(
+      //                 PageType.tabBar,
+      //                 route: null,
+      //                 tab: tab,
+      //               );
+      //               cacheProvider.clearPageCache();
+      //             }),
+      //           },
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 }

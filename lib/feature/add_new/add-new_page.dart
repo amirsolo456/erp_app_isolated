@@ -1,3 +1,4 @@
+// ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_core/data/auth/menu/response_data.dart' as prefix0;
@@ -152,6 +153,7 @@ class _LeafMenuTile extends StatelessWidget {
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
           ),
           onTap: () async {
+
             await NavigatorAgent().navigatorAssist.to(
               ((item.appLink ?? item.webLink) ?? '/notFound'),
             );

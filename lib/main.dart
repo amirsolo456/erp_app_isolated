@@ -13,6 +13,7 @@ import 'package:micro_app_commons/app_notifier.dart';
 import 'package:models_package/Base/enums.dart';
 import 'package:models_package/base/language_model.dart';
 import 'package:models_package/base/login_module.dart';
+import 'package:models_package/index.dart' hide SessionKeysExt, SessionKeys;
 import 'package:provider/provider.dart';
 import 'package:resources_package/l10n/app_localizations.dart';
 import 'package:services_package/api_client_service.dart';
@@ -33,11 +34,13 @@ import 'feature/auth/menu/bloc/menu_event.dart';
 import 'feature/com/person/domain/repositories/person_repository.dart';
 import 'feature/com/person/presentation/blocs/person_bloc/person_list_bloc.dart';
 import 'feature/com/person/presentation/blocs/search_person_bloc/search_person_bloc.dart';
+import 'feature/com/person/presentation/widgets/person_list_nav.dart';
 import 'feature/default_page/Language/bloc/language_bloc.dart';
 import 'feature/default_page/cashier/bloc/cashier_bloc.dart';
 import 'feature/default_page/currency/bloc/currency_bloc.dart';
 import 'feature/default_page/place/bloc/place_bloc.dart';
 import 'feature/default_page/year/bloc/year_bloc.dart';
+import 'feature/list_generator/data/models/generic_list_entity_state.dart';
 import 'feature/profile/profile_bloc.dart';
 
 final apiClient = sl<ApiClient>();
@@ -129,36 +132,37 @@ Widget buildERPApp({required Map<String, dynamic> loginData}) {
 
   storageService.saveLoginSessionModel(loginModuleResult);
 
-  final placeService = sl<PlaceService>();
-  final getCashierUseCase = sl<CashierService>();
-  final getCurrencyUseCase = sl<CurrencyService>();
-  final getYearUseCase = sl<YearService>();
-  final getLanguageUseCase = sl<LanguageService>();
+  // final placeService = sl<PlaceService>();
+  // final getCashierUseCase = sl<CashierService>();
+  // final getCurrencyUseCase = sl<CurrencyService>();
+  // final getYearUseCase = sl<YearService>();
+  // final getLanguageUseCase = sl<LanguageService>();
 
   try {
     return MultiProvider(
       providers: [
+
         ChangeNotifierProvider.value(value: sl<ErpAppNotifier>()),
+        ChangeNotifierProvider<
+            GenericListEntityState<BaseResponse<Person>, Person, BaseRequest>
+        >(
+          create: (_) => GenericListEntityState<
+              BaseResponse<Person>,
+              Person,
+              BaseRequest
+          >(
+            request: BaseRequest(),
+            response: BaseResponse(),
+            fields: [],
+          ),
+        ),
         Provider<LoginService>(
           create: (_) => LoginService(client: sl<ApiClient>()),
         ),
-        Provider<PlaceBloc>(
-          create: (_) => PlaceBloc(getPlaceUseCase: placeService),
-        ),
-        Provider<CashierBloc>(
-          create: (_) => CashierBloc(getCashierUseCase: getCashierUseCase),
-        ),
-        Provider<CurrencyBloc>(
-          create: (_) =>
-              CurrencyBloc(getSelectCurrencyUseCase: getCurrencyUseCase),
-        ),
-        Provider<YearBloc>(
-          create: (_) => YearBloc(getSelectYearUseCase: getYearUseCase),
-        ),
-        BlocProvider(
-          create: (_) => LanguageBloc(getLanguageUseCase: getLanguageUseCase),
-        ),
-        BlocProvider(create: (_) => sl<MenuBloc>()..add(LoadMenuEvent())),
+
+
+        BlocProvider<MenuBloc>(create: (_) => sl<MenuBloc>()..add(LoadMenuEvent())),
+
         BlocProvider(create: (_) => ProfileBloc()),
         BlocProvider(
           create: (_) => PersonListBloc(personService: sl<PersonService>()),

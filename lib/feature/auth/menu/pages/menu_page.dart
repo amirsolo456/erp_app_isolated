@@ -8,6 +8,7 @@ import 'package:shared_core/data/auth/menu/response_data.dart';
 import 'package:ui_components_package/erp_app_componenets/common/loadings/circle_loading.dart';
 
 import '../../../../index.dart';
+import '../../../../src/erp_notifier.dart';
 import '../bloc/menu_bloc.dart';
 import '../bloc/menu_state.dart';
 
@@ -150,7 +151,7 @@ class _MenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasChildren = item.subMenus.isNotEmpty;
-    final notifier = Provider.of<AppNotifier>(context);
+    final notifier = Provider.of<ErpAppNotifier>(context);
     final Widget titleWidget = Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [

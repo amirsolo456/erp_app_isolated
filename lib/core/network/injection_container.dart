@@ -1,5 +1,6 @@
 // ignore_for_file: library_prefixes
 
+import 'package:erp_app/feature/default_page/pages/default_bloc.dart';
 import 'package:erp_app/index.dart';
 import 'package:erp_app/src/erp_notifier.dart';
 import 'package:flutter/material.dart';
@@ -151,7 +152,7 @@ class InjectionContainer {
 
     if (!sl.isRegistered<UserExistService>()) {
       sl.registerLazySingleton<UserExistService>(
-        () => UserExistService( apiClient: sl<ApiClient>()),
+        () => UserExistService(apiClient: sl<ApiClient>()),
       );
     }
 
@@ -182,7 +183,6 @@ class InjectionContainer {
         () => LoginService(client: sl<ApiClient>()),
       );
     }
-
 
     // -------------------------
     // 7. Generic ApiService registrations (fix factory)
@@ -242,38 +242,37 @@ class InjectionContainer {
       sl.registerFactory<MenuService>(() => MenuService(sl<ApiClient>()));
     }
 
-
-
-    // Defaults: Place / Year / Language / Cashier / Currency
-    if (!sl.isRegistered<PlaceService>()) {
-      sl.registerFactory<PlaceService>(() => PlaceService(sl<ApiClient>()));
-    }
-    if (!sl.isRegistered<PlaceBloc>()) {
-      sl.registerFactory(() => PlaceBloc(getPlaceUseCase: sl<PlaceService>()));
-    }
-
-    if (!sl.isRegistered<YearService>()) {
-      sl.registerFactory<YearService>(() => YearService(sl<ApiClient>()));
-    }
-    if (!sl.isRegistered<YearBloc>()) {
-      sl.registerFactory(
-        () => YearBloc(getSelectYearUseCase: sl<YearService>()),
-      );
-    }
-
     if (!sl.isRegistered<LanguageService>()) {
       sl.registerFactory<LanguageService>(
-        () => LanguageService(
+            () => LanguageService(
           sl<ApiClient>(),
           repoViewId: AppConstants().languageRepoViewId,
         ),
       );
     }
+
+    if (!sl.isRegistered<DefaultBloc>()) {
+      sl.registerFactory(() => DefaultBloc(sl<ApiSettings>()));
+    }
+
     if (!sl.isRegistered<LanguageBloc>()) {
       sl.registerFactory(
-        () => LanguageBloc(getLanguageUseCase: sl<LanguageService>()),
+            () => LanguageBloc(getLanguageUseCase: sl<LanguageService>()),
       );
     }
+
+    // Defaults: Place / Year / Language / Cashier / Currency
+    if (!sl.isRegistered<PlaceService>()) {
+      sl.registerFactory<PlaceService>(() => PlaceService(sl<ApiClient>()));
+    }
+
+    if (!sl.isRegistered<YearService>()) {
+      sl.registerFactory<YearService>(() => YearService(sl<ApiClient>()));
+    }
+
+
+
+
 
     if (!sl.isRegistered<CashierService>()) {
       sl.registerFactory<CashierService>(
@@ -283,23 +282,31 @@ class InjectionContainer {
         ),
       );
     }
-    if (!sl.isRegistered<CashierBloc>()) {
-      sl.registerFactory(
-        () => CashierBloc(getCashierUseCase: sl<CashierService>()),
-      );
-    }
 
     if (!sl.isRegistered<CurrencyService>()) {
       sl.registerFactory<CurrencyService>(
         () => CurrencyService(sl<ApiClient>()),
       );
     }
-    if (!sl.isRegistered<CurrencyBloc>()) {
+
+    if (!sl.isRegistered<PlaceBloc>()) {
+      sl.registerFactory(() => PlaceBloc(getPlaceUseCase: sl<PlaceService>()));
+    }
+    if (!sl.isRegistered<YearBloc>()) {
       sl.registerFactory(
-        () => CurrencyBloc(getSelectCurrencyUseCase: sl<CurrencyService>()),
+            () => YearBloc(getSelectYearUseCase: sl<YearService>()),
       );
     }
-
+    if (!sl.isRegistered<CurrencyBloc>()) {
+      sl.registerFactory(
+            () => CurrencyBloc(getSelectCurrencyUseCase: sl<CurrencyService>()),
+      );
+    }
+    if (!sl.isRegistered<CashierBloc>()) {
+      sl.registerFactory(
+            () => CashierBloc(getCashierUseCase: sl<CashierService>()),
+      );
+    }
     // -------------------------
     // 9. Person-related services & Blocs
     // -------------------------
@@ -407,11 +414,8 @@ class InjectionContainer {
     // print('Registered: ApiClient=${sl.isRegistered<ApiClient>()}');
   }
 
-  static Store<ErpStoreState<T, D, C>> getStore<
-    T extends BaseResponse<D>,
-    D,
-    C extends BaseRequest
-  >({
+  static Store<ErpStoreState<T, D, C>>
+  getStore<T extends BaseResponse<D>, D, C extends BaseRequest>({
     required C Function() requestFactory,
     required T Function(Map<String, dynamic>) fromJsonD,
   }) {

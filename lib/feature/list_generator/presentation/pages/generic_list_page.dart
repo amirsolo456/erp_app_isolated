@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 
 class  GenericListPage<D> extends StatefulWidget {
-  final List<FieldDisplayConfig<D>> fieldConfigs;
+  final FieldDisplayConfig<D> fieldConfigs;
   final String screenTitle;
   final Widget Function(D item)? customItemBuilder;
   final bool enablePagination;
@@ -106,7 +106,7 @@ class _GenericEntityScreenState<D> extends State<GenericListPage<D>> {
                 return widget.customItemBuilder!(item);
               }
 
-              final firstField = widget.fieldConfigs.first;
+              final firstField = widget.fieldConfigs;
 
               return ListTile(title: Text(firstField.valueGetter(item)));
             },
