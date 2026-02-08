@@ -45,7 +45,10 @@ class FieldTitle extends StatelessWidget {
 
           if (help != null && help!.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(right: 10),
+
+
+              //Ehsan
+              padding: const EdgeInsets.only(right: 1),
               child: Tooltip(
                 message: help!,
                 child: Directionality(
@@ -54,7 +57,7 @@ class FieldTitle extends StatelessWidget {
                     radius: 15,
                     backgroundColor: Colors.white,
                     child: Icon(
-                      Icons.info_outline,
+                      Icons.help_outline,
                       size: 20,
                       color: Colors.grey[500],
                     ),
@@ -62,6 +65,9 @@ class FieldTitle extends StatelessWidget {
                 )
 
               ),
+
+
+              //Ehsan
             ),
 
         ],

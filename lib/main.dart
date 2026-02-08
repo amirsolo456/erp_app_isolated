@@ -40,6 +40,16 @@ import 'feature/default_page/place/bloc/place_bloc.dart';
 import 'feature/default_page/year/bloc/year_bloc.dart';
 import 'feature/profile/profile_bloc.dart';
 
+
+import 'package:shared_core/index.dart';
+import 'package:services_package/api_service.dart';
+
+import '../../../../core/network/injection_container.dart';
+
+
+
+
+
 final apiClient = sl<ApiClient>();
 
 void main() async {

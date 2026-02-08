@@ -10,6 +10,12 @@ import 'package:redux/redux.dart';
 import 'package:services_package/Interfaces/front_helper_services/isnackbar_service.dart'
     as snack_bar;
 import 'package:services_package/Repo_ViewId/repo_view_id.dart';
+
+import 'package:shared_core/base_response.dart';
+import 'package:shared_core/base_request.dart';
+import 'package:shared_core/data/default/response_data.dart';
+
+
 import 'package:services_package/api_client_service.dart';
 import 'package:services_package/api_service.dart';
 import 'package:services_package/auth/menu/menu_service.dart';

@@ -124,7 +124,7 @@ class _MenuPageState extends State<MenuPage> {
                   ),
                   Expanded(
                     child: ListView.builder(
-                      padding: EdgeInsets.zero,
+                      padding: EdgeInsets.only(left: 20),
                       itemCount: filteredMenus.length,
                       itemBuilder: (context, index) {
                         return _MenuTile(filteredMenus[index]);
@@ -155,13 +155,13 @@ class _MenuTile extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         if (item.icon!.isNotEmpty)
-          SvgPicture.string(item.icon ?? '', width: 18, height: 18),
+          SvgPicture.string(item.icon ?? '', width: 20, height: 20),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             item.menuDesc ?? '',
             // textDirection: TextDirection.rtl,
-            style: const TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: 14 , color: Color(0XFF585858),fontWeight:FontWeight.w600 ),
           ),
         ),
       ],
@@ -196,8 +196,8 @@ class _MenuTile extends StatelessWidget {
             tilePadding: const EdgeInsets.symmetric(horizontal: 12),
             childrenPadding: const EdgeInsets.only(right: 20, bottom: 2),
             splashColor: Colors.transparent,
-            controlAffinity: ListTileControlAffinity.trailing,
-            collapsedIconColor: Colors.black,
+            // controlAffinity: ListTileControlAffinity.trailing,
+            collapsedIconColor: Color(0XFF515151),
             iconColor: Colors.black,
             dense: true,
             visualDensity: const VisualDensity(vertical: -3),

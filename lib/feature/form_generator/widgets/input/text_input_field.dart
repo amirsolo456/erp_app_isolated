@@ -61,7 +61,7 @@ class _TextInputFieldState extends State<TextInputField> {
               errorText: _errorText,
 
               filled: true,
-              fillColor: Colors.grey[100],
+              fillColor: Color(0xfff4f4f4),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide.none,

@@ -71,37 +71,44 @@ class _RadioInputFieldState extends State<RadioInputField> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+
+                    //Ehsan
                     Container(
                       width: 20,
                       height: 20,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Colors.grey[400]!,
+                          color:isSelected
+                              ?  Colors.grey[400]! :
+                          Colors.white,
                           width: 1.2,
                         ),
                         color: Colors.white,
                       ),
-                      child: isSelected
-                          ? Center(
+                      child: Center(
                         child: Container(
-                          width: 10,
-                          height: 10,
+                          width: 15,
+                          height: 15,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.black,
+                            color:isSelected
+                                ?  Colors.black
+                            : Colors.grey[400],
                           ),
                         ),
                       )
-                          : null,
                     ),
+                    //Ehsan
+
+
                     SizedBox(width: 8),
                     Text(
                       caption,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],

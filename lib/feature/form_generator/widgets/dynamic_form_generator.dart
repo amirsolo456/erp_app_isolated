@@ -185,8 +185,8 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
                       contentPadding: EdgeInsets.only(
                         right: 70,
                         left: 16,
-                        top: 4,
-                        bottom: 4,
+                        // top: 4,
+                        // bottom: 4,
                       ),
                       dense: true,
                       minVerticalPadding: 0,
