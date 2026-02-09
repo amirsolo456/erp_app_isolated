@@ -8,12 +8,14 @@ import 'package:get_it/get_it.dart';
 import 'package:micro_app_commons/app_notifier.dart';
 import 'package:models_package/index.dart';
 import 'package:redux/redux.dart';
+import 'package:resources_package/Resources/Theme/theme_manager.dart';
 import 'package:services_package/Interfaces/front_helper_services/isnackbar_service.dart'
     as snack_bar;
 import 'package:services_package/Repo_ViewId/repo_view_id.dart';
 import 'package:services_package/api_client_service.dart';
 import 'package:services_package/api_service.dart';
 import 'package:services_package/auth/menu/menu_service.dart';
+import 'package:services_package/auth/toolbar/toolbar_service.dart';
 import 'package:services_package/com/person/person_service.dart';
 import 'package:services_package/default/com/select/currency_service.dart';
 import 'package:services_package/default/com/select/year_service.dart';
@@ -34,13 +36,13 @@ import 'package:shared_core/data/auth/menu/response_data.dart' as prefixMenu;
 import 'package:shared_core/data/com/person/request.dart' as prefixPerson;
 import 'package:shared_core/data/com/person/response.dart' as prefixPerson;
 import 'package:shared_core/data/com/person/response_data.dart' as prefixPerson;
+import 'package:ui_components_package/erp_app_componenets/common/Buttons/language_button_standalone/language_button_stand_alone_cubit.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Buttons/absoluted_button.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Expanders/list_datas_expander.dart';
 
 import '../../feature/com/person/domain/repositories/person_repository.dart';
 import '../../feature/com/person/presentation/blocs/person_bloc/person_list_bloc.dart';
 import '../../feature/com/person/presentation/blocs/search_person_bloc/search_person_bloc.dart';
-import '../../feature/default_page/Language/bloc/language_bloc.dart';
 import '../../feature/default_page/cashier/bloc/cashier_bloc.dart';
 import '../../feature/default_page/currency/bloc/currency_bloc.dart';
 import '../../feature/default_page/place/bloc/place_bloc.dart';
@@ -90,7 +92,7 @@ class InjectionContainer {
       final defaults = Defaults(
         placeId: 1,
         yearId: 1403,
-        languageId: 2,
+        languageId: 0,
         managementAccountId: 1,
         currencyId: 0,
         cashierId: 72,
@@ -150,6 +152,12 @@ class InjectionContainer {
       sl.registerLazySingleton<OtpService>(() => OtpService(sl<ApiClient>()));
     }
 
+    if (!sl.isRegistered<ToolbarService>()) {
+      sl.registerLazySingleton<ToolbarService>(
+        () => ToolbarService(sl<ApiClient>()),
+      );
+    }
+
     if (!sl.isRegistered<UserExistService>()) {
       sl.registerLazySingleton<UserExistService>(
         () => UserExistService(apiClient: sl<ApiClient>()),
@@ -183,7 +191,12 @@ class InjectionContainer {
         () => LoginService(client: sl<ApiClient>()),
       );
     }
-
+    if (!sl.isRegistered<LanguageButtonStandAloneCubit>()) {
+      sl.registerLazySingleton<LanguageButtonStandAloneCubit>(
+        () =>
+            LanguageButtonStandAloneCubit(initialLocale: AppTheme.local.value),
+      );
+    }
     // -------------------------
     // 7. Generic ApiService registrations (fix factory)
     // -------------------------
@@ -244,7 +257,7 @@ class InjectionContainer {
 
     if (!sl.isRegistered<LanguageService>()) {
       sl.registerFactory<LanguageService>(
-            () => LanguageService(
+        () => LanguageService(
           sl<ApiClient>(),
           repoViewId: AppConstants().languageRepoViewId,
         ),
@@ -254,12 +267,12 @@ class InjectionContainer {
     if (!sl.isRegistered<DefaultBloc>()) {
       sl.registerFactory(() => DefaultBloc(sl<ApiSettings>()));
     }
-
-    if (!sl.isRegistered<LanguageBloc>()) {
-      sl.registerFactory(
-            () => LanguageBloc(getLanguageUseCase: sl<LanguageService>()),
-      );
-    }
+    //
+    // if (!sl.isRegistered<LanguageBloc>()) {
+    //   sl.registerFactory(
+    //     () => LanguageBloc(getLanguageUseCase: sl<LanguageService>()),
+    //   );
+    // }
 
     // Defaults: Place / Year / Language / Cashier / Currency
     if (!sl.isRegistered<PlaceService>()) {
@@ -269,10 +282,6 @@ class InjectionContainer {
     if (!sl.isRegistered<YearService>()) {
       sl.registerFactory<YearService>(() => YearService(sl<ApiClient>()));
     }
-
-
-
-
 
     if (!sl.isRegistered<CashierService>()) {
       sl.registerFactory<CashierService>(
@@ -294,17 +303,17 @@ class InjectionContainer {
     }
     if (!sl.isRegistered<YearBloc>()) {
       sl.registerFactory(
-            () => YearBloc(getSelectYearUseCase: sl<YearService>()),
+        () => YearBloc(getSelectYearUseCase: sl<YearService>()),
       );
     }
     if (!sl.isRegistered<CurrencyBloc>()) {
       sl.registerFactory(
-            () => CurrencyBloc(getSelectCurrencyUseCase: sl<CurrencyService>()),
+        () => CurrencyBloc(getSelectCurrencyUseCase: sl<CurrencyService>()),
       );
     }
     if (!sl.isRegistered<CashierBloc>()) {
       sl.registerFactory(
-            () => CashierBloc(getCashierUseCase: sl<CashierService>()),
+        () => CashierBloc(getCashierUseCase: sl<CashierService>()),
       );
     }
     // -------------------------

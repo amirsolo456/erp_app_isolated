@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_core/data/com/person/person.dart' as person;
 import 'package:shared_core/index.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/Expanders/list_datas_expander.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../list_generator/data/models/generic_list_entity_state.dart';
@@ -100,27 +101,17 @@ class PersonsScreen extends StatelessWidget {
             response: null,
             fields: [],
           ),
-      child: Consumer<GenericListEntityState<BaseResponse<Person>, Person, BaseRequest>>(
-        builder: (context, state, child) {
-          // حالا می‌توانید state را به GenericEntityScreen پاس دهید.
-          // اما GenericEntityScreen ما در نسخه‌ی جدید state را از طریق پارامتر نمی‌گیرد، بلکه از طریق Provider می‌گیرد.
-          // بنابراین، باید GenericEntityScreen را طوری تغییر دهیم که state را از طریق Provider بگیرد.
-          // من یک نسخه جدید از GenericEntityScreen می‌نویسم که state را از طریق Provider می‌خواند.
-          // اما اگر می‌خواهید state را از بیرون بگیرد، می‌توانید آن را به عنوان پارامتر بفرستید.
-          // من فرض می‌کنیم که می‌خواهید از Provider استفاده کنید و state را از Consumer بگیرید.
-          // در این صورت، نیازی به پاس دادن state به GenericEntityScreen نیست.
-          // بلکه در داخل GenericEntityScreen از Consumer یا Provider.of استفاده می‌کنیم.
-          // اما از آنجایی که GenericEntityScreen جنریک است، کمی پیچیده می‌شود.
-          // پیشنهاد من این است که یک کلاس جداگانه برای صفحه‌های خاص بسازید و از GenericEntityScreen استفاده نکنید.
-          // اما اگر اصرار دارید، می‌توانید type parameterها را به GenericEntityScreen پاس دهید.
-          // من یک راه ساده‌تر پیشنهاد می‌دهم: یک Widget به نام _GenericEntityScreenInternal بسازید که state را از طریق پارامتر بگیرد.
-          // و در Consumer، آن را فراخوانی کنید.
-          return _GenericEntityScreenInternal<Person>(
-            state: state,
-            fieldConfigs: personFieldConfigs,
-          );
-        },
-      ),
+      child:
+          Consumer<
+            GenericListEntityState<BaseResponse<Person>, Person, BaseRequest>
+          >(
+            builder: (context, state, child) {
+              return _GenericEntityScreenInternal<Person>(
+                state: state,
+                fieldConfigs: personFieldConfigs,
+              );
+            },
+          ),
     );
   }
 }
@@ -137,16 +128,9 @@ class _GenericEntityScreenInternal<D> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // حالا می‌توانید از state استفاده کنید.
-    // بقیه کدهای GenericEntityScreen را اینجا کپی کنید.
-    // اما توجه: state از نوع GenericEntityState است و fetchData آن از نوع List<dynamic> است.
-    // شما باید آن را به List<D> تبدیل کنید.
     var data = state.fetchData as List<D>;
 
-    // سپس با استفاده از data و fieldConfigs لیست را بسازید.
-    // از آنجایی که کد طولانی است، من فقط ساختار کلی را می‌نویسم.
     return Scaffold(
-      // appBar: AppBar(title: Text('/sadf')),
       body: Column(
         children: [
           // ... نوار آمار و ...
@@ -155,10 +139,8 @@ class _GenericEntityScreenInternal<D> extends StatelessWidget {
               itemCount: data.length,
               itemBuilder: (context, index) {
                 final item = data[index];
-                // اگر customItemBuilder وجود داشت، از آن استفاده کن.
-                // در اینجا customItemBuilder را نداریم، پس با fieldConfigs نمایش می‌دهیم.
                 final firstField = fieldConfigs.values.first;
-                return ListTile(title: Text(firstField.valueGetter(item)));
+                return PersonExpander(person: item as person.ResponseData);
               },
             ),
           ),

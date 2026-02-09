@@ -48,8 +48,7 @@ class FieldTitle extends StatelessWidget {
               padding: const EdgeInsets.only(right: 10),
               child: Tooltip(
                 message: help!,
-                child: Directionality(
-                  textDirection: TextDirection.ltr,
+
                   child: CircleAvatar(
                     radius: 15,
                     backgroundColor: Colors.white,
@@ -62,7 +61,7 @@ class FieldTitle extends StatelessWidget {
                 )
 
               ),
-            ),
+
 
         ],
       ),

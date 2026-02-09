@@ -10,7 +10,8 @@ import 'package:micro_app_core/services/routing/route_events.dart';
 class ErpShownEvent extends RouteEvent {}
 
 class ErpCloseEvent extends RouteEvent {}
-class ErpFormGenericShownEvent extends RouteEvent {}
+class ErpFormGeneratorEvent extends RouteEvent {}
+class ErpListGeneratorEvent extends RouteEvent {}
 
 ///
 /// Exports the events in a class so we dont need to import
@@ -19,10 +20,13 @@ class ErpFormGenericShownEvent extends RouteEvent {}
 class ErpCustomEvents extends RouteEvent {
   RouteEvent erpShownEvent = ErpShownEvent();
   RouteEvent erpCloseEvent = ErpCloseEvent();
-  RouteEvent erpFormGenericShownEvent = ErpFormGenericShownEvent();
 }
+
 class ErpEvents {
   static ErpShownEvent shown() => ErpShownEvent();
+  static ErpFormGeneratorEvent erpFormGeneratorEvent() => ErpFormGeneratorEvent();
+  static ErpListGeneratorEvent erpListGeneratorEvent() => ErpListGeneratorEvent();
+
   static ErpCloseEvent close() => ErpCloseEvent();
 
   static OpenErpModuleEvent openModule({
@@ -37,8 +41,5 @@ class OpenErpModuleEvent extends RouteEvent {
   final ErpAppsCoreEnum module;
   final dynamic payload;
 
-  OpenErpModuleEvent({
-    required this.module,
-    this.payload,
-  });
+  OpenErpModuleEvent({required this.module, this.payload});
 }

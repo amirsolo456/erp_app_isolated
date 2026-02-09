@@ -6,16 +6,12 @@ import 'package:erp_app/feature/list_generator/presentation/bloc/base_bloc/erp_l
 import 'package:erp_app/feature/profile/profile.dart';
 import 'package:erp_app/micro_app/erp_events.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:micro_app_commons/app_notifier.dart';
 import 'package:micro_app_commons/features/not_found/presentation/not_found_page.dart';
 import 'package:micro_app_core/index.dart';
 import 'package:models_package/index.dart';
-import 'package:navigation_builder/navigation_builder.dart';
-import 'package:provider/provider.dart';
-import '../core/network/injection_container.dart';
 import '../feature/auth/menu/pages/menu_page.dart';
-import '../feature/com/person/presentation/features/person_list_page.dart';
-import '../feature/list_generator/presentation/pages/generic_list_page.dart';
 import '../feature/open_page/open_page.dart';
 
 class ErpAppNotifier
@@ -52,6 +48,33 @@ class ErpAppNotifier
     });
   }
 
+
+  AppBarsMode getMod(){
+    switch(selectedTab){
+      case NavButtonTabBarMode.erpGenericFormTabMode:
+        return AppBarsMode.erpGenericForm;
+      case NavButtonTabBarMode.erpMenuTabMode:
+        return AppBarsMode.erpMenuMode;
+
+      case NavButtonTabBarMode.erpNewTabMode:
+        return AppBarsMode.erpNewMode;
+      case NavButtonTabBarMode.erpOpenedTabMode:
+        return AppBarsMode.erpOpenedMode;
+      case NavButtonTabBarMode.erpDefaultTabMode:
+        return AppBarsMode.erpDefaultMode;
+      case NavButtonTabBarMode.erpProfileTabMode:
+        return AppBarsMode.erpProfileMode;
+      case NavButtonTabBarMode.erpGenericListTabMode:
+        return AppBarsMode.erpGenericList;
+      case NavButtonTabBarMode.erpNotFound:
+        return AppBarsMode.erpNotFound;
+      case NavButtonTabBarMode.skeletion:
+        return AppBarsMode.erpDashboardMode;
+      case NavButtonTabBarMode.erpDashboardTabMode:
+        return AppBarsMode.erpDashboardMode;
+    }
+  }
+
   void openModule(ErpAppsCoreEnum module, {dynamic payload}) {
     _activeModule = module;
     _modulePayload = payload;
@@ -74,12 +97,12 @@ class ErpAppNotifier
       case NavButtonTabBarMode.erpDefaultTabMode:
         return DefaultPage();
       case NavButtonTabBarMode.erpGenericListTabMode:
-        return const PersonListPage(refreshData: false);
-        ;
-      // return ErpListGeneratorResolver().getPage();
+        return ErpListGeneratorResolver(
+          route: getListRoute.toString().toLowerCase(),
+        ).getPage();
       case NavButtonTabBarMode.erpGenericFormTabMode:
         return DynamicFormGenerator(jsonString: '');
-        ;
+
         return ErpFormGeneratorResolver().getPage();
       case NavButtonTabBarMode.skeletion:
         return Text('ERP parent nav: skeletion');

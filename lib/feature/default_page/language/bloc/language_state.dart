@@ -1,3 +1,4 @@
+/*
 // ignore_for_file: unused_import
 
 import 'package:equatable/equatable.dart';
@@ -36,3 +37,4 @@ class LanguageError extends LanguageState {
   @override
   List<Object?> get props => [message];
 }
+*/

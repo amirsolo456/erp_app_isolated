@@ -1,16 +1,13 @@
-import 'package:erp_app/feature/form_generator/bloc/base_bloc/erp_form_generator_events.dart';
 import 'package:flutter/material.dart';
 import 'package:micro_app_commons/app_notifier.dart';
 import 'package:micro_app_core/index.dart';
 import 'package:models_package/base/enums.dart';
-import 'package:navigation_builder/navigation_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Components/erp_appbar.dart';
 
 import '../core/network/injection_container.dart';
-import '../feature/com/person/presentation/features/person_list_page.dart';
 import '../feature/navigation_button/presentation/widget/app_navigation_button.dart';
-import 'advance_router.dart';
+import '../micro_app/erp_events.dart';
 import 'erp_notifier.dart';
 
 class ErpContentWrapper extends StatefulWidget {
@@ -43,18 +40,43 @@ class _ErpContentWrapperState extends State<ErpContentWrapper> {
   @override
   void initState() {
     super.initState();
-    CustomEventBus.on<ErpFormGeneratorEvents>((event) {
-       sl<AppNotifier>().changePage( PageType.formGenerator);
+    CustomEventBus.on<ErpFormGeneratorEvent>((event) {
+      setState(() {
+        sl<ErpAppNotifier>().changePage(
+          PageType.formGenerator,
+          tab: NavButtonTabBarMode.erpGenericFormTabMode,
+          route: 'form',
+        );
+      });
+    });
+
+    CustomEventBus.on<ErpListGeneratorEvent>((event) {
+      setState(() {
+        sl<ErpAppNotifier>().changePage(
+          PageType.listGenerator,
+          tab: NavButtonTabBarMode.erpGenericListTabMode,
+          route: 'list',
+        );
+      });
     });
   }
 
   Widget _buildMainContent(BuildContext context, ErpAppNotifier notifier) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: ErpAppBar(mode: AppBarsMode.erpDefaultMode),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Consumer<ErpAppNotifier>(
+          builder: (context, notifier, child) {
+            return ErpAppBar(
+              mode: notifier.getMod(),
+            );
+          },
+        ),
+      ),
       body: Column(
         children: [
-          // if (notifier.errorMessages.length > 1) _buildErrorWidget(notifier),
+
           Expanded(
             child: Consumer<ErpAppNotifier>(
               builder: (context, navNotifier, child) {
@@ -68,6 +90,7 @@ class _ErpContentWrapperState extends State<ErpContentWrapper> {
         selectedTab: notifier.selectedTab,
         onTabSelected: (value) =>
             notifier.changePage(PageType.tabBar, route: null, tab: value),
+       currentLocal: sl<AppNotifier>().currentLocal(),
       ),
     );
   }

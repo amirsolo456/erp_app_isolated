@@ -1,9 +1,10 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:micro_app_core/index.dart';
 import 'package:shared_core/data/auth/menu/response_data.dart' as prefix0;
-import 'package:ui_components_package/navigator.dart';
 
+import '../../micro_app/erp_events.dart';
 import '../auth/menu/bloc/menu_bloc.dart';
 import '../auth/menu/bloc/menu_event.dart';
 import '../auth/menu/bloc/menu_state.dart';
@@ -100,9 +101,7 @@ class _AddNewPageState extends State<AddNewPage> {
               _filteredMenus = _leafMenus;
             }
 
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Column(
+            return   Column(
                 children: [
                   _SearchBox(
                     controller: searchController,
@@ -119,7 +118,7 @@ class _AddNewPageState extends State<AddNewPage> {
                     ),
                   ),
                 ],
-              ),
+
             );
           }
 
@@ -152,12 +151,14 @@ class _LeafMenuTile extends StatelessWidget {
             item.menuDesc ?? '',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
           ),
-          onTap: () async {
+          onTap: () {
+            CustomEventBus.emit(ErpFormGeneratorEvent());
 
-            await NavigatorAgent().navigatorAssist.to(
-              ((item.appLink ?? item.webLink) ?? '/notFound'),
-            );
           },
+
+          // await NavigatorAgent().navigatorAssist.to(
+          //   ((item.appLink ?? item.webLink) ?? '/notFound'),
+          // );
         ),
       ),
     );

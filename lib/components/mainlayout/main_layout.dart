@@ -4,6 +4,7 @@ import 'package:micro_app_commons/app_notifier.dart';
 import 'package:models_package/base/enums.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/network/injection_container.dart';
 import '../../feature/navigation_button/presentation/widget/app_navigation_button.dart';
 
 class MainLayoutPage extends StatefulWidget {
@@ -47,6 +48,7 @@ class _MainLayoutPageState extends State<MainLayoutPage> {
             bottomNavigationBar: AppNavigationButton(
               selectedTab: cacheProvider.selectedTab,
               onTabSelected: (tab) => _onTabSelected(tab, cacheProvider),
+              currentLocal: sl<AppNotifier>().currentLocal(),
             ),
           );
         },

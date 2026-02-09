@@ -55,13 +55,13 @@ class _SelectInputFieldState extends State<SelectInputField> {
         orElse: () => Select(caption: '', value: null),
       );
 
-      _controller.text = selectedOption.caption;
+      _controller.text = selectedOption.caption ?? '';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final options = widget.field.options;
+    final options = widget.field.options ?? [];
 
     // اگر گزینه‌ای وجود ندارد، یک TextField نشان بده
     if (options.isEmpty) {

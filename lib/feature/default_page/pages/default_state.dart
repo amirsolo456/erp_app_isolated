@@ -16,7 +16,7 @@ class DefaultState extends Equatable {
     int? yearId,
     int? placeId,
     int? cashierId,
-    int? languageId,
+    String? languageId,
     int? currencyId,
   }) {
     return DefaultState(
@@ -24,7 +24,7 @@ class DefaultState extends Equatable {
         yearId: yearId ?? defaults.yearId,
         placeId: placeId ?? defaults.placeId,
         cashierId: cashierId ?? defaults.cashierId,
-        languageId: languageId ?? defaults.languageId,
+        languageId: ((languageId ?? defaults.languageId as String) == 'en' ? 0 : 1),
         currencyId: currencyId ?? defaults.currencyId,
         managementAccountId: defaults.managementAccountId,
       ),

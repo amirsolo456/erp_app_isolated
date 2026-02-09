@@ -2,8 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:models_package/base/enums.dart';
 
+
 class AppNavigationButton extends StatelessWidget {
   final NavButtonTabBarMode selectedTab;
+  final Locale currentLocal;
   final ValueChanged<NavButtonTabBarMode> onTabSelected;
   static const double iconSize = 40;
 
@@ -11,6 +13,7 @@ class AppNavigationButton extends StatelessWidget {
     super.key,
     required this.selectedTab,
     required this.onTabSelected,
+    required this.currentLocal,
   });
 
   Widget _paddedIcon(String assetPath) {
@@ -18,8 +21,8 @@ class AppNavigationButton extends StatelessWidget {
       padding: const EdgeInsets.only(top: 0),
       child: Image.asset(
         assetPath,
-        width: iconSize,
-        height: iconSize,
+        width: iconSize + 10,
+        height: iconSize + 10,
         package: 'resources_package',
       ),
     );
@@ -53,7 +56,7 @@ class AppNavigationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tabs = {
+     var  tabs = <NavButtonTabBarMode, dynamic>{
       NavButtonTabBarMode.erpProfileTabMode: {
         'icon': _paddedIcon('assets/images/account.png'),
         'activeIcon': _paddedIcon('assets/images/activeaccount.png'),
@@ -76,6 +79,30 @@ class AppNavigationButton extends StatelessWidget {
       },
     };
 
+    if (currentLocal.languageCode == 'en') {
+      tabs = {
+        NavButtonTabBarMode.erpProfileTabMode: {
+          'icon': _paddedIcon('assets/images/account_en.png'),
+          'activeIcon': _paddedIcon('assets/images/account_en.png'),
+        },
+        NavButtonTabBarMode.erpDefaultTabMode: {
+          'icon': _paddedIcon('assets/images/default_en_selected.png'),
+          'activeIcon': _paddedIcon('assets/images/default_en_selected.png'),
+        },
+        NavButtonTabBarMode.erpOpenedTabMode: {
+          'icon': _paddedIcon('assets/images/opened_en.png'),
+          'activeIcon': _paddedIcon('assets/images/opened_en.png'),
+        },
+        NavButtonTabBarMode.erpNewTabMode: {
+          'icon': _paddedIcon('assets/images/new_en.png'),
+          'activeIcon': _paddedIcon('assets/images/new_en.png'),
+        },
+        NavButtonTabBarMode.erpMenuTabMode: {
+          'icon': _paddedIcon('assets/images/menu_en.png'),
+          'activeIcon': _paddedIcon('assets/images/menu_en.png'),
+        },
+      };
+    }
     final tabOrder = [
       NavButtonTabBarMode.erpMenuTabMode,
       NavButtonTabBarMode.erpNewTabMode,

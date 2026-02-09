@@ -5,9 +5,10 @@ import 'package:erp_app/feature/default_page/pages/default_state.dart';
 import 'package:erp_app/feature/default_page/year/bloc/year_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:resources_package/Resources/Assets/assets_manager.dart';
-import 'package:services_package/default/mng/select/language_service.dart';
+import 'package:resources_package/Resources/Theme/theme_manager.dart';
+import 'package:resources_package/extensions.dart';
+import 'package:resources_package/l10n/app_localizations.dart';
 import 'package:shared_core/data/com/person/request.dart' as prefix0;
 import 'package:shared_core/data/com/person/response.dart' as prefix0;
 import 'package:shared_core/data/com/person/response_data.dart' as prefix0;
@@ -38,6 +39,8 @@ import 'package:shared_core/data/default/trh/select/cashier/response.dart'
     as prefixCash;
 import 'package:shared_core/data/default/trh/select/cashier/response_data.dart'
     as prefixCash;
+import 'package:ui_components_package/erp_app_componenets/common/Buttons/language_button_standalone/language_button_stand_alone.dart';
+import 'package:ui_components_package/erp_app_componenets/common/Buttons/language_button_standalone/language_button_stand_alone_cubit.dart';
 
 import '../../../core/network/injection_container.dart';
 import '../cashier/bloc/cashier_bloc.dart';
@@ -64,7 +67,7 @@ class DefaultPage extends StatefulWidget {
 }
 
 class _DefaultPageState extends State<DefaultPage> {
-  int? edLanguageId;
+  String? edLanguageId;
   int? edPlaceId;
   int? edCashierId;
   int? edCurrencyId;
@@ -73,104 +76,61 @@ class _DefaultPageState extends State<DefaultPage> {
   @override
   void initState() {
     super.initState();
-    if (!sl.isRegistered<LanguageBloc>()) {
-      sl.registerLazySingleton(
-        () => LanguageBloc(getLanguageUseCase: sl<LanguageService>()),
-      );
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<YearBloc>().add(const LoadYearEvent());
-      context.read<CurrencyBloc>().add(const LoadCurrencyEvent());
-      context.read<CashierBloc>().add(const LoadCashierEvent());
-      context.read<PlaceBloc>().add(const LoadPlaceEvent());
-      context.read<LanguageBloc>().add(const LoadLanguageEvent());
-    });
     // لود اولیه داده‌ها
-    // context.read<YearBloc>().add(const LoadYearEvent());
-    // context.read<CurrencyBloc>().add(const LoadCurrencyEvent());
-    // context.read<CashierBloc>().add(const LoadCashierEvent());
-    // context.read<PlaceBloc>().add(const LoadPlaceEvent());
+    context.read<YearBloc>().add(const LoadYearEvent());
+    context.read<CurrencyBloc>().add(const LoadCurrencyEvent());
+    context.read<CashierBloc>().add(const LoadCashierEvent());
+    context.read<PlaceBloc>().add(const LoadPlaceEvent());
     // context.read<LanguageBloc>().add(const LoadLanguageEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: MultiBlocProvider(
-        providers: [
-          // // اگر DefaultBloc از قبل در sl ثبت و ساخته شده و می‌خواهی همان instance را استفاده کنی:
-          // BlocProvider<DefaultBloc>.value(value: sl<DefaultBloc>(),child: Provider<DefaultEvent,DefaultState>(
-          //   create: (BuildContext context) {  },
-          //   child: ,
-          // )),
-
-          // بقیه Blocها را با create و dispatch اولیه می‌سازیم
-          BlocProvider<YearBloc>(create: (_) => sl<YearBloc>()..add(const LoadYearEvent())),
-          BlocProvider<CurrencyBloc>(create: (_) => sl<CurrencyBloc>()..add(const LoadCurrencyEvent())),
-          BlocProvider<CashierBloc>(create: (_) => sl<CashierBloc>()..add(const LoadCashierEvent())),
-          BlocProvider<PlaceBloc>(create: (_) => sl<PlaceBloc>()..add(const LoadPlaceEvent())),
-          BlocProvider<LanguageBloc>(create: (_) => sl<LanguageBloc>()..add(const LoadLanguageEvent())),
-          // Menu / Profile / PersonList / ... اگر لازم است
-        ],
-        // همه providers را بالا دادیم؛ child نهایی را اینجا قرار می‌دهیم:
-        child: BlocListener<DefaultBloc, DefaultState>(
-          listenWhen: (prev, curr) {
-            // فقط وقتی defaults واقعاً تغییر کردند listener اجرا شود.
-            // این شرط نمونه است؛ متناسب با DefaultState خودت دقیق‌تر بنویس.
-            return prev != curr && curr != DefaultState.initial();
-          },bloc: sl<DefaultBloc>(),
-          listener: (context, state) {
-            // به جای reload همه چیز بی‌هدف، فقط در صورت نیاز هدفمند dispatch کن
-            // مثال: اگر state.yearIdChanged => dispatch فقط LoadYearEvent
-            // اینجا یک مثال ساده (ولی ممکن است باعث فراخوانی مجدد شود) — بهتر شرطی کن
-
-            context.read<YearBloc>().add(const LoadYearEvent());
-            context.read<CurrencyBloc>().add(const LoadCurrencyEvent());
-            context.read<CashierBloc>().add(const LoadCashierEvent());
-            context.read<PlaceBloc>().add(const LoadPlaceEvent());
-            context.read<LanguageBloc>().add(const LoadLanguageEvent());
-
-
-            // و الی آخر؛ یا از listenWhen دقیق‌تر استفاده کن
-          },
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildLanguageSection(),
-                const SizedBox(height: 32),
-                _buildCurrencySection(),
-                const SizedBox(height: 32),
-                _buildYearSection(),
-                const SizedBox(height: 32),
-                _buildCashierSection(),
-                const SizedBox(height: 32),
-                _buildPlaceSection(),
-              ],
-            ),
-          ),
+    return BlocListener<DefaultBloc, DefaultState>(
+      listenWhen: (prev, curr) => prev.defaults != curr.defaults,
+      listener: (context, state) {
+        // هر بار Defaultion تغییر کرد، بلوک‌ها را ری‌لود کن
+        context.read<YearBloc>().add(const LoadYearEvent());
+        context.read<CurrencyBloc>().add(const LoadCurrencyEvent());
+        context.read<CashierBloc>().add(const LoadCashierEvent());
+        context.read<PlaceBloc>().add(const LoadPlaceEvent());
+        // context.read<LanguageBloc>().add(const LoadLanguageEvent());
+      },
+      bloc: context.read<DefaultBloc>(),
+      child: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildLanguageSection(),
+            const SizedBox(height: 32),
+            _buildCurrencySection(),
+            const SizedBox(height: 32),
+            // Text("aaa"),
+            _buildYearSection(),
+            const SizedBox(height: 32),
+            _buildCashierSection(),
+            const SizedBox(height: 32),
+            _buildPlaceSection(),
+          ],
         ),
       ),
     );
   }
 
-  Widget horizontal<T>({
+  Widget horizontalor<T>({
     required String title,
     required String iconTitle,
     required List<T> items,
-    required int? edId,
-    required int Function(T) getId,
+    required Object? edId,
+    required Object Function(T) getId,
     required String Function(T) getTitle,
-    required void Function(int id) on,
+    required void Function(Object id) on,
   }) {
     // اگر آیتمی وجود نداره، یک لیست خالی می‌سازیم ولی تیتر و آیکون همیشه نمایش داده می‌شود
+    final displayItems = [...items];
 
-    final selected = edId == null
-        ? <T>[]
-        : items.where((e) => getId(e) == edId).toList();
-    final others = items.where((e) => getId(e) != edId).toList();
-    final displayItems = [...selected, ...others];
     // 2. انتخاب شده را اول می‌آوریم
     if (edId != null) {
       displayItems.sort((a, b) {
@@ -180,9 +140,8 @@ class _DefaultPageState extends State<DefaultPage> {
       });
     }
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Column(
+
+        return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -225,7 +184,7 @@ class _DefaultPageState extends State<DefaultPage> {
                       return Padding(
                         padding: const EdgeInsets.only(left: 8),
                         child: GestureDetector(
-                          onTap: () => on(id),
+                          onTap: () => on((id is int ? (id as num).toInt() : Locale(id as String))),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
@@ -267,48 +226,45 @@ class _DefaultPageState extends State<DefaultPage> {
                   ),
                 ),
         ],
-      ),
+
     );
   }
 
   Widget _buildLanguageSection() {
-    return BlocBuilder<LanguageBloc, LanguageState>(
-      bloc: sl<LanguageBloc>(),
+    return BlocBuilder<LanguageButtonStandAloneCubit, Locale>(
+      bloc: sl<LanguageButtonStandAloneCubit>(),
       builder: (context, state) {
-        if (state is LanguageLoaded) {
-          return horizontal(
-            iconTitle: AryanAssets.langIcon,
-            title: 'زبان',
-            items: state.languages,
-            edId: edLanguageId,
-            getId: (e) => (e).languageId,
-            getTitle: (e) => (e).languageDesc,
-            on: (id) {
-              setState(() => edLanguageId = id);
-              context.read<DefaultBloc>().add(LanguageChanged(id));
-            },
-          );
-        }
-        return const SizedBox.shrink();
+        return horizontalor<Locale>(
+          iconTitle: AryanAssets.langIcon,
+          title: 'زبان',
+          items: AppLocalizations.supportedLocales.toList(),
+          edId: edLanguageId ?? AppTheme.local.value ,
+          getId: (e) => e.languageCode,
+          getTitle: (e) => (e).languageCode,
+          on: (id) {
+            setState(() => edLanguageId = (id as Locale).languageCode);
+            context.read<DefaultBloc>().add(LanguageChanged((id as Locale).languageCode));
+            context.read<LanguageButtonStandAloneCubit>().setLocale(state);
+          },
+        );
       },
     );
   }
 
   Widget _buildPlaceSection() {
     return BlocBuilder<PlaceBloc, PlaceState>(
-      bloc: sl<PlaceBloc>(),
       builder: (context, state) {
         if (state is PlaceLoaded) {
-          return horizontal<prefixPlace.ResponseData>(
-            iconTitle: AryanAssets.buildingsIcon,
+          return horizontalor<prefixPlace.ResponseData>(
+            iconTitle: AryanAssets.buildings,
             title: 'شرکت',
             items: state.places,
             edId: edPlaceId,
             getId: (e) => e.placeId,
             getTitle: (e) => e.placeDesc ?? '',
             on: (id) {
-              setState(() => edPlaceId = id);
-              context.read<DefaultBloc>().add(PlaceChanged(id));
+              setState(() => edPlaceId = (id as num).toInt());
+              context.read<DefaultBloc>().add(PlaceChanged((id as num).toInt()));
             },
           );
         }
@@ -319,10 +275,9 @@ class _DefaultPageState extends State<DefaultPage> {
 
   Widget _buildCashierSection() {
     return BlocBuilder<CashierBloc, CashierState>(
-      bloc: sl<CashierBloc>(),
       builder: (context, state) {
         if (state is CashierLoaded) {
-          return horizontal<prefixCash.ResponseData>(
+          return horizontalor<prefixCash.ResponseData>(
             iconTitle: AryanAssets.cashOutIcon,
             title: 'صندوقدار اصلی',
             items: state.Cashier,
@@ -330,8 +285,8 @@ class _DefaultPageState extends State<DefaultPage> {
             getId: (e) => (e).id,
             getTitle: (e) => (e).display ?? '',
             on: (id) {
-              setState(() => edCashierId = id);
-              context.read<DefaultBloc>().add(CashierChanged(id));
+              setState(() => edCashierId = (id as num).toInt());
+              context.read<DefaultBloc>().add(CashierChanged((id as num).toInt()));
             },
           );
         }
@@ -342,10 +297,9 @@ class _DefaultPageState extends State<DefaultPage> {
 
   Widget _buildCurrencySection() {
     return BlocBuilder<CurrencyBloc, CurrencyState>(
-      bloc: sl<CurrencyBloc>(),
       builder: (context, state) {
         if (state is CurrencyLoaded) {
-          return horizontal<prefixCur.ResponseData>(
+          return horizontalor<prefixCur.ResponseData>(
             iconTitle: AryanAssets.moneyIcon,
             title: 'ارز',
             items: (state).selectCurrency,
@@ -353,8 +307,8 @@ class _DefaultPageState extends State<DefaultPage> {
             getId: (e) => (e).selectId,
             getTitle: (e) => (e).selectDisplay,
             on: (id) {
-              setState(() => edCurrencyId = id);
-              context.read<DefaultBloc>().add(CurrencyChanged(id));
+              setState(() => edCurrencyId = (id as num).toInt());
+              context.read<DefaultBloc>().add(CurrencyChanged((id as num).toInt()));
             },
           );
         }
@@ -365,10 +319,9 @@ class _DefaultPageState extends State<DefaultPage> {
 
   Widget _buildYearSection() {
     return BlocBuilder<YearBloc, YearState>(
-      bloc: sl<YearBloc>(),
       builder: (context, state) {
         if (state is YearLoaded) {
-          return horizontal<prefixYear.ResponseData>(
+          return horizontalor<prefixYear.ResponseData>(
             iconTitle: AryanAssets.calendarIcon,
             title: 'سال مالی',
             items: (state).selectYears,
@@ -376,8 +329,8 @@ class _DefaultPageState extends State<DefaultPage> {
             getId: (e) => (e).yearId,
             getTitle: (e) => (e).yearDesc,
             on: (id) {
-              setState(() => edYearId = id);
-              context.read<DefaultBloc>().add(YearChanged(id));
+              setState(() => edYearId = (id as num).toInt());
+              context.read<DefaultBloc>().add(YearChanged((id as num).toInt()));
             },
           );
         }

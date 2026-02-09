@@ -1,9 +1,11 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide View;
+import 'package:services_package/auth/toolbar/toolbar_service.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/chat_bot/chat_bot.dart';
+import '../../../core/network/injection_container.dart';
 import 'field_renderer.dart';
 import 'input/radio_Input_field.dart';
-import 'package:shared_core/index.dart';
+import 'package:shared_core/data/auth/toolbar/toolbar.dart';
 
 class DynamicFormGenerator extends StatefulWidget {
   final void Function(Map<String, dynamic> values)? onSubmit;
@@ -27,18 +29,24 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, dynamic> _values = {};
   Map<String, dynamic>? _parsedJson;
-  List<dynamic> _formConfigs = [];
+  List<Field> _formConfigs = [];
+  List<View> _allConfigs = [];
 
   Map<String, dynamic>? _selectedFormConfig;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isLoading = false;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
     _values.addAll(widget.initialValues);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeRadioValues();
+      _loadData();
+    });
 
-    _initializeRadioValues();
-    _processJson();
+    // _processJson();
   }
 
   void _initializeRadioValues() {
@@ -53,81 +61,58 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     }
   }
 
-  void _processJson() {
+  Future<void> _loadData() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
     try {
-      _parsedJson = json.decode(widget.jsonString);
-      _parsedJson!.forEach((key, value) {});
+      final newState = await sl<ToolbarService>().get(
+        Request(repoId: 106045, systemId: 106, type: 2),
+        Response.fromJson,
+      );
+      final data = newState?.data ?? [];
 
-      if (_parsedJson!.containsKey('Data')) {
-        final data = _parsedJson!['Data'] as Map<String, dynamic>;
-        data.forEach((key, value) {
-          if (value is List) {
-          } else if (value is Map) {
-          } else {}
-        });
+      _allConfigs = data.first.list!.listProp;
+      for (final view in _allConfigs) {
+        if (view.isForm) {
+          final form = view.formConfig;
+          setState(() {
+            _formConfigs = view.formConfig!.fields;
+          });
 
-        if (data.containsKey('List')) {
-          final listData = data['List'] as Map<String, dynamic>;
-          listData.forEach((key, value) {});
+          print('Form endpoint: ${form?.addEndpoint}');
+        }
 
-          if (listData.containsKey('ListProp')) {
-            _formConfigs = listData['ListProp'] as List<dynamic>;
-
-            _selectForm();
-          }
+        if (view.isList) {
+          final list = view.listConfig;
+          // _formConfigs = view.listConfig!.fields;
+          print('List columns count: ${list?.column.length}');
         }
       }
+
+      // _allConfigs = data.toList().first.list?.listProp ?? [];
+
+      // if (_allConfigs.length > 1) {
+      //   setState(() {
+      //     _formConfigs = _allConfigs.last.formConfig  ?? _allConfigs.last.formConfig.;
+      //   });
+      // } else {
+      //   setState(() {
+      //     _formConfigs = _allConfigs.first.formConfig!.fields;
+      //   });
+      // }
+
+      // _selectForm();
     } catch (e) {
-      print(e);
-    } finally {
-      // setState(() => _isLoading = false);
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
     }
   }
 
-
-  void _selectForm() {
-    dynamic selectedForm;
-
-    if (_formConfigs.length == 1) {
-      selectedForm = _formConfigs[0];
-    } else if (widget.selectedFormDesc != null) {
-      selectedForm = _formConfigs.firstWhere(
-        (form) =>
-            (form as Map<String, dynamic>)['Desc'] == widget.selectedFormDesc,
-        orElse: () => _formConfigs[0],
-      );
-    } else {
-      final advancedForm = _formConfigs.firstWhere(
-        (form) =>
-            (form as Map<String, dynamic>)['Desc']?.contains('پیشرفته') ??
-            false,
-        orElse: () => _formConfigs[0],
-      );
-      selectedForm = advancedForm;
-    }
-
-    final formMap = selectedForm as Map<String, dynamic>;
-
-    if (formMap.containsKey('Config') && formMap['Config'] is String) {
-      final configString = formMap['Config'] as String;
-
-      try {
-        // if (!mounted) return;
-        // setState(() {
-          _selectedFormConfig =
-              json.decode(configString) as Map<String, dynamic>;
-        // });
-
-        if (_selectedFormConfig!.containsKey('fields')) {
-          final fields = _selectedFormConfig!['fields'] as List;
-
-          if (fields.length > 3) {}
-        } else {}
-      } catch (e) {
-        print(e);
-      }
-    }
-  }
 
   void _navigateToForm(String formDesc) {
     Navigator.pushReplacement(
@@ -172,41 +157,40 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
             ),
 
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.only(right: 16, top: 4, bottom: 4),
+              child: Column(
                 children: [
-                  ..._formConfigs.map((form) {
-                    print('TEST');
-                    print(form);
-                    final formMap = form as Map<String, dynamic>;
-                    print(formMap);
-
-                    return ListTile(
-                      contentPadding: EdgeInsets.only(
-                        right: 70,
-                        left: 16,
-                        top: 4,
-                        bottom: 4,
-                      ),
-                      dense: true,
-                      minVerticalPadding: 0,
-                      visualDensity: VisualDensity.compact,
-
-                      title: Text(
-                        formMap['Desc'],
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
+                  ListView.builder(
+                    padding: EdgeInsets.only(right: 16, top: 4, bottom: 4),
+                    itemCount: _allConfigs.length,
+                    itemBuilder: (context, index) {
+                      final item = _allConfigs[index];
+                      return ListTile(
+                        contentPadding: EdgeInsets.only(
+                          right: 70,
+                          left: 16,
+                          top: 4,
+                          bottom: 4,
                         ),
-                      ),
-                      onTap: () {
-                        Navigator.pop(context);
-                        _navigateToForm(formMap['Desc']);
-                      },
-                    );
-                  }).toList(),
+                        dense: true,
+                        minVerticalPadding: 0,
+                        visualDensity: VisualDensity.compact,
+
+                        title: Text(
+                          item.desc ?? '',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _navigateToForm(item.desc ?? '');
+                        },
+                      );
+                    },
+                  ),
 
                   buildCustomDivider(),
 
@@ -229,9 +213,6 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
                     _formKey.currentState?.reset();
                     _values.clear();
 
-                    // ScaffoldMessenger.of(context).showSnackBar(
-                    //   SnackBar(content: Text('فرم بازنشانی شد')),
-                    // );
                     Navigator.pop(context);
                   }, 'assets/images/calendar.png'),
 
@@ -424,202 +405,164 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     );
   }
 
-  List<Widget> _buildFormFields() {
-    if (_selectedFormConfig == null ||
-        !_selectedFormConfig!.containsKey('fields')) {
-      return [Text('فیلدی یافت نشد')];
-    }
-
-    final List<dynamic> fields = _selectedFormConfig!['fields'];
-    final widgets = <Widget>[];
-
-    fields.sort((a, b) => (a['order'] ?? 0).compareTo(b['order'] ?? 0));
-
-    final fieldsToShow = <Map<String, dynamic>>[];
+  Widget _buildFormFields(Field field, int index) {
+    // if (_selectedFormConfig == null ||
+    //     !_selectedFormConfig!.containsKey('fields')) {
+    //   return Text('فیلدی یافت نشد');
+    // }
 
     final indicesToSkip = <int>{};
 
-    for (var i = 0; i < fields.length; i++) {
-      final field = fields[i] as Map<String, dynamic>;
-      final fieldType = field['type']?.toString().toLowerCase() ?? 'text';
-
-      if (fieldType == 'noshow') {
-        indicesToSkip.add(i);
-
-        if (i + 1 < fields.length) {
-          indicesToSkip.add(i + 1);
-
-          i++;
-        }
-      }
+    if (field.type == 'noshow') {
+      indicesToSkip.add(index);
+      return SizedBox(width: 10);
     }
 
-    for (var i = 0; i < fields.length; i++) {
-      if (!indicesToSkip.contains(i)) {
-        final field = fields[i] as Map<String, dynamic>;
-        fieldsToShow.add(field);
-      }
-    }
+    if (field.type == 'radio') {
+      final radioOptions =
+          (field.radioValues as List?)?.cast<Map<String, dynamic>>() ?? [];
 
-    for (var field in fieldsToShow) {
-      final fieldMap = field;
-      final fieldName = fieldMap['name']?.toString() ?? '';
-      final fieldType = fieldMap['type']?.toString().toLowerCase() ?? 'text';
+      final rules = field.rules as List? ?? [];
+      final isRequired = rules.any(
+        (rule) =>
+            rule is Map &&
+            (rule['required'] == true || rule['rule'] == 'required'),
+      );
 
-      if (fieldType == 'radio') {
-        final radioOptions =
-            (fieldMap['radioValues'] as List?)?.cast<Map<String, dynamic>>() ??
-            [];
-
-        final rules = fieldMap['rules'] as List? ?? [];
-        final isRequired = rules.any(
-          (rule) =>
-              rule is Map &&
-              (rule['required'] == true || rule['rule'] == 'required'),
-        );
-
-        widgets.add(
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            child: RadioInputField(
-              caption: fieldMap['caption']?.toString() ?? '',
-              help: fieldMap['help']?.toString() ?? '',
-              fieldName: fieldName,
-              options: radioOptions,
-              onChanged: (value) {
-                // if (!mounted) return;
-                // setState(() {
-                  _values[fieldName] = value;
-                // });
-              },
-              initialValue: _values[fieldName] ?? fieldMap['defaultValue'],
-              isRequired: isRequired,
-            ),
-          ),
-        );
-        continue;
-      }
-
-      final selectEndpointData = fieldMap['selectEndpoint'];
+      final selectEndpointData = field.selectEndpoint;
       final selectEndpoint =
-          (selectEndpointData != null &&
-              selectEndpointData is Map &&
-              selectEndpointData.isNotEmpty)
+          (selectEndpointData != null && selectEndpointData is Map)
           ? _convertSelectEndpoint(selectEndpointData)
           : null;
 
-      final fieldModel = Field(
-        name: fieldName,
-        caption: fieldMap['caption']?.toString() ?? '',
-        help: fieldMap['help']?.toString() ?? '',
-        type: fieldType,
-        placeHolder: fieldMap['placeHolder']?.toString() ?? '',
-        defaultValue: fieldMap['defaultValue']?.toString() ?? '',
-        showId: false,
-        radioValues: [],
-        order: fieldMap['order'] ?? 0,
-        selectEndpoint: selectEndpoint,
-        options: _convertOptions(fieldMap['options']),
-        rules: _convertRules(fieldMap['rules']),
-        icon: null,
-        idValue: 0,
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        child: RadioInputField(
+          caption: field.caption?.toString() ?? '',
+          help: field.help?.toString() ?? '',
+          fieldName: field.name ?? '',
+          options: radioOptions,
+          onChanged: (value) {
+            // if (!mounted) return;
+            // setState(() {
+            _values[field.name ?? field.defaultValue] = value;
+            // });
+          },
+          initialValue: _values[field.name ?? field.defaultValue],
+          isRequired: isRequired,
+        ),
       );
+    }
 
-      dynamic initialValue = _values[fieldName] ?? fieldModel.defaultValue;
+    // final fieldModel = Field(
+    //   name: fieldName,
+    //   caption: fieldMap['caption']?.toString() ?? '',
+    //   help: fieldMap['help']?.toString() ?? '',
+    //   type: fieldType,
+    //   placeHolder: fieldMap['placeHolder']?.toString() ?? '',
+    //   defaultValue: fieldMap['defaultValue']?.toString() ?? '',
+    //   showId: false,
+    //   radioValues: [],
+    //   order: fieldMap['order'] ?? 0,
+    //   selectEndpoint: selectEndpoint,
+    //   options: _convertOptions(fieldMap['options']),
+    //   rules: _convertRules(fieldMap['rules']),
+    //   icon: null,
+    //   idValue: 0,
+    // );
 
-      if (fieldType == 'treeoption' || fieldType == 'selectoption') {
-        var hasValidValue = false;
+    dynamic initialValue = _values[field.name] ?? field.defaultValue;
 
-        if (initialValue is Map) {
-          final value = initialValue['value'];
-          final label = initialValue['label'];
+    if (field.type == 'treeoption' || field.type == 'selectoption') {
+      var hasValidValue = false;
 
-          if (value != null && value.toString().isNotEmpty) {
-            hasValidValue = true;
-          } else if (label != null && label.toString().isNotEmpty) {
-            hasValidValue = true;
-          }
-        }
+      if (initialValue is Map) {
+        final value = initialValue['value'];
+        final label = initialValue['label'];
 
-        if (!hasValidValue) {
-          initialValue = null;
-        }
-
-        if (initialValue is! Map) {
-          final label = _values['${fieldName}_label'];
-          final path = _values['${fieldName}_path'];
-
-          if (initialValue != null || label != null) {
-            initialValue = {
-              'value': initialValue,
-              'label': label ?? initialValue?.toString() ?? '',
-            };
-            if (fieldType == 'treeoption' && path != null) {
-              (initialValue)['path'] = path;
-            }
-          }
+        if (value != null && value.toString().isNotEmpty) {
+          hasValidValue = true;
+        } else if (label != null && label.toString().isNotEmpty) {
+          hasValidValue = true;
         }
       }
 
-      if (!_values.containsKey(fieldName) && initialValue != null) {
-        _values[fieldName] = initialValue;
+      if (!hasValidValue) {
+        initialValue = null;
       }
 
-      final showWithoutBorder =
-          fieldType == 'checkbox' ||
-          fieldType == 'treeoption' ||
-          fieldType == 'selectoption';
+      if (initialValue is! Map) {
+        final label = _values['${field.name}_label'];
+        final path = _values['${field.name}_path'];
 
-      if (showWithoutBorder) {
-        widgets.add(
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: FieldRenderer(
-              field: fieldModel,
-              onChanged: (value) {
-                // if (!mounted) return;
-                // setState(() {
-                  if (fieldType == 'treeoption' && value is Map) {
-                    _values[fieldName] = value['value'];
-                    _values['${fieldName}_label'] = value['label'];
-                    _values['${fieldName}_path'] = value['path'];
-                  } else if (fieldType == 'selectoption' && value is Map) {
-                    _values[fieldName] = value['value'];
-                    _values['${fieldName}_label'] = value['label'];
-                  } else {
-                    _values[fieldName] = value;
-                  }
-                // });
-              },
-              initialValues: {fieldName: initialValue ?? ''},
-            ),
-          ),
-        );
-      } else {
-        widgets.add(
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(color: Colors.white),
-              child: FieldRenderer(
-                field: fieldModel,
-                onChanged: (value) {
-                  if (!mounted) return;
-                    // setState(() {
-                      _values[fieldName] = value;
-                    // });
-
-                },
-                initialValues: {fieldName: initialValue ?? ''},
-              ),
-            ),
-          ),
-        );
+        if (initialValue != null || label != null) {
+          initialValue = {
+            'value': initialValue,
+            'label': label ?? initialValue?.toString() ?? '',
+          };
+          if (field.type == 'treeoption' && path != null) {
+            (initialValue)['path'] = path;
+          }
+        }
       }
     }
 
-    return widgets;
+    if (!_values.containsKey(field.name) && initialValue != null) {
+      _values[field.name ?? field.defaultValue] = initialValue;
+    }
+
+    final showWithoutBorder =
+        field.type == 'checkbox' ||
+        field.type == 'treeoption' ||
+        field.type == 'selectoption';
+
+    if (showWithoutBorder) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: FieldRenderer(
+          field: field,
+          onChanged: (value) {
+            // if (!mounted) return;
+            // setState(() {
+            if (field.type == 'treeoption' && value is Map) {
+              _values[field.name ?? field.defaultValue] = value['value'];
+              _values['${field.name ?? field.defaultValue}_label'] =
+                  value['label'];
+              _values['${field.name ?? field.defaultValue}_path'] =
+                  value['path'];
+            } else if (field.type == 'selectoption' && value is Map) {
+              _values[field.name ?? field.defaultValue] = value['value'];
+              _values['${field.name ?? field.defaultValue}_label'] =
+                  value['label'];
+            } else {
+              _values[field.name ?? field.defaultValue] = value;
+            }
+            // });
+          },
+          initialValues: {field.name ?? field.defaultValue: initialValue ?? ''},
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Container(
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(color: Colors.white),
+          child: FieldRenderer(
+            field: field,
+            onChanged: (value) {
+              if (!mounted) return;
+              // setState(() {
+              _values[field.name ?? field.defaultValue] = value;
+              // });
+            },
+            initialValues: {
+              field.name ?? field.defaultValue: initialValue ?? '',
+            },
+          ),
+        ),
+      );
+    }
   }
 
   SelectEndpoint? _convertSelectEndpoint(dynamic endpoint) {
@@ -657,33 +600,6 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     return result;
   }
 
-  List<Rule> _convertRules(dynamic rules) {
-    if (rules == null) return [];
-
-    final converted = <Rule>[];
-
-    if (rules is List) {
-      for (var rule in rules) {
-        if (rule is Map) {
-          final ruleName = rule['rule']?.toString();
-          final isRequired = rule['required'] == true || ruleName == 'required';
-
-          converted.add(
-            Rule(
-              name: ruleName ?? rule['name']?.toString() ?? '',
-              condition: rule['condition']?.toString(),
-              message: rule['message']?.toString() ?? '',
-              required: isRequired,
-              type: rule['type']?.toString() ?? (isRequired ? 'required' : ''),
-              len: (rule['len'] as int?) ?? 0,
-            ),
-          );
-        }
-      }
-    }
-
-    return converted;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -692,21 +608,26 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
       appBar: _buildAppBar(),
       endDrawer: _buildDrawer(),
       body: SafeArea(
-        child: _selectedFormConfig == null
-            ? Center(child: Text('خطا در بارگذاری فرم'))
-            : Directionality(
-                textDirection: TextDirection.rtl,
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(children: [..._buildFormFields()]),
-                  ),
-                ),
+
+          child: Form(
+            key: _formKey,
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(
+                vertical: 16,
+                horizontal: 10,
               ),
-      ),
+              itemCount: _formConfigs.length,
+              itemBuilder: (context, index) {
+                final item = _formConfigs[index];
+                return _buildFormFields(item, index);
+              },
+            ),
+          ),
+        ),
+
     );
   }
+
 
   String getCurrencyRateCaption() {
     try {

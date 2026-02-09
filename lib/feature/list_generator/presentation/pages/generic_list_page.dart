@@ -1,9 +1,10 @@
 import 'package:erp_app/feature/list_generator/data/models/field_display_config.dart';
 import 'package:erp_app/feature/list_generator/data/models/generic_list_entity_state.dart';
 import 'package:flutter/material.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/Expanders/list_datas_expander.dart';
+import 'package:shared_core/data/com/person/person.dart' as person;
 
-
-class  GenericListPage<D> extends StatefulWidget {
+class GenericListPage<D> extends StatefulWidget {
   final FieldDisplayConfig<D> fieldConfigs;
   final String screenTitle;
   final Widget Function(D item)? customItemBuilder;
@@ -66,20 +67,6 @@ class _GenericEntityScreenState<D> extends State<GenericListPage<D>> {
 
     if (_error != null) {
       _error = null;
-      // Text('asd');
-      // return Container(decoration: BoxDecoration(color: Colors.black),
-      //   child: Column(verticalDirection: VerticalDirection.down,
-      //     crossAxisAlignment: CrossAxisAlignment.start,
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: [
-      //       Text('خطا: $_error'),
-      //       ElevatedButton(
-      //         onPressed: _loadData,
-      //         child: const Text('تلاش مجدد'),
-      //       ),
-      //     ],
-      //   ),
-      // );
     }
 
     if (_state == null || _state!.fetchData.isEmpty) {
@@ -90,29 +77,29 @@ class _GenericEntityScreenState<D> extends State<GenericListPage<D>> {
 
   Widget _buildContent(GenericListEntityState state) {
     var data = state.fetchData as List<D>;
-    return Container(color: Colors.transparent,
-      child:
-        Expanded(
-          child: ListView.builder(
-            itemCount: data.length,
+    return Container(
+      color: Colors.transparent,
+      child: Expanded(
+        child: ListView.builder(
+          itemCount: data.length,
 
-            padding: EdgeInsetsGeometry.all(10),
-            primary: true,
-            scrollDirection: Axis.vertical,
-            itemBuilder: (context, index) {
-              final item = data[index];
+          padding: EdgeInsetsGeometry.all(10),
+          primary: true,
+          scrollDirection: Axis.vertical,
+          itemBuilder: (context, index) {
+            final item = data[index];
 
-              if (widget.customItemBuilder != null) {
-                return widget.customItemBuilder!(item);
-              }
+            if (widget.customItemBuilder != null) {
+              return widget.customItemBuilder!(item);
+            }
 
-              final firstField = widget.fieldConfigs;
-
-              return ListTile(title: Text(firstField.valueGetter(item)));
-            },
-          ),
+            final firstField = widget.fieldConfigs;
+            PersonExpander(person: item as person.ResponseData);
+            return null;
+            // return ListTile(title: Text(firstField.valueGetter(item)));
+          },
         ),
-
+      ),
     );
   }
 }

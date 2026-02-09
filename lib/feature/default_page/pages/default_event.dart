@@ -40,7 +40,7 @@ class CurrencyChanged extends DefaultEvent {
 }
 
 class LanguageChanged extends DefaultEvent {
-  final int languageId;
+  final String languageId;
   const LanguageChanged(this.languageId);
 
   @override

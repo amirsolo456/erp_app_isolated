@@ -78,13 +78,15 @@ class _MenuPageState extends State<MenuPage> {
             return const Center(child: Text('خطا در بارگذاری'));
           }
           if (state is MenuLoadedState) {
-            // اگر چیزی تایپ شد، فیلتر را اعمال کن
             if (searchController.text.isEmpty) {
               filteredMenus = state.menus;
             }
 
             return Directionality(
-              textDirection: TextDirection.rtl,
+              textDirection:
+                  sl<AppNotifier>().currentLocal().languageCode == 'en'
+                  ? TextDirection.ltr
+                  : TextDirection.rtl,
               child: Column(
                 children: [
                   Padding(

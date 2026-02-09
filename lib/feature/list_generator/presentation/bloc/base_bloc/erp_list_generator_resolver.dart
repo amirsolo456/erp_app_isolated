@@ -5,47 +5,33 @@ import 'package:erp_app/src/erp_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:micro_app_core/index.dart';
 import 'package:navigation_builder/navigation_builder.dart';
-import 'package:shared_core/data/com/person/response.dart';
 
+import '../../../../com/person/presentation/features/person_list_page.dart';
 import '../../../../com/person/presentation/widgets/person_list_nav.dart';
 
 class ErpListGeneratorResolver extends ErpChildMicroApp {
-  Map<String, WidgetBuilderArgs> get routes => {
-    // routes should point to a bootstrap page that normalizes the incoming payload
-    '/erp/list': (context, payload) => ErpListGenBootstrapPage(),
-  };
+  final String route;
+
+  // Map<String, WidgetBuilderArgs> get routes => {
+  //   // routes should point to a bootstrap page that normalizes the incoming payload
+  //   '/erp/list': (context, payload) => ErpListGenBootstrapPage(),
+  // };
+  ErpListGeneratorResolver({required this.route});
 
   @override
   Widget build(BuildContext context, payload) {
     // simple default build that delegates to the route entry
-    final builder = routes['/erp/list'];
-    if (builder != null) return builder(context, payload);
+
     return ErpListGenBootstrapPage();
   }
 
   @override
   Widget getPage() {
-    return PersonsScreen();
-    // if your framework expects a root page for the micro app, return one here
-    // return FutureBuilder<FieldDisplayConfig<Response>>(
-    //   future: getFieldConfigs(),
-    //   builder: (context, snapshot) {
-    //     if (snapshot.connectionState == ConnectionState.waiting) {
-    //       return const Center(child: CircularProgressIndicator());
-    //     }
-    //
-    //     if (snapshot.hasError) {
-    //       return Center(child: Text(snapshot.error.toString()));
-    //     }
-    //
-    //     final data = snapshot.data;
-    //     if (data == null) {
-    //       return const Center(child: Text('No field configuration provided'));
-    //     }
-    //
-    //     return GenericListPage<D>(fieldConfigs: data);
-    //   },
-    // );
+    if (route.contains('person')) {
+      return const PersonListPage(refreshData: false);
+    } else {
+      return Center(child: Text('Not Found'));
+    }
   }
 
   @override
@@ -124,7 +110,7 @@ class ErpListGenBootstrapPage<D> extends StatelessWidget {
     // fallback: if nothing matches, throw a descriptive error so the caller
     // (and developer) know what went wrong at runtime.
     throw Exception(
-      'Unsupported payload type for FieldDisplayConfig: ${payload?.runtimeType}',
+      'Unsupported payload type for FieldDisplayConfig: ${payload.runtimeType}',
     );
   }
 

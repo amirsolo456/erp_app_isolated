@@ -5,10 +5,8 @@ import 'package:micro_app_core/services/custom_event_bus/custom_event_bus.dart';
 import 'package:micro_app_core/services/routing/routes.dart';
 import 'package:models_package/base/api_settings.dart';
 import 'package:services_package/auth/menu/menu_service.dart';
-import 'package:services_package/storage/domain/usecases/storage_service.dart';
 import 'package:shared_core/data/auth/menu/request.dart';
 import 'package:shared_core/data/auth/menu/response.dart';
-import 'package:ui_components_package/navigator.dart';
 
 import '../../../../core/network/injection_container.dart';
 import 'menu_event.dart';

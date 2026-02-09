@@ -86,6 +86,7 @@ class ErpResolver extends MicroApp<ErpCoreModel, ErpAppsCoreEnum> {
         payload: {'customerId': 42},
       );
     });
+
   }
 
   void _handleErpShownEvent(ErpShownEvent event) {
