@@ -6,6 +6,7 @@ import 'package:models_package/index.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_core/data/auth/menu/response_data.dart';
 import 'package:ui_components_package/erp_app_componenets/common/loadings/circle_loading.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/search_box.dart';
 
 import '../../../../index.dart';
 import '../../../../src/erp_notifier.dart';
@@ -47,18 +48,25 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   ResponseData? _filterMenu(ResponseData menu, String query) {
-    final matches = menu.menuDesc!.contains(query);
-    final subMenusFiltered = menu.subMenus
+    final matches = (menu.menuDesc ?? '').contains(query);
+    final subMenusFiltered = (menu.subMenus ?? [])
         .map((e) => _filterMenu(e, query))
         .where((e) => e != null)
         .cast<ResponseData>()
         .toList();
 
     if (matches || subMenusFiltered.isNotEmpty) {
-      return ResponseData().copyWith(subMenus: subMenusFiltered);
+      return ResponseData().copyWith(
+        subMenus: subMenusFiltered,
+        menuDesc: menu.menuDesc,
+        icon: menu.icon,
+        appLink: menu.appLink,
+        webLink: menu.webLink,
+      );
     }
     return null;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -89,42 +97,19 @@ class _MenuPageState extends State<MenuPage> {
                   : TextDirection.rtl,
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isFocused ? Colors.white : Colors.grey[100],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isFocused ? Colors.black12 : Colors.white,
-                        ),
-                      ),
-                      child: TextField(
-                        controller: searchController,
-                        focusNode: searchFocusNode,
-                        // textDirection: TextDirection.rtl,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontFamily: 'IRanSans',
-                        ),
-                        decoration: const InputDecoration(
-                          hintText: 'جستجو',
-                          hintStyle: TextStyle(color: Colors.black54),
+                SearchBox(
+                controller: searchController,
+                focusNode: searchFocusNode,
+                isFocused: isFocused,
+                onChanged: (value) => filterMenus(state.menus, value),
+                textStyle: const TextStyle(
+                  color: Colors.black,
+                  fontFamily: 'IRanSans',
+                ),
+                hintStyle: const TextStyle(color: Colors.black54),
+                textDirection: null, // یا TextDirection.rtl اگه میخواید اجباری باشه
+              ),
 
-                          // مهم! باید صفر شود تا صد در صد رنگ پس‌زمینه از Container گرفته شود
-                          filled: false,
-
-                          // fillColor: Colors.red,
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                        ),
-                        onChanged: (value) => filterMenus(state.menus, value),
-                      ),
-                    ),
-                  ),
                   Expanded(
                     child: ListView.builder(
                       padding: EdgeInsets.zero,
@@ -152,23 +137,26 @@ class _MenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasChildren = item.subMenus.isNotEmpty;
+    final hasChildren = (item.subMenus ?? []).isNotEmpty;
     final notifier = Provider.of<ErpAppNotifier>(context);
+    final iconWidget = (item.icon != null && item.icon!.isNotEmpty)
+        ? SvgPicture.string(item.icon!, width: 18, height: 18)
+        : const SizedBox(width: 18, height: 18);
+
     final Widget titleWidget = Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        if (item.icon!.isNotEmpty)
-          SvgPicture.string(item.icon ?? '', width: 18, height: 18),
+        iconWidget,
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             item.menuDesc ?? '',
-            // textDirection: TextDirection.rtl,
             style: const TextStyle(fontSize: 14),
           ),
         ),
       ],
     );
+
 
     if (!hasChildren) {
       return Padding(

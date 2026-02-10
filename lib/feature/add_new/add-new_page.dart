@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:micro_app_core/index.dart';
 import 'package:shared_core/data/auth/menu/response_data.dart' as prefix0;
+import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/search_box.dart';
 
 import '../../micro_app/erp_events.dart';
 import '../auth/menu/bloc/menu_bloc.dart';
@@ -103,7 +104,7 @@ class _AddNewPageState extends State<AddNewPage> {
 
             return   Column(
                 children: [
-                  _SearchBox(
+                  SearchBox(
                     controller: searchController,
                     focusNode: searchFocusNode,
                     isFocused: isFocused,
@@ -165,43 +166,3 @@ class _LeafMenuTile extends StatelessWidget {
   }
 }
 
-class _SearchBox extends StatelessWidget {
-  final TextEditingController controller;
-  final FocusNode focusNode;
-  final bool isFocused;
-  final ValueChanged<String> onChanged;
-
-  const _SearchBox({
-    required this.controller,
-    required this.focusNode,
-    required this.isFocused,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Container(
-        decoration: BoxDecoration(
-          color: isFocused ? Colors.white : Colors.grey[100],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isFocused ? Colors.black12 : Colors.transparent,
-          ),
-        ),
-        child: TextField(
-          controller: controller,
-          focusNode: focusNode,
-          textDirection: TextDirection.rtl,
-          decoration: const InputDecoration(
-            hintText: 'جستجو',
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          ),
-          onChanged: onChanged,
-        ),
-      ),
-    );
-  }
-}
