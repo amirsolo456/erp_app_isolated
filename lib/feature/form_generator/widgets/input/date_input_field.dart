@@ -62,8 +62,8 @@ class _DateInputFieldState extends State<DateInputField> {
 
   String _formatJalali(Jalali j) =>
       '${toPersianNumber(j.year.toString())}/'
-      '${toPersianNumber(j.month.toString().padLeft(2, '0'))}/'
-      '${toPersianNumber(j.day.toString().padLeft(2, '0'))}';
+          '${toPersianNumber(j.month.toString().padLeft(2, '0'))}/'
+          '${toPersianNumber(j.day.toString().padLeft(2, '0'))}';
 
   String _jalaliToGregorianString(Jalali j) {
     final g = j.toGregorian();
@@ -112,7 +112,7 @@ class _DateInputFieldState extends State<DateInputField> {
                         IconButton(
                           icon: const Icon(Icons.chevron_left),
                           onPressed: () => setStateDialog(
-                            () => _focusedMonth = _focusedMonth.addMonths(-1),
+                                () => _focusedMonth = _focusedMonth.addMonths(-1),
                           ),
                         ),
                         Text(
@@ -125,7 +125,7 @@ class _DateInputFieldState extends State<DateInputField> {
                         IconButton(
                           icon: const Icon(Icons.chevron_right),
                           onPressed: () => setStateDialog(
-                            () => _focusedMonth = _focusedMonth.addMonths(1),
+                                () => _focusedMonth = _focusedMonth.addMonths(1),
                           ),
                         ),
                       ],
@@ -148,15 +148,15 @@ class _DateInputFieldState extends State<DateInputField> {
                       children: weekDays
                           .map(
                             (e) => SizedBox(
-                              width: 34,
-                              child: Center(
-                                child: Text(
-                                  e,
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                              ),
+                          width: 34,
+                          child: Center(
+                            child: Text(
+                              e,
+                              style: const TextStyle(color: Colors.grey),
                             ),
-                          )
+                          ),
+                        ),
+                      )
                           .toList(),
                     ),
 
@@ -168,11 +168,11 @@ class _DateInputFieldState extends State<DateInputField> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: daysInMonth,
                       gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 7,
-                            mainAxisSpacing: 4,
-                            crossAxisSpacing: 4,
-                          ),
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 7,
+                        mainAxisSpacing: 4,
+                        crossAxisSpacing: 4,
+                      ),
                       itemBuilder: (_, index) {
                         final day = Jalali(
                           _focusedMonth.year,
@@ -183,7 +183,7 @@ class _DateInputFieldState extends State<DateInputField> {
                         final isToday = isSameJalali(day, today);
                         final isSelected =
                             _selectedDay != null &&
-                            isSameJalali(day, _selectedDay!);
+                                isSameJalali(day, _selectedDay!);
 
                         return GestureDetector(
                           onTap: () {
@@ -209,13 +209,13 @@ class _DateInputFieldState extends State<DateInputField> {
                             child: Text(
                               toPersianNumber(day.day.toString()),
                               style: TextStyle(
-                                color: isSelected
-                                    ? Colors.white
-                                    : (isToday
-                                          ? Color(0xff939393)
-                                          : Color(0xff939393)),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700
+                                  color: isSelected
+                                      ? Colors.white
+                                      : (isToday
+                                      ? Color(0xff939393)
+                                      : Color(0xff939393)),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700
 
                               ),
                             ),

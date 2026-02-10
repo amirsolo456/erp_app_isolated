@@ -31,6 +31,9 @@ import 'package:services_package/storage/domain/usecases/sqlite_storage_usecase.
 import 'package:services_package/storage/domain/usecases/storage_service.dart';
 import 'package:services_package/user_exist.dart';
 import 'package:shared_core/data/auth/menu/request.dart' as prefixMenu;
+import 'package:shared_core/data/default/response_data.dart';
+import 'package:shared_core/base_response.dart';
+import 'package:shared_core/base_request.dart';
 import 'package:shared_core/data/auth/menu/response.dart' as prefixMenu;
 import 'package:shared_core/data/auth/menu/response_data.dart' as prefixMenu;
 import 'package:shared_core/data/com/person/request.dart' as prefixPerson;

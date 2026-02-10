@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
- 
+
 import 'package:shared_core/index.dart';
 import '../../validation/rule_mapper.dart';
 import '../common/field_title.dart';
@@ -332,9 +332,9 @@ class __SampleSelectionPageState extends State<_SampleSelectionPage> {
                 borderRadius: BorderRadius.circular(8),
                 border: _searchQuery.isNotEmpty
                     ? Border.all(
-                        color: Colors.black,
-                        width: 1.0,
-                      )
+                  color: Colors.black,
+                  width: 1.0,
+                )
                     : null,
               ),
               child: Row(
@@ -398,53 +398,52 @@ class __SampleSelectionPageState extends State<_SampleSelectionPage> {
                 ? Center(child: CircularProgressIndicator())
                 : _filteredItems.isEmpty
                 ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _searchQuery.isEmpty
-                              ? 'داده‌ای برای نمایش وجود ندارد'
-                              : 'نتیجه‌ای برای "$_searchQuery" یافت نشد',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _searchQuery.isEmpty
+                        ? 'داده‌ای برای نمایش وجود ندارد'
+                        : 'نتیجه‌ای برای "$_searchQuery" یافت نشد',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 14,
                     ),
-                  )
-                : ListView.builder(
-                    itemCount: _filteredItems.length,
-                    itemBuilder: (context, index) {
-                      final item = _filteredItems[index];
-                      return ListTile(
-                        title: Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Text(
-                            item['name'],
-                            textAlign: TextAlign.right,
-
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-
-                        onTap: () {
-                          Navigator.pop(context, {
-                            'value': item['id'],
-                            'label': item['name'],
-                          });
-                        },
-                      );
-                    },
                   ),
+                ],
+              ),
+            )
+                : ListView.builder(
+              itemCount: _filteredItems.length,
+              itemBuilder: (context, index) {
+                final item = _filteredItems[index];
+                return ListTile(
+                  title: Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Text(
+                      item['name'],
+                      textAlign: TextAlign.right,
+
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+
+                  onTap: () {
+                    Navigator.pop(context, {
+                      'value': item['id'],
+                      'label': item['name'],
+                    });
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
     );
   }
 }
-

@@ -96,10 +96,14 @@ class ErpAppNotifier
         return OpenedPage(items: []);
       case NavButtonTabBarMode.erpDefaultTabMode:
         return DefaultPage();
+
+
       case NavButtonTabBarMode.erpGenericListTabMode:
         return ErpListGeneratorResolver(
           route: getListRoute.toString().toLowerCase(),
         ).getPage();
+
+
       case NavButtonTabBarMode.erpGenericFormTabMode:
         return DynamicFormGenerator(jsonString: '');
 

@@ -74,30 +74,30 @@ class _RadioInputFieldState extends State<RadioInputField> {
 
                     //Ehsan
                     Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color:isSelected
-                              ?  Colors.grey[400]! :
-                          Colors.white,
-                          width: 1.2,
-                        ),
-                        color: Colors.white,
-                      ),
-                      child: Center(
-                        child: Container(
-                          width: 15,
-                          height: 15,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
                             color:isSelected
-                                ?  Colors.black
-                            : Colors.grey[400],
+                                ?  Colors.grey[400]! :
+                            Colors.white,
+                            width: 1.2,
                           ),
+                          color: Colors.white,
                         ),
-                      )
+                        child: Center(
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:isSelected
+                                  ?  Colors.black
+                                  : Colors.grey[400],
+                            ),
+                          ),
+                        )
                     ),
                     //Ehsan
 

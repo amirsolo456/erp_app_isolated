@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart' hide View;
+import 'package:micro_app_commons/app_notifier.dart';
 import 'package:services_package/auth/toolbar/toolbar_service.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/chat_bot/chat_bot.dart';
 import '../../../core/network/injection_container.dart';
 import 'field_renderer.dart';
 import 'input/radio_Input_field.dart';
 import 'package:shared_core/data/auth/toolbar/toolbar.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/Drawer/drawer_design.dart';
+
 
 class DynamicFormGenerator extends StatefulWidget {
   final void Function(Map<String, dynamic> values)? onSubmit;
@@ -129,163 +132,164 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
   }
 
   Widget _buildDrawer() {
-    return Drawer(
-      backgroundColor: Colors.white,
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: 16),
+    final isFa = sl<AppNotifier>().currentLocal().languageCode == "fa";
 
-            //نمایش
-            Padding(
-              padding: const EdgeInsets.only(
-                right: 50,
-                left: 0,
-                top: 4,
-                bottom: 4,
-              ),
-              child: Text(
-                'نمایش',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.grey,
+    return Directionality(
+      textDirection: isFa ? TextDirection.rtl : TextDirection.ltr,
+      child: Drawer(
+        backgroundColor: Colors.white,
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const SizedBox(height: 16),
+
+              /// عنوان: نمایش
+              Padding(
+                padding: const EdgeInsetsDirectional.only(
+                  start: 50,
+                  top: 4,
+                  bottom: 4,
                 ),
-                textAlign: TextAlign.right,
-              ),
-            ),
-
-            Expanded(
-              child: Column(
-                children: [
-                  ListView.builder(
-                    padding: EdgeInsets.only(right: 16, top: 4, bottom: 4),
-                    itemCount: _allConfigs.length,
-                    itemBuilder: (context, index) {
-                      final item = _allConfigs[index];
-                      return ListTile(
-                        contentPadding: EdgeInsets.only(
-                          right: 70,
-                          left: 16,
-                          top: 4,
-                          bottom: 4,
-                        ),
-                        dense: true,
-                        minVerticalPadding: 0,
-                        visualDensity: VisualDensity.compact,
-
-                        title: Text(
-                          item.desc ?? '',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black,
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          _navigateToForm(item.desc ?? '');
-                        },
-                      );
-                    },
+                child: const Text(
+                  'نمایش',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.grey,
                   ),
+                ),
+              ),
 
-                  buildCustomDivider(),
-
-                  //منو بیشتر
-                  Padding(
-                    padding: const EdgeInsets.only(right: 30),
-                    child: Text(
-                      'منو بیشتر',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.grey,
-                      ),
-                      textAlign: TextAlign.right,
+              /// لیست فرم‌ها
+              ..._allConfigs.map((item) {
+                return ListTile(
+                  contentPadding: const EdgeInsetsDirectional.only(
+                    start: 70,
+                    end: 16,
+                    top: 4,
+                    bottom: 4,
+                  ),
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  title: Text(
+                    item.desc ?? '',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-
-                  //برچسب
-                  _buildMenuItem('برچسب', () {
-                    _formKey.currentState?.reset();
-                    _values.clear();
-
+                  onTap: () {
                     Navigator.pop(context);
-                  }, 'assets/images/calendar.png'),
+                    _navigateToForm(item.desc ?? '');
+                  },
+                );
+              }).toList(),
 
-                  buildCustomDivider(),
+              buildCustomDivider(),
 
-                  //چاپ
-                  Padding(
-                    padding: const EdgeInsets.only(right: 30),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        'چاپ',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.grey,
-                        ),
-                        textAlign: TextAlign.right,
+              /// منو بیشتر
+              Padding(
+                padding:  EdgeInsetsDirectional.only(
+                  start: isFa ?50 : 55,
+                  end: isFa ?50 : 0,
+                  top: 4,
+                  bottom: 4,
+                ),
+                child: const Text(
+                  'منو بیشتر',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+
+              _buildMenuItem(
+                'برچسب',
+                    () {
+                  _formKey.currentState?.reset();
+                  _values.clear();
+                  Navigator.pop(context);
+                },
+                'assets/images/calendar.png',
+              ),
+
+              buildCustomDivider(),
+
+              /// چاپ
+              ListTile(
+                contentPadding: const EdgeInsetsDirectional.only(
+                  start: 60,
+                  end: 16,
+                ),
+                dense: true,
+                visualDensity: VisualDensity.compact,
+                title: const Text(
+                  'چاپ',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.grey,
+                  ),
+                ),
+                onTap: () => Navigator.pop(context),
+              ),
+
+              buildCustomDivider(),
+
+              /// عملیات‌ها
+              _buildMenuItem(
+                'باز نشانی',
+                    () {
+                  _formKey.currentState?.reset();
+                  _values.clear();
+                  Navigator.pop(context);
+                },
+                'assets/images/refresh.png',
+              ),
+
+              _buildMenuItem(
+                'جدید',
+                    () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DynamicFormGenerator(
+                        jsonString: widget.jsonString,
+                        onSubmit: widget.onSubmit,
                       ),
                     ),
-                  ),
-
-                  buildCustomDivider(),
-
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      _buildMenuItem('باز نشانی', () {
-                        _formKey.currentState?.reset();
-                        _values.clear();
-
-                        // ScaffoldMessenger.of(context).showSnackBar(
-                        //   SnackBar(content: Text('فرم بازنشانی شد')),
-                        // );
-                        Navigator.pop(context);
-                      }, 'assets/images/refresh.png'),
-                      _buildMenuItem('جدید', () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DynamicFormGenerator(
-                              jsonString: widget.jsonString,
-                              onSubmit: widget.onSubmit,
-                            ),
-                          ),
-                        );
-                      }, 'assets/images/add.png'),
-                      _buildMenuItem('ذخیره و جدید', () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          if (widget.onSubmit != null) {
-                            widget.onSubmit!(_values);
-                          }
-                          Navigator.pop(context);
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DynamicFormGenerator(
-                                jsonString: widget.jsonString,
-                                onSubmit: widget.onSubmit,
-                              ),
-                            ),
-                          );
-                        }
-                      }, 'assets/images/save.png'),
-                    ],
-                  ),
-                ],
+                  );
+                },
+                'assets/images/add.png',
               ),
-            ),
-          ],
+
+              _buildMenuItem(
+                'ذخیره و جدید',
+                    () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    widget.onSubmit?.call(_values);
+                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DynamicFormGenerator(
+                          jsonString: widget.jsonString,
+                          onSubmit: widget.onSubmit,
+                        ),
+                      ),
+                    );
+                  }
+                },
+                'assets/images/save.png',
+              ),
+
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -312,28 +316,28 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
 
   Widget _buildMenuItem(String title, VoidCallback onTap, String assetPath) {
     return ListTile(
-      contentPadding: EdgeInsets.only(right: 60, left: 16),
-
+      contentPadding: const EdgeInsetsDirectional.only(
+        start: 60,
+        end: 16,
+      ),
       dense: true,
       visualDensity: VisualDensity.compact,
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text(
-            title,
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(width: 10),
           Image.asset(
             assetPath,
             package: 'resources_package',
             width: 15,
             height: 15,
+          ),
+          const SizedBox(width: 10),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -345,27 +349,26 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     final currencyRateCaption = getCurrencyRateCaption();
 
     return AppBar(
-      leading: InkWell(
-        onTap: () => _scaffoldKey.currentState?.openEndDrawer(),
-        child: paddedIcon('assets/images/more.png'),
+      leading: Container(
+        padding: EdgeInsets.only(left: 10),
+        child: InkWell(
+          onTap: () {},
+          child: paddedIcon('assets/images/arrow_back.png'),
+        ),
       ),
       title: Row(
         children: [
-          InkWell(
-            onTap: () {
-              print('PanelForm');
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return Center(); // be jaye pannelform
-                  },
-                ),
-              );
-            },
-            child: paddedIcon('assets/images/futures.png'),
+          Text(
+            currencyRateCaption + ' - جدید',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              color: Colors.black,
+            ),
           ),
-          SizedBox(width: 10),
+          Expanded(child: SizedBox()),
+
           InkWell(
             onTap: () {
               print('chat bot');
@@ -380,29 +383,39 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
             },
             child: paddedIcon('assets/images/chat.png'),
           ),
-          Expanded(child: SizedBox()),
-          Text(
-            currencyRateCaption + ' - جدید',
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: Colors.black,
-            ),
+          SizedBox(width: 10),
+
+          InkWell(
+            onTap: () {
+              print('PanelForm');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return Center(); // be jaye pannelform
+                  },
+                ),
+              );
+            },
+            child: paddedIcon('assets/images/futures.png'),
           ),
         ],
       ),
       actions: [
-        Container(
-          padding: EdgeInsets.only(right: 10),
-          // color: Colors.yellow,
-          child: InkWell(
-            onTap: () {},
-            child: paddedIcon('assets/images/arrow_back.png'),
-          ),
+        InkWell(
+          onTap: () {
+            final lang = sl<AppNotifier>().currentLocal().languageCode;
+            if (lang == 'fa') {
+              _scaffoldKey.currentState?.openDrawer();
+            } else {
+              _scaffoldKey.currentState?.openEndDrawer();
+            }
+          },
+          child: paddedIcon('assets/images/more.png'),
         ),
       ],
     );
+
   }
 
   Widget _buildFormFields(Field field, int index) {
@@ -417,6 +430,7 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
       indicesToSkip.add(index);
       return SizedBox(width: 10);
     }
+
 
     if (field.type == 'radio') {
       final radioOptions =
@@ -603,29 +617,51 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final lang = sl<AppNotifier>().currentLocal().languageCode;
+    final isFa = lang == 'fa';
+
+     return Scaffold(
       key: _scaffoldKey,
       appBar: _buildAppBar(),
-      endDrawer: _buildDrawer(),
-      body: SafeArea(
+      drawer: isFa
+          ? DynamicFormDrawer(
+        allConfigs: _allConfigs,
+        formKey: _formKey,
+        values: _values,
+        onNavigateToForm: _navigateToForm,
+        onSubmit: widget.onSubmit,
+        appNotifier: sl<AppNotifier>(),
+      )
+          : null,
+      endDrawer: !isFa
+          ? DynamicFormDrawer(
+        allConfigs: _allConfigs,
+        formKey: _formKey,
+        values: _values,
+        onNavigateToForm: _navigateToForm,
+        onSubmit: widget.onSubmit,
+        appNotifier: sl<AppNotifier>(),
+      )
+          : null,
 
-          child: Form(
-            key: _formKey,
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(
-                vertical: 16,
-                horizontal: 10,
-              ),
-              itemCount: _formConfigs.length,
-              itemBuilder: (context, index) {
-                final item = _formConfigs[index];
-                return _buildFormFields(item, index);
-              },
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(
+              vertical: 1,
+              horizontal: 10,
             ),
+            itemCount: _formConfigs.length,
+            itemBuilder: (context, index) {
+              final item = _formConfigs[index];
+              return _buildFormFields(item, index);
+            },
           ),
         ),
-
+      ),
     );
+
   }
 
 

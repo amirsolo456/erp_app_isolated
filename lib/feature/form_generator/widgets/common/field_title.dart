@@ -53,7 +53,7 @@ class FieldTitle extends StatelessWidget {
                     radius: 15,
                     backgroundColor: Colors.white,
                     child: Icon(
-                      Icons.info_outline,
+                      Icons.help_outline,
                       size: 20,
                       color: Colors.grey[500],
                     ),
