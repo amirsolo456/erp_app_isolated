@@ -1,4 +1,3 @@
-
 import 'package:erp_app/src/advance_router.dart';
 import 'package:erp_app/core/network/injection_container.dart';
 import 'package:erp_app/feature/form_generator/widgets/dynamic_form_generator.dart';
@@ -10,6 +9,10 @@ import 'package:shared_core/data/auth/toolbar/toolbar.dart';
 import 'erp_form_generator_inject.dart';
 
 class ErpFormGeneratorResolver extends ErpChildMicroApp {
+  final String route;
+
+  ErpFormGeneratorResolver({required this.route});
+
   @override
   ErpAppsCoreEnum get key => ErpAppsCoreEnum.erpForm;
 
@@ -32,9 +35,9 @@ class ErpFormGeneratorResolver extends ErpChildMicroApp {
   };
 
   @override
-  Widget getPage() {
+  Widget getPage({Map<String, dynamic>? args}) {
     injectionsRegister();
-    return const ErpGenBootstrapPage();
+    return ErpGenBootstrapPage(args: args);
   }
 
   @override
@@ -59,7 +62,12 @@ class ErpGenBootstrapPage extends StatelessWidget {
           return Center(child: Text(snapshot.error.toString()));
         }
 
-        return DynamicFormGenerator(jsonString: snapshot.data!);
+        return DynamicFormGenerator(
+          jsonString: snapshot.data!,
+          type: args?['type'] ?? -1,
+          systemId: args?['systemId'] ?? 106,
+          repoId: args?['repoId'] ?? 106045,
+        );
       },
     );
   }
@@ -68,7 +76,7 @@ class ErpGenBootstrapPage extends StatelessWidget {
     final toolbarService = sl<ToolbarService>();
 
     final request = Request(
-      type: 2,
+      type: args?['type'] ?? -1,
       systemId: args?['systemId'] ?? 106,
       repoId: args?['repoId'] ?? 106045,
     );
@@ -78,6 +86,6 @@ class ErpGenBootstrapPage extends StatelessWidget {
       (json) => Response.fromJson(json),
     );
 
-    return result!.toJson((value) => value.toJson()).toString() ;
+    return result!.toJson((value) => value.toJson()).toString();
   }
 }

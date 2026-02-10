@@ -81,9 +81,7 @@ void main() async {
         //   create: (_) =>
         //       LanguageBloc(getLanguageUseCase: sl<LanguageService>()),
         // ),
-        BlocProvider(create: (_) =>
-        sl<MenuBloc>()
-          ..add(LoadMenuEvent())),
+        BlocProvider(create: (_) => sl<MenuBloc>()..add(LoadMenuEvent())),
         BlocProvider(create: (_) => ProfileBloc()),
         BlocProvider(create: (_) => SearchPersonBloc(sl<PersonRepository>())),
       ],
@@ -96,7 +94,7 @@ void main() async {
           GlobalCupertinoLocalizations.delegate,
         ],
         locale: AppTheme.local.value,
-        supportedLocales:AppLocalizations .supportedLocales ,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
@@ -127,11 +125,10 @@ Widget buildERPApp({required Map<String, dynamic> loginData}) {
   }
   if (!sl.isRegistered<MenuBloc>()) {
     sl.registerFactory(
-          () =>
-          MenuBloc(
-            getMenuUseCase: sl<MenuService>(),
-            onErrorEven: loginBlocOnError,
-          ),
+      () => MenuBloc(
+        getMenuUseCase: sl<MenuService>(),
+        onErrorEven: loginBlocOnError,
+      ),
     );
   }
   usePathUrlStrategy();
@@ -145,7 +142,7 @@ Widget buildERPApp({required Map<String, dynamic> loginData}) {
       providers: [
         ChangeNotifierProvider.value(value: sl<ErpAppNotifier>()),
         ChangeNotifierProvider<
-            GenericListEntityState<BaseResponse<Person>, Person, BaseRequest>
+          GenericListEntityState<BaseResponse<Person>, Person, BaseRequest>
         >(
           create: (_) =>
               GenericListEntityState<BaseResponse<Person>, Person, BaseRequest>(
@@ -158,35 +155,29 @@ Widget buildERPApp({required Map<String, dynamic> loginData}) {
           create: (_) => LoginService(client: sl<ApiClient>()),
         ),
         BlocProvider<LanguageButtonStandAloneCubit>(
-          create: (_) =>
-              LanguageButtonStandAloneCubit(
-                initialLocale: AppTheme.local.value,
-                storage: sl<StorageService>(),
-              ),
+          create: (_) => LanguageButtonStandAloneCubit(
+            initialLocale: AppTheme.local.value,
+            storage: storageService,
+            onLocalChange: (s) async {
+              await storageService.saveLanguage(LanguageModel(languageCode: s));
+            },
+          ),
         ),
         // BlocProvider<LanguageBloc>(
         //   create: (_) => sl<LanguageBloc>()..add(LoadLanguageEvent()),
         // ),
         BlocProvider<DefaultBloc>(create: (_) => sl<DefaultBloc>()),
         BlocProvider<YearBloc>(
-          create: (_) =>
-          sl<YearBloc>()
-            ..add(LoadYearEvent()),
+          create: (_) => sl<YearBloc>()..add(LoadYearEvent()),
         ),
         BlocProvider<CurrencyBloc>(
-          create: (_) =>
-          sl<CurrencyBloc>()
-            ..add(LoadCurrencyEvent()),
+          create: (_) => sl<CurrencyBloc>()..add(LoadCurrencyEvent()),
         ),
         BlocProvider<CashierBloc>(
-          create: (_) =>
-          sl<CashierBloc>()
-            ..add(LoadCashierEvent()),
+          create: (_) => sl<CashierBloc>()..add(LoadCashierEvent()),
         ),
         BlocProvider<PlaceBloc>(
-          create: (_) =>
-          sl<PlaceBloc>()
-            ..add(LoadPlaceEvent()),
+          create: (_) => sl<PlaceBloc>()..add(LoadPlaceEvent()),
         ),
         // BlocProvider<LanguageBloc>(create: (_) => sl<LanguageBloc>()..add(LoadLanguageEvent())),
         // context.read<CurrencyBloc>().add(const LoadCurrencyEvent());
@@ -194,9 +185,7 @@ Widget buildERPApp({required Map<String, dynamic> loginData}) {
         // context.read<PlaceBloc>().add(const LoadPlaceEvent());
         // context.read<LanguageBloc>().add(const LoadLanguageEvent());
         BlocProvider<MenuBloc>(
-          create: (_) =>
-          sl<MenuBloc>()
-            ..add(LoadMenuEvent()),
+          create: (_) => sl<MenuBloc>()..add(LoadMenuEvent()),
         ),
 
         BlocProvider(create: (_) => ProfileBloc()),
@@ -212,9 +201,11 @@ Widget buildERPApp({required Map<String, dynamic> loginData}) {
   }
 }
 
-void loginBlocOnError(BuildContext context,
-    String? title,
-    String? description,) {
+void loginBlocOnError(
+  BuildContext context,
+  String? title,
+  String? description,
+) {
   ModernToast().showToast(
     context,
     Text(title ?? 'خطا'),

@@ -101,24 +101,23 @@ class _AddNewPageState extends State<AddNewPage> {
               _filteredMenus = _leafMenus;
             }
 
-            return   Column(
-                children: [
-                  _SearchBox(
-                    controller: searchController,
-                    focusNode: searchFocusNode,
-                    isFocused: isFocused,
-                    onChanged: _onSearch,
+            return Column(
+              children: [
+                _SearchBox(
+                  controller: searchController,
+                  focusNode: searchFocusNode,
+                  isFocused: isFocused,
+                  onChanged: _onSearch,
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _filteredMenus.length,
+                    itemBuilder: (context, index) {
+                      return _LeafMenuTile(_filteredMenus[index]);
+                    },
                   ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _filteredMenus.length,
-                      itemBuilder: (context, index) {
-                        return _LeafMenuTile(_filteredMenus[index]);
-                      },
-                    ),
-                  ),
-                ],
-
+                ),
+              ],
             );
           }
 
@@ -152,8 +151,9 @@ class _LeafMenuTile extends StatelessWidget {
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
           ),
           onTap: () {
-            CustomEventBus.emit(ErpFormGeneratorEvent());
-
+            CustomEventBus.emit(
+              ErpFormGeneratorEvent(item.safeRepoId, item.safeSystemId, 1),
+            );
           },
 
           // await NavigatorAgent().navigatorAssist.to(

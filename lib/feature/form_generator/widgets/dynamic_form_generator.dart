@@ -11,6 +11,10 @@ class DynamicFormGenerator extends StatefulWidget {
   final void Function(Map<String, dynamic> values)? onSubmit;
   final Map<String, dynamic> initialValues;
   final String jsonString; // JSON کامل از سرور
+  final int repoId;
+  final int systemId;
+  final int type;
+
   final String? selectedFormDesc;
 
   const DynamicFormGenerator({
@@ -19,6 +23,9 @@ class DynamicFormGenerator extends StatefulWidget {
     this.initialValues = const {},
     required this.jsonString,
     this.selectedFormDesc,
+    required this.repoId,
+    required this.systemId,
+    required this.type,
   });
 
   @override
@@ -32,10 +39,7 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
   List<Field> _formConfigs = [];
   List<View> _allConfigs = [];
 
-  Map<String, dynamic>? _selectedFormConfig;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool _isLoading = false;
-  String? _error;
 
   @override
   void initState() {
@@ -62,34 +66,31 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
   }
 
   Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+    setState(() {});
 
     try {
       final newState = await sl<ToolbarService>().get(
-        Request(repoId: 106045, systemId: 106, type: 2),
+        Request(repoId: widget.repoId, systemId: widget.systemId, type:widget.type),
         Response.fromJson,
       );
       final data = newState?.data ?? [];
 
       _allConfigs = data.first.list!.listProp;
       for (final view in _allConfigs) {
-        if (view.isForm) {
+
           final form = view.formConfig;
           setState(() {
             _formConfigs = view.formConfig!.fields;
           });
 
           print('Form endpoint: ${form?.addEndpoint}');
-        }
 
-        if (view.isList) {
-          final list = view.listConfig;
-          // _formConfigs = view.listConfig!.fields;
-          print('List columns count: ${list?.column.length}');
-        }
+
+        // if (view.isList) {
+        //   final list = view.listConfig;
+        //   // _formConfigs = view.listConfig!.fields;
+        //   print('List columns count: ${list?.column.length}');
+        // }
       }
 
       // _allConfigs = data.toList().first.list?.listProp ?? [];
@@ -106,13 +107,9 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
 
       // _selectForm();
     } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
+      setState(() {});
     }
   }
-
 
   void _navigateToForm(String formDesc) {
     Navigator.pushReplacement(
@@ -123,6 +120,9 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
           selectedFormDesc: formDesc,
           onSubmit: widget.onSubmit,
           initialValues: widget.initialValues,
+          repoId: widget.repoId,
+          systemId: widget.systemId,
+          type: widget.type,
         ),
       ),
     );
@@ -259,6 +259,10 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
                             builder: (context) => DynamicFormGenerator(
                               jsonString: widget.jsonString,
                               onSubmit: widget.onSubmit,
+                              repoId: widget.repoId,
+                              systemId: widget.systemId,
+                              type: widget.type,
+                              initialValues: widget.initialValues,
                             ),
                           ),
                         );
@@ -275,6 +279,10 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
                               builder: (context) => DynamicFormGenerator(
                                 jsonString: widget.jsonString,
                                 onSubmit: widget.onSubmit,
+                                repoId: widget.repoId,
+                                systemId: widget.systemId,
+                                type: widget.type,
+                                initialValues: widget.initialValues,
                               ),
                             ),
                           );
@@ -429,12 +437,6 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
             (rule['required'] == true || rule['rule'] == 'required'),
       );
 
-      final selectEndpointData = field.selectEndpoint;
-      final selectEndpoint =
-          (selectEndpointData != null && selectEndpointData is Map)
-          ? _convertSelectEndpoint(selectEndpointData)
-          : null;
-
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         child: RadioInputField(
@@ -565,42 +567,6 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     }
   }
 
-  SelectEndpoint? _convertSelectEndpoint(dynamic endpoint) {
-    if (endpoint == null || !(endpoint is Map) || endpoint.isEmpty) return null;
-
-    final repoViewId = endpoint['repoViewId'];
-    String? repoViewIdStr;
-
-    if (repoViewId != null) {
-      repoViewIdStr = repoViewId.toString();
-    }
-
-    return SelectEndpoint(
-      endpoint: endpoint['endpoint']?.toString() ?? '',
-      repoViewId: repoViewIdStr,
-      addAppUrl: endpoint['addAppUrl']?.toString(),
-      addWebUrl: endpoint['addWebUrl']?.toString(),
-    );
-  }
-
-  List<Select> _convertOptions(dynamic options) {
-    if (options == null || !(options is List)) return [];
-
-    final result = <Select>[];
-    for (var item in options) {
-      if (item is Map) {
-        result.add(
-          Select(
-            caption: item['caption']?.toString() ?? '',
-            value: item['value'],
-          ),
-        );
-      }
-    }
-    return result;
-  }
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -608,26 +574,20 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
       appBar: _buildAppBar(),
       endDrawer: _buildDrawer(),
       body: SafeArea(
-
-          child: Form(
-            key: _formKey,
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(
-                vertical: 16,
-                horizontal: 10,
-              ),
-              itemCount: _formConfigs.length,
-              itemBuilder: (context, index) {
-                final item = _formConfigs[index];
-                return _buildFormFields(item, index);
-              },
-            ),
+        child: Form(
+          key: _formKey,
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+            itemCount: _formConfigs.length,
+            itemBuilder: (context, index) {
+              final item = _formConfigs[index];
+              return _buildFormFields(item, index);
+            },
           ),
         ),
-
+      ),
     );
   }
-
 
   String getCurrencyRateCaption() {
     try {

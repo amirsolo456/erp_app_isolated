@@ -26,9 +26,9 @@ class ErpListGeneratorResolver extends ErpChildMicroApp {
   }
 
   @override
-  Widget getPage() {
+  Widget getPage({Map<String, dynamic>? args}) {
     if (route.contains('person')) {
-      return const PersonListPage(refreshData: false);
+      return PersonListPage(refreshData: false);
     } else {
       return Center(child: Text('Not Found'));
     }

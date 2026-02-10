@@ -87,14 +87,17 @@ class _GenericEntityScreenState<D> extends State<GenericListPage<D>> {
           primary: true,
           scrollDirection: Axis.vertical,
           itemBuilder: (context, index) {
-            final item = data[index];
+            if (D is person.ResponseData) {
+              final item = data[index] as person.ResponseData;
 
-            if (widget.customItemBuilder != null) {
-              return widget.customItemBuilder!(item);
+              if (widget.customItemBuilder != null) {
+                return widget.customItemBuilder!.call(item as D);
+              }
+
+              // final firstField = widget.fieldConfigs;
+              ListDataExpander(data: (item).toJson());
             }
 
-            final firstField = widget.fieldConfigs;
-            PersonExpander(person: item as person.ResponseData);
             return null;
             // return ListTile(title: Text(firstField.valueGetter(item)));
           },

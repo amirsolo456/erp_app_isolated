@@ -2,13 +2,8 @@
 
 import 'package:erp_app/feature/list_generator/data/models/field_display_config.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_core/data/com/person/person.dart' as person;
-import 'package:shared_core/index.dart';
-import 'package:ui_components_package/erp_app_componenets/mobile/Expanders/list_datas_expander.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../list_generator/data/models/generic_list_entity_state.dart';
 
 class Person extends ChangeNotifier {
   final int id;
@@ -78,6 +73,7 @@ final personFieldConfigs = <String, FieldDisplayConfig<Person>>{
     isSortable: true,
   ),
 };
+/*
 
 class PersonsScreen extends StatelessWidget {
   @override
@@ -139,7 +135,7 @@ class _GenericEntityScreenInternal<D> extends StatelessWidget {
               itemCount: data.length,
               itemBuilder: (context, index) {
                 final item = data[index];
-                final firstField = fieldConfigs.values.first;
+
                 return PersonExpander(person: item as person.ResponseData);
               },
             ),
@@ -149,3 +145,4 @@ class _GenericEntityScreenInternal<D> extends StatelessWidget {
     );
   }
 }
+*/

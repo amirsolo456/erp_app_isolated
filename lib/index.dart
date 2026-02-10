@@ -21,4 +21,5 @@ export 'feature/default_page/pages/default_page.dart'; // placeholder - اگر �
 export 'package:erp_app/feature/form_generator/widgets/dynamic_form_generator.dart';
 export 'package:erp_app/feature/list_generator/data/data_source/erp_generic_middleware.dart';
 export 'package:erp_app/feature/list_generator/data/data_source/api_middleware.dart';
+export 'package:erp_app/src/erp_notifier.dart';
 

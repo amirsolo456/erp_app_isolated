@@ -17,7 +17,7 @@ import '../feature/com/person/presentation/features/person_list_page.dart';
 class AdvancedRouter {
   static final Map<String, RouteHandler> _routes = {
     '/signOut': _handleSignOut,
-    '/': _handleHome,
+    // '/': _handleHome,
     '/GenericList/Com/PersonList': _handlePersonList,
     '/notFound': _handleNotFound,
   };
@@ -39,12 +39,12 @@ class AdvancedRouter {
     return const SizedBox();
   }
 
-  static Widget _handleHome(RouteData data, BuildContext context) {
-    final tab =
-        (data.queryParams['tab'] ?? NavButtonTabBarMode.erpOpenedTabMode)
-            as NavButtonTabBarMode;
-    return MainLayoutPage(initialTab: tab);
-  }
+  // static Widget _handleHome(RouteData data, BuildContext context) {
+  //   final tab =
+  //       (data.queryParams['tab'] ?? NavButtonTabBarMode.erpOpenedTabMode)
+  //           as NavButtonTabBarMode;
+  //   return MainLayoutPage(initialTab: tab);
+  // }
 
   static Widget _handlePersonList(RouteData data, BuildContext context) {
     // اگر می‌خواهید navigation notifier را به‌روز کنید

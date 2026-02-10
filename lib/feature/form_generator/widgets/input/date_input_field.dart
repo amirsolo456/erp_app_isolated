@@ -131,9 +131,7 @@ class _DateInputFieldState extends State<DateInputField> {
                       ],
                     ),
 
-
                     // const SizedBox(height: 8),
-
                     Divider(
                       color: Color(0xff939393),
                       // height: 2,
@@ -215,8 +213,7 @@ class _DateInputFieldState extends State<DateInputField> {
                                           ? Color(0xff939393)
                                           : Color(0xff939393)),
                                 fontSize: 16,
-                                fontWeight: FontWeight.w700
-
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
@@ -254,8 +251,6 @@ class _DateInputFieldState extends State<DateInputField> {
                         ),
                       ),
                     ),
-
-
                   ],
                 ),
               );

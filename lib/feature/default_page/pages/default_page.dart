@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:resources_package/Resources/Assets/assets_manager.dart';
 import 'package:resources_package/Resources/Theme/theme_manager.dart';
-import 'package:resources_package/extensions.dart';
 import 'package:resources_package/l10n/app_localizations.dart';
 import 'package:shared_core/data/com/person/request.dart' as prefix0;
 import 'package:shared_core/data/com/person/response.dart' as prefix0;
@@ -49,9 +48,6 @@ import '../cashier/bloc/cashier_state.dart';
 import '../currency/bloc/currency_bloc.dart';
 import '../currency/bloc/currency_event.dart';
 import '../currency/bloc/currency_state.dart';
-import '../language/bloc/language_bloc.dart';
-import '../language/bloc/language_event.dart';
-import '../language/bloc/language_state.dart';
 import '../place/bloc/place_bloc.dart';
 import '../place/bloc/place_event.dart';
 import '../place/bloc/place_state.dart';
@@ -119,7 +115,7 @@ class _DefaultPageState extends State<DefaultPage> {
     );
   }
 
-  Widget horizontalor<T>({
+  Widget horizontal<T>({
     required String title,
     required String iconTitle,
     required List<T> items,
@@ -234,7 +230,7 @@ class _DefaultPageState extends State<DefaultPage> {
     return BlocBuilder<LanguageButtonStandAloneCubit, Locale>(
       bloc: sl<LanguageButtonStandAloneCubit>(),
       builder: (context, state) {
-        return horizontalor<Locale>(
+        return horizontal<Locale>(
           iconTitle: AryanAssets.langIcon,
           title: 'زبان',
           items: AppLocalizations.supportedLocales.toList(),
@@ -255,7 +251,7 @@ class _DefaultPageState extends State<DefaultPage> {
     return BlocBuilder<PlaceBloc, PlaceState>(
       builder: (context, state) {
         if (state is PlaceLoaded) {
-          return horizontalor<prefixPlace.ResponseData>(
+          return horizontal<prefixPlace.ResponseData>(
             iconTitle: AryanAssets.buildings,
             title: 'شرکت',
             items: state.places,
@@ -277,7 +273,7 @@ class _DefaultPageState extends State<DefaultPage> {
     return BlocBuilder<CashierBloc, CashierState>(
       builder: (context, state) {
         if (state is CashierLoaded) {
-          return horizontalor<prefixCash.ResponseData>(
+          return horizontal<prefixCash.ResponseData>(
             iconTitle: AryanAssets.cashOutIcon,
             title: 'صندوقدار اصلی',
             items: state.Cashier,
@@ -299,7 +295,7 @@ class _DefaultPageState extends State<DefaultPage> {
     return BlocBuilder<CurrencyBloc, CurrencyState>(
       builder: (context, state) {
         if (state is CurrencyLoaded) {
-          return horizontalor<prefixCur.ResponseData>(
+          return horizontal<prefixCur.ResponseData>(
             iconTitle: AryanAssets.moneyIcon,
             title: 'ارز',
             items: (state).selectCurrency,
@@ -321,7 +317,7 @@ class _DefaultPageState extends State<DefaultPage> {
     return BlocBuilder<YearBloc, YearState>(
       builder: (context, state) {
         if (state is YearLoaded) {
-          return horizontalor<prefixYear.ResponseData>(
+          return horizontal<prefixYear.ResponseData>(
             iconTitle: AryanAssets.calendarIcon,
             title: 'سال مالی',
             items: (state).selectYears,

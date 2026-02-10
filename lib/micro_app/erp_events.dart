@@ -10,8 +10,22 @@ import 'package:micro_app_core/services/routing/route_events.dart';
 class ErpShownEvent extends RouteEvent {}
 
 class ErpCloseEvent extends RouteEvent {}
-class ErpFormGeneratorEvent extends RouteEvent {}
-class ErpListGeneratorEvent extends RouteEvent {}
+
+class ErpFormGeneratorEvent extends RouteEvent {
+  final int repoId;
+  final int systemId;
+  final int type;
+
+  ErpFormGeneratorEvent(this.repoId, this.systemId, this.type);
+}
+
+class ErpListGeneratorEvent extends RouteEvent {
+  final int repoId;
+  final int systemId;
+  final int type;
+
+  ErpListGeneratorEvent(this.repoId, this.systemId, this.type);
+}
 
 ///
 /// Exports the events in a class so we dont need to import
@@ -24,8 +38,18 @@ class ErpCustomEvents extends RouteEvent {
 
 class ErpEvents {
   static ErpShownEvent shown() => ErpShownEvent();
-  static ErpFormGeneratorEvent erpFormGeneratorEvent() => ErpFormGeneratorEvent();
-  static ErpListGeneratorEvent erpListGeneratorEvent() => ErpListGeneratorEvent();
+
+  static ErpFormGeneratorEvent erpFormGeneratorEvent(
+    int repo,
+    int sys,
+    int type,
+  ) => ErpFormGeneratorEvent(repo, sys, type);
+
+  static ErpListGeneratorEvent erpListGeneratorEvent(
+    int repo,
+    int sys,
+    int type,
+  ) => ErpListGeneratorEvent(repo, sys, type);
 
   static ErpCloseEvent close() => ErpCloseEvent();
 

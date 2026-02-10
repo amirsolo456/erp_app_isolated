@@ -401,7 +401,7 @@ class InjectionContainer {
                           child: ListView.builder(
                             itemCount: state.props.length,
                             itemBuilder: (context, index) {
-                              return PersonExpander(person: state.props[index]);
+                              return ListDataExpander(data: state.props[index]);
                             },
                           ),
                         ),

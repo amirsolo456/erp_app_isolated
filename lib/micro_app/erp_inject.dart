@@ -13,29 +13,16 @@ import '../feature/list_generator/presentation/bloc/store/list_reducer.dart';
 
 class Inject {
   static void initialize() {
-    // final manager = MicroAppManager.instance;
-    // sl.registerSingleton<MicroAppNotifier<ErpCoreModel, ErpAppsCoreEnum>>(
-    //   MicroAppNotifier<ErpCoreModel, ErpAppsCoreEnum>(ErpCoreModel()),
-    // );
+
     final manager = MicroAppManager.instance;
     MicroAppFactories.registerResolverFactory(
       MicroAppsName.erpApp,
-      () => ErpResolver(), // یا بدون پارامتر اگر امکان دارد
+      () => ErpResolver(  () => ''  ), // یا بدون پارامتر اگر امکان دارد
     );
-
-
-
 
     // 3. به Manager بگو که بعداً resolver را ایجاد کند
     _deferredRegistration(manager, MicroAppsName.erpApp);
 
-    // sl.registerSingleton<MicroAppNotifier<ErpCoreModel, ErpAppsCoreEnum>>(
-    //   notifier,
-    // );
-    // final loginNotifier = sl<MicroAppNotifier<ErpCoreModel, ErpAppsCoreEnum>>();
-    //
-    // sl.registerSingleton(loginNotifier);
-    // manager.registerApp<ErpCoreModel, ErpAppsCoreEnum>(sl<ErpResolver>());
   }
 
   static void _deferredRegistration(

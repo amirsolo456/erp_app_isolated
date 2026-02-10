@@ -75,7 +75,7 @@ class _PersonListPageState extends State<PersonListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final cacheProvider = sl<AppNotifier>();
+    sl<AppNotifier>();
 
     if (_isLoading) {
       return const Center(child: CircleLoading());
@@ -120,7 +120,10 @@ class _PersonListPageState extends State<PersonListPage> {
         enableSorting: true,
         enablePagination: true,
         customItemBuilder: (person) {
-          return PersonExpander(person: person);
+
+          return ListDataExpander(data: (person).toJson());
+
+          // return PersonExpander(person: person);
         },
         onFetchData: () async {
           final response = await GetIt.instance<PersonService>().get(
