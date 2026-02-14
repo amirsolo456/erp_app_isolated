@@ -12,6 +12,7 @@ class ErpShownEvent extends RouteEvent {}
 class ErpCloseEvent extends RouteEvent {}
 class ErpFormGeneratorEvent extends RouteEvent {}
 class ErpListGeneratorEvent extends RouteEvent {}
+class ErpUserInfoEvent extends RouteEvent {}
 
 ///
 /// Exports the events in a class so we dont need to import
@@ -26,6 +27,7 @@ class ErpEvents {
   static ErpShownEvent shown() => ErpShownEvent();
   static ErpFormGeneratorEvent erpFormGeneratorEvent() => ErpFormGeneratorEvent();
   static ErpListGeneratorEvent erpListGeneratorEvent() => ErpListGeneratorEvent();
+  static  ErpUserInfoEvent erpUserInfoEvent() => ErpUserInfoEvent();
 
   static ErpCloseEvent close() => ErpCloseEvent();
 

@@ -4,6 +4,7 @@ import 'package:erp_app/feature/form_generator/bloc/base_bloc/erp_form_generator
 import 'package:erp_app/feature/form_generator/widgets/dynamic_form_generator.dart';
 import 'package:erp_app/feature/list_generator/presentation/bloc/base_bloc/erp_list_generator_resolver.dart';
 import 'package:erp_app/feature/profile/profile.dart';
+import 'package:erp_app/feature/user_info/user_info.dart';
 import 'package:erp_app/micro_app/erp_events.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -117,7 +118,7 @@ class ErpAppNotifier
       case NavButtonTabBarMode.erpDashboardTabMode:
         return Text('ERP parent nav: erpDashboardTabMode');
       case NavButtonTabBarMode.erpUserInfo:
-        return Text('User info');
+        return UserInfo();
 
     }
   }

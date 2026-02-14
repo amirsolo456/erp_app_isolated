@@ -14,6 +14,7 @@ import 'package:services_package/storage/domain/usecases/storage_service.dart';
 import 'package:ui_components_package/erp_app_componenets/common/loadings/circle_loading.dart';
 
 import '../../core/network/injection_container.dart';
+import '../../micro_app/erp_events.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -111,14 +112,13 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(
               children: [
                 //مشخصات کاربری
-                ListTile(onTap:() => navigatorKey.currentState?.pushReplacementNamed(
-                  Routes.erpApp.value,
-                ),
+                ListTile(
+                  onTap: () => CustomEventBus.emit(ErpUserInfoEvent()),
+
                   title: Text(context.l10n.userInfo, style: itemsProfileStyle),
                   horizontalTitleGap: 10,
                   leading: userInfoIcon,
                 ),
-
 
                 Divider(height: 10, color: Color(0xFFB1B1B1)),
 
@@ -141,24 +141,32 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [
                         Text(' 0 ', style: itemsWalletStyle),
                         Text(context.l10n.toman, style: itemsWalletStyle),
-
                       ],
                     ),
                   ),
-                  title: Text(context.l10n.userWallet, style: itemsProfileStyle),
+                  title: Text(
+                    context.l10n.userWallet,
+                    style: itemsProfileStyle,
+                  ),
                   horizontalTitleGap: 10,
                   leading: userWallet,
                 ),
                 Divider(height: 10, color: Color(0xFFB1B1B1)),
                 ListTile(
-                  title: Text(context.l10n.userSettings, style: itemsProfileStyle),
+                  title: Text(
+                    context.l10n.userSettings,
+                    style: itemsProfileStyle,
+                  ),
                   horizontalTitleGap: 10,
                   leading: userSettings,
                 ),
                 Divider(height: 10, color: Color(0xFFB1B1B1)),
 
                 ListTile(
-                  title: Text(context.l10n.usersDevices, style: itemsProfileStyle),
+                  title: Text(
+                    context.l10n.usersDevices,
+                    style: itemsProfileStyle,
+                  ),
                   horizontalTitleGap: 10,
                   leading: userDevices,
                 ),

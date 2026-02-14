@@ -59,6 +59,16 @@ class _ErpContentWrapperState extends State<ErpContentWrapper> {
         );
       });
     });
+
+    CustomEventBus.on<ErpUserInfoEvent>((event) {
+      setState(() {
+        sl<ErpAppNotifier>().changePage(
+          PageType.common,
+          tab: NavButtonTabBarMode.erpUserInfo,
+          route: 'tabBar',
+        );
+      });
+    });
   }
 
   Widget _buildMainContent(BuildContext context, ErpAppNotifier notifier) {

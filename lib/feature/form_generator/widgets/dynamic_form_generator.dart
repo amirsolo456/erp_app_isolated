@@ -3,9 +3,9 @@ import 'package:flutter/material.dart' hide View;
 import 'package:micro_app_commons/app_notifier.dart';
 import 'package:services_package/auth/toolbar/toolbar_service.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/chat_bot/chat_bot.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/selection_box/radio_Input_field.dart';
 import '../../../core/network/injection_container.dart';
 import 'field_renderer.dart';
-import 'input/radio_Input_field.dart';
 import 'package:shared_core/data/auth/toolbar/toolbar.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Drawer/drawer_design.dart';
 
@@ -72,7 +72,7 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
 
     try {
       final newState = await sl<ToolbarService>().get(
-        Request(repoId: 106045, systemId: 106, type: 2),
+        Request(repoId: 106045, systemId: 106, type: 2, id: 0),
         Response.fromJson,
       );
       final data = newState?.data ?? [];
@@ -349,59 +349,57 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     final currencyRateCaption = getCurrencyRateCaption();
 
     return AppBar(
-      leading: Container(
-        padding: EdgeInsets.only(left: 10),
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 10),
         child: InkWell(
           onTap: () {},
           child: paddedIcon('assets/images/arrow_back.png'),
         ),
       ),
-      title: Row(
-        children: [
-          Text(
-            currencyRateCaption + ' - جدید',
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: Colors.black,
-            ),
-          ),
-          Expanded(child: SizedBox()),
 
-          InkWell(
-            onTap: () {
-              print('chat bot');
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return ChatPage();
-                  },
-                ),
-              );
-            },
-            child: paddedIcon('assets/images/chat.png'),
-          ),
-          SizedBox(width: 10),
-
-          InkWell(
-            onTap: () {
-              print('PanelForm');
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return Center(); // be jaye pannelform
-                  },
-                ),
-              );
-            },
-            child: paddedIcon('assets/images/futures.png'),
-          ),
-        ],
+      title: Text(
+        currencyRateCaption + ' - جدید',
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 16,
+          color: Colors.black,
+        ),
       ),
+
       actions: [
+
+        /// چت
+        InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ChatPage(),
+              ),
+            );
+          },
+          child: paddedIcon('assets/images/chat.png'),
+        ),
+
+        const SizedBox(width: 10),
+
+        /// futures
+        InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const Center(),
+              ),
+            );
+          },
+          child: paddedIcon('assets/images/futures.png'),
+        ),
+
+        const SizedBox(width: 10),
+
+        /// more
         InkWell(
           onTap: () {
             final lang = sl<AppNotifier>().currentLocal().languageCode;
@@ -413,6 +411,8 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
           },
           child: paddedIcon('assets/images/more.png'),
         ),
+
+        const SizedBox(width: 10),
       ],
     );
 
