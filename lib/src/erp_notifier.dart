@@ -72,6 +72,10 @@ class ErpAppNotifier
         return AppBarsMode.erpDashboardMode;
       case NavButtonTabBarMode.erpDashboardTabMode:
         return AppBarsMode.erpDashboardMode;
+
+
+      case NavButtonTabBarMode.erpUserInfo:
+        return AppBarsMode.erpUserInfo;
     }
   }
 
@@ -112,6 +116,9 @@ class ErpAppNotifier
         return Text('ERP parent nav: skeletion');
       case NavButtonTabBarMode.erpDashboardTabMode:
         return Text('ERP parent nav: erpDashboardTabMode');
+      case NavButtonTabBarMode.erpUserInfo:
+        return Text('User info');
+
     }
   }
 

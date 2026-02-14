@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:micro_app_commons/app_notifier.dart';
+import 'package:micro_app_core/index.dart';
+import 'package:micro_app_core/services/routing/routes.dart';
 import 'package:provider/provider.dart';
+import 'package:resources_package/extensions.dart';
 import 'package:resources_package/l10n/app_localizations.dart';
 import 'package:resources_package/l10n/app_localizations_en.dart';
 import 'package:resources_package/l10n/app_localizations_fa.dart';
@@ -108,18 +111,21 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(
               children: [
                 //مشخصات کاربری
-                ListTile(
-                  title: Text(loc!.usersTitle, style: itemsProfileStyle),
+                ListTile(onTap:() => navigatorKey.currentState?.pushReplacementNamed(
+                  Routes.erpApp.value,
+                ),
+                  title: Text(context.l10n.userInfo, style: itemsProfileStyle),
                   horizontalTitleGap: 10,
                   leading: userInfoIcon,
                 ),
+
 
                 Divider(height: 10, color: Color(0xFFB1B1B1)),
 
                 //تغییر رمز عبور
                 ListTile(
                   title: Text(
-                    loc!.userPasswordChange,
+                    context.l10n.userPasswordChange,
                     style: itemsProfileStyle,
                   ),
                   horizontalTitleGap: 10,
@@ -133,32 +139,33 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: 70,
                     child: Row(
                       children: [
-                        Text(loc!.rial, style: itemsWalletStyle),
-                        Text(' 0.00 ', style: itemsWalletStyle),
+                        Text(' 0 ', style: itemsWalletStyle),
+                        Text(context.l10n.toman, style: itemsWalletStyle),
+
                       ],
                     ),
                   ),
-                  title: Text(loc!.userWallet, style: itemsProfileStyle),
+                  title: Text(context.l10n.userWallet, style: itemsProfileStyle),
                   horizontalTitleGap: 10,
                   leading: userWallet,
                 ),
                 Divider(height: 10, color: Color(0xFFB1B1B1)),
                 ListTile(
-                  title: Text(loc!.userSettings, style: itemsProfileStyle),
+                  title: Text(context.l10n.userSettings, style: itemsProfileStyle),
                   horizontalTitleGap: 10,
                   leading: userSettings,
                 ),
                 Divider(height: 10, color: Color(0xFFB1B1B1)),
 
                 ListTile(
-                  title: Text(loc!.usersDevices, style: itemsProfileStyle),
+                  title: Text(context.l10n.usersDevices, style: itemsProfileStyle),
                   horizontalTitleGap: 10,
                   leading: userDevices,
                 ),
                 Divider(height: 10, color: Color(0xFFB1B1B1)),
                 ListTile(
                   title: Text(
-                    loc!.usersSignOut,
+                    context.l10n.usersSignOut,
                     style: TextStyle(
                       color: Color(0xFFDC3545),
                       fontWeight: FontWeight.w500,

@@ -28,6 +28,7 @@ class ErpResolver extends MicroApp<ErpCoreModel, ErpAppsCoreEnum> {
         ErpAppsCoreEnum.erpLoad: () {},
         ErpAppsCoreEnum.erpOpened: () {},
         ErpAppsCoreEnum.erpError: () {},
+        ErpAppsCoreEnum.erpUserInfo: () {},
       },
       super(
         ErpCoreModel(
@@ -39,6 +40,7 @@ class ErpResolver extends MicroApp<ErpCoreModel, ErpAppsCoreEnum> {
             ErpAppsCoreEnum.erpLoad: () {},
             ErpAppsCoreEnum.erpOpened: () {},
             ErpAppsCoreEnum.erpError: () {},
+            ErpAppsCoreEnum.erpUserInfo: () {},
           },
         ),
       );

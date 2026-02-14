@@ -106,6 +106,8 @@ PreferredSizeWidget _getDynamicAppBar(Widget outlet) {
   // می‌توانید از یک provider مخصوص برای این کار استفاده کنید
   return ErpAppBar(mode: AppBarsMode.erpGenericList);
 }
+
+
 abstract class ErpChildMicroApp {
   ErpAppsCoreEnum get key;
   Widget getPage();
