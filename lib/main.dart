@@ -48,6 +48,16 @@ import 'feature/default_page/year/bloc/year_event.dart';
 import 'feature/list_generator/data/models/generic_list_entity_state.dart';
 import 'feature/profile/profile_bloc.dart';
 
+
+import 'package:shared_core/index.dart';
+import 'package:services_package/api_service.dart';
+
+import '../../../../core/network/injection_container.dart';
+
+
+
+
+
 final apiClient = sl<ApiClient>();
 
 void main() async {
