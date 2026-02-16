@@ -4,12 +4,10 @@ import 'dart:async';
 
 import 'package:erp_app/feature/form_generator/bloc/base_bloc/erp_form_generator_events.dart';
 import 'package:erp_app/feature/form_generator/bloc/base_bloc/erp_form_generator_resolver.dart';
-import 'package:erp_app/feature/profile/profile.dart';
+import 'package:erp_app/feature/profile/profile_page.dart';
 import 'package:erp_app/main.dart';
 import 'package:erp_app/micro_app/erp_events.dart';
-import 'package:erp_app/src/erp_notifier.dart';
 import 'package:flutter/material.dart';
-import 'package:micro_app_commons/app_notifier.dart';
 import 'package:micro_app_commons/features/not_found/presentation/not_found_page.dart';
 import 'package:micro_app_commons/features/popup/domain/entities/enum.dart';
 import 'package:micro_app_commons/features/popup/presentation/bloc/base_bloc/popup_events.dart';
@@ -111,34 +109,6 @@ class ErpResolver extends MicroApp<ErpCoreModel, ErpAppsCoreEnum>
     return Text('ERP parent nav: ${tab.name}');
   }
 
-  /*
-
-  ErpResolver()
-    : callbacks = {
-        ErpAppsCoreEnum.erpDashboard: () {},
-        ErpAppsCoreEnum.erpMenu: () {},
-        ErpAppsCoreEnum.erpForm: () {},
-        ErpAppsCoreEnum.erpList: () {},
-        ErpAppsCoreEnum.erpLoad: () {},
-        ErpAppsCoreEnum.erpOpened: () {},
-        ErpAppsCoreEnum.erpError: () {},
-      },
-      super(
-        ErpCoreModel(
-          sl<ErpAppNotifier>(),
-          functions: {
-            ErpAppsCoreEnum.erpDashboard: () {},
-            ErpAppsCoreEnum.erpMenu: () {},
-            ErpAppsCoreEnum.erpForm: () {},
-            ErpAppsCoreEnum.erpList: () {},
-            ErpAppsCoreEnum.erpLoad: () {},
-            ErpAppsCoreEnum.erpOpened: () {},
-            ErpAppsCoreEnum.erpError: () {},
-          },
-          name: MicroAppsName.erpApp,
-        ),
-      );
-*/
 
   @override
   void injectionsRegister() => Inject.initialize();

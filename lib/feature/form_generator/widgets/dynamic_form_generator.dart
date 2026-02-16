@@ -1,14 +1,24 @@
 import 'dart:convert';
+import 'package:erp_app/feature/drawer/data/dashboard_drawer_provider.dart';
+import 'package:erp_app/index.dart';
 import 'package:flutter/material.dart' hide View;
+import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:micro_app_core/index.dart';
+import 'package:models_package/base/drawer_item_model.dart';
+import 'package:resources_package/Resources/Assets/assets_manager.dart';
+import 'package:resources_package/Resources/Assets/icons_manager.dart';
 import 'package:services_package/auth/toolbar/toolbar_service.dart';
-import 'package:ui_components_package/erp_app_componenets/mobile/chat_bot/chat_bot.dart';
-import '../../../core/network/injection_container.dart';
+import 'package:services_package/index.dart';
+import 'package:toastification/toastification.dart';
+import 'package:ui_components_package/extensions.dart';
+import 'package:ui_components_package/index.dart';
 import 'field_renderer.dart';
 import 'input/radio_Input_field.dart';
 import 'package:shared_core/data/auth/toolbar/toolbar.dart';
 
 class DynamicFormGenerator extends StatefulWidget {
-  final void Function(Map<String, dynamic> values)? onSubmit;
+  final Future Function(Map<String, dynamic> values)? onSubmit;
   final Map<String, dynamic> initialValues;
   final String jsonString; // JSON کامل از سرور
   final int repoId;
@@ -32,32 +42,36 @@ class DynamicFormGenerator extends StatefulWidget {
   State<DynamicFormGenerator> createState() => _DynamicFormGeneratorState();
 }
 
+bool isLoaded = false;
+
 class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, dynamic> _values = {};
   Map<String, dynamic>? _parsedJson;
   List<Field> _formConfigs = [];
+  List<ResponseData>? _data;
+  DashboardDrawerProvider dashboardDrawerProvider = DashboardDrawerProvider();
   List<View> _allConfigs = [];
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    _values.addAll(widget.initialValues);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeRadioValues();
-      _loadData();
-    });
 
-    // _processJson();
+    dashboardDrawerProvider = DashboardDrawerProvider();
+    _values.clear();
+    // _values.addAll(widget.initialValues);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _initializeRadioValues();
+    });
   }
 
-  void _initializeRadioValues() {
-    if (widget.initialValues.isNotEmpty) {
+  Future<void> _initializeRadioValues() async {
+    if (widget.initialValues.isNotEmpty || isLoaded) {
       return;
     }
 
+    await _loadData();
+    isLoaded = true;
     for (var key in widget.initialValues.keys) {
       if (widget.initialValues[key] is bool) {
         _values[key] = widget.initialValues[key];
@@ -66,237 +80,183 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
   }
 
   Future<void> _loadData() async {
-    setState(() {});
-
+    setState(() {
+      sl<ErpAppNotifier>().setLoading(true);
+    });
     try {
       final newState = await sl<ToolbarService>().get(
-        Request(repoId: widget.repoId, systemId: widget.systemId, type:widget.type),
+        Request(repoId: 106045, systemId: 106, type: 2),
         Response.fromJson,
       );
-      final data = newState?.data ?? [];
+      _data = newState?.data ?? [];
 
-      _allConfigs = data.first.list!.listProp;
-      for (final view in _allConfigs) {
+      if (_data == null) {
+        _data = [];
+        return;
+      }
+      _allConfigs = _data!.first.list!.listProp;
 
-          final form = view.formConfig;
-          setState(() {
-            _formConfigs = view.formConfig!.fields;
-          });
+      final form = _allConfigs.first;
+      final viewFormConfig = View(config: form.config).formConfig;
 
-          print('Form endpoint: ${form?.addEndpoint}');
+      if (viewFormConfig == null) return;
 
-
-        // if (view.isList) {
-        //   final list = view.listConfig;
-        //   // _formConfigs = view.listConfig!.fields;
-        //   print('List columns count: ${list?.column.length}');
-        // }
+      setState(() {
+        _formConfigs = viewFormConfig.fields;
+      });
+    } catch (e) {
+      ModernToast().showToast(
+        context,
+        Text('خطا'),
+        Text(e.toString()),
+        ToastificationType.error,
+      );
+    } finally {
+      setState(() {
+        sl<ErpAppNotifier>().setLoading(false);
+      });
+      var counter = 0;
+      if (_data == null || _data!.first.list == null) {
+        return;
       }
 
-      // _allConfigs = data.toList().first.list?.listProp ?? [];
-
-      // if (_allConfigs.length > 1) {
-      //   setState(() {
-      //     _formConfigs = _allConfigs.last.formConfig  ?? _allConfigs.last.formConfig.;
-      //   });
-      // } else {
-      //   setState(() {
-      //     _formConfigs = _allConfigs.first.formConfig!.fields;
-      //   });
-      // }
-
-      // _selectForm();
-    } catch (e) {
-      setState(() {});
-    }
-  }
-
-  void _navigateToForm(String formDesc) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DynamicFormGenerator(
-          jsonString: widget.jsonString,
-          selectedFormDesc: formDesc,
-          onSubmit: widget.onSubmit,
-          initialValues: widget.initialValues,
-          repoId: widget.repoId,
-          systemId: widget.systemId,
-          type: widget.type,
+      dashboardDrawerProvider.addNEWItem(
+        DrawerTittle(
+          order: counter,
+          icon: SizedBox(),
+          title: 'نمایش',
+          routeKey: 'title',
         ),
-      ),
-    );
-  }
+      );
+      counter++;
+      for (var i = 0; i < _data!.first.list!.listProp.length; i++) {
+        dashboardDrawerProvider.addNEWItem(
+          DrawerItemModel(
+            order: counter,
+            callBackType: () => {
+              _formKey.currentState?.reset(),
+              _values.clear(),
+              Navigator.pop(context),
+            },
+            title: _data!.first.list!.listProp[i].desc ?? '',
+            icon: SizedBox(),
+            routeKey:
+                _data!.first.list!.listProp[i].desc ??
+                'index : ${i.toString()}',
+          ),
+        );
+        counter++;
+      }
 
-  Widget _buildDrawer() {
-    return Drawer(
-      backgroundColor: Colors.white,
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: 16),
+      if (_data == null || _data!.first.moreMenu == null) {
+        return;
+      }
 
-            //نمایش
-            Padding(
-              padding: const EdgeInsets.only(
-                right: 50,
-                left: 0,
-                top: 4,
-                bottom: 4,
-              ),
-              child: Text(
-                'نمایش',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.grey,
+      dashboardDrawerProvider.addNEWItem(
+        DrawerDivider(
+          order: counter++,
+          icon: SizedBox(),
+          title: 'منو بیشتر',
+          routeKey: 'more Menu',
+        ),
+      );
+      dashboardDrawerProvider.addNEWItem(
+        DrawerTittle(
+          order: counter++,
+          icon: SizedBox(),
+          title: 'منو بیشتر',
+          routeKey: 'more Menu',
+        ),
+      );
+      counter++;
+      for (var i = 0; i < _data!.first.moreMenu!.length; i++) {
+        dashboardDrawerProvider.addNEWItem(
+          DrawerItemModel(
+            order: counter,
+            callBackType: () => {
+              _formKey.currentState?.reset(),
+              _values.clear(),
+              Navigator.pop(context),
+            },
+            title: _data!.first.moreMenu![i].menuDesc ?? '',
+            icon: (_data!.first.moreMenu![i].icon != null
+                ? SvgPicture.string(
+                    _data!.first.moreMenu![i].icon!,
+                    width: 24,
+                    height: 24,
+                  )
+                : SvgPicture.network(
+                    _data!.first.moreMenu![i].iconUrl ??
+                        AryanAssets.defaultImage,
+                    width: 24,
+                    height: 24,
+                  )),
+            routeKey:
+                _data!.first.moreMenu![i].menuDesc ?? 'index : ${i.toString()}',
+          ),
+        );
+        counter++;
+      }
+      dashboardDrawerProvider.addNEWItem(
+        DrawerDivider(
+          order: counter++,
+          icon: SizedBox(),
+          title: 'منو بیشتر',
+          routeKey: 'more Menu',
+        ),
+      );
+      dashboardDrawerProvider.addNEWItem(
+        DrawerTittle(
+          order: counter++,
+          icon: SizedBox(),
+          title: 'چاپ',
+          routeKey: 'print',
+        ),
+      );
+
+      dashboardDrawerProvider.addNEWItems([
+        DrawerItemModel(
+          order: counter++,
+          callBackType: () => {
+            _formKey.currentState?.reset(),
+            _values.clear(),
+            Navigator.pop(context),
+          },
+          title: 'بازنشانی',
+          icon: AryanAppAssets.images.imageByValue(AryanAssets.refresh),
+          routeKey: 'reffresh',
+        ),
+        DrawerItemModel(
+          order: counter++,
+          callBackType: () => CustomEventBus.emit(
+            ErpFormGeneratorEvent(widget.repoId, widget.systemId, widget.type),
+          ),
+          title: 'جدید',
+          icon: AryanAppAssets.images.imageByValue(AryanAssets.add),
+          routeKey: 'add',
+        ),
+
+        DrawerItemModel(
+          order: counter++,
+          callBackType: () => {
+            if (_formKey.currentState?.validate() ?? false)
+              {
+                CustomEventBus.emit(
+                  ErpFormGeneratorEvent(
+                    widget.repoId,
+                    widget.systemId,
+                    widget.type,
+                  ),
                 ),
-                textAlign: TextAlign.right,
-              ),
-            ),
-
-            Expanded(
-              child: Column(
-                children: [
-                  ListView.builder(
-                    padding: EdgeInsets.only(right: 16, top: 4, bottom: 4),
-                    itemCount: _allConfigs.length,
-                    itemBuilder: (context, index) {
-                      final item = _allConfigs[index];
-                      return ListTile(
-                        contentPadding: EdgeInsets.only(
-                          right: 70,
-                          left: 16,
-                          top: 4,
-                          bottom: 4,
-                        ),
-                        dense: true,
-                        minVerticalPadding: 0,
-                        visualDensity: VisualDensity.compact,
-
-                        title: Text(
-                          item.desc ?? '',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black,
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          _navigateToForm(item.desc ?? '');
-                        },
-                      );
-                    },
-                  ),
-
-                  buildCustomDivider(),
-
-                  //منو بیشتر
-                  Padding(
-                    padding: const EdgeInsets.only(right: 30),
-                    child: Text(
-                      'منو بیشتر',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.grey,
-                      ),
-                      textAlign: TextAlign.right,
-                    ),
-                  ),
-
-                  //برچسب
-                  _buildMenuItem('برچسب', () {
-                    _formKey.currentState?.reset();
-                    _values.clear();
-
-                    Navigator.pop(context);
-                  }, 'assets/images/calendar.png'),
-
-                  buildCustomDivider(),
-
-                  //چاپ
-                  Padding(
-                    padding: const EdgeInsets.only(right: 30),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        'چاپ',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.grey,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ),
-
-                  buildCustomDivider(),
-
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      _buildMenuItem('باز نشانی', () {
-                        _formKey.currentState?.reset();
-                        _values.clear();
-
-                        // ScaffoldMessenger.of(context).showSnackBar(
-                        //   SnackBar(content: Text('فرم بازنشانی شد')),
-                        // );
-                        Navigator.pop(context);
-                      }, 'assets/images/refresh.png'),
-                      _buildMenuItem('جدید', () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DynamicFormGenerator(
-                              jsonString: widget.jsonString,
-                              onSubmit: widget.onSubmit,
-                              repoId: widget.repoId,
-                              systemId: widget.systemId,
-                              type: widget.type,
-                              initialValues: widget.initialValues,
-                            ),
-                          ),
-                        );
-                      }, 'assets/images/add.png'),
-                      _buildMenuItem('ذخیره و جدید', () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          if (widget.onSubmit != null) {
-                            widget.onSubmit!(_values);
-                          }
-                          Navigator.pop(context);
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DynamicFormGenerator(
-                                jsonString: widget.jsonString,
-                                onSubmit: widget.onSubmit,
-                                repoId: widget.repoId,
-                                systemId: widget.systemId,
-                                type: widget.type,
-                                initialValues: widget.initialValues,
-                              ),
-                            ),
-                          );
-                        }
-                      }, 'assets/images/save.png'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
+              },
+          },
+          title: 'ذخیره و جدید',
+          icon: AryanAppAssets.images.imageByValue(AryanAssets.save),
+          routeKey: 'save',
         ),
-      ),
-    );
+      ]);
+      DrawerRegistry.instance.registerProvider(dashboardDrawerProvider);
+    }
   }
 
   Widget buildCustomDivider({
@@ -307,7 +267,7 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     double endIndent = 16,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: FormSpacing.pagePadding,
       child: Divider(
         thickness: thickness,
         height: height,
@@ -318,107 +278,7 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     );
   }
 
-  Widget _buildMenuItem(String title, VoidCallback onTap, String assetPath) {
-    return ListTile(
-      contentPadding: EdgeInsets.only(right: 60, left: 16),
-
-      dense: true,
-      visualDensity: VisualDensity.compact,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            title,
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(width: 10),
-          Image.asset(
-            assetPath,
-            package: 'resources_package',
-            width: 15,
-            height: 15,
-          ),
-        ],
-      ),
-      onTap: onTap,
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    final currencyRateCaption = getCurrencyRateCaption();
-
-    return AppBar(
-      leading: InkWell(
-        onTap: () => _scaffoldKey.currentState?.openEndDrawer(),
-        child: paddedIcon('assets/images/more.png'),
-      ),
-      title: Row(
-        children: [
-          InkWell(
-            onTap: () {
-              print('PanelForm');
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return Center(); // be jaye pannelform
-                  },
-                ),
-              );
-            },
-            child: paddedIcon('assets/images/futures.png'),
-          ),
-          SizedBox(width: 10),
-          InkWell(
-            onTap: () {
-              print('chat bot');
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return ChatPage();
-                  },
-                ),
-              );
-            },
-            child: paddedIcon('assets/images/chat.png'),
-          ),
-          Expanded(child: SizedBox()),
-          Text(
-            currencyRateCaption + ' - جدید',
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              color: Colors.black,
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        Container(
-          padding: EdgeInsets.only(right: 10),
-          // color: Colors.yellow,
-          child: InkWell(
-            onTap: () {},
-            child: paddedIcon('assets/images/arrow_back.png'),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildFormFields(Field field, int index) {
-    // if (_selectedFormConfig == null ||
-    //     !_selectedFormConfig!.containsKey('fields')) {
-    //   return Text('فیلدی یافت نشد');
-    // }
-
     final indicesToSkip = <int>{};
 
     if (field.type == 'noshow') {
@@ -427,8 +287,7 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     }
 
     if (field.type == 'radio') {
-      final radioOptions =
-          (field.radioValues as List?)?.cast<Map<String, dynamic>>() ?? [];
+      final radioOptions = (field.radioValues as List<RadioValues>?) ?? [];
 
       final rules = field.rules as List? ?? [];
       final isRequired = rules.any(
@@ -437,41 +296,24 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
             (rule['required'] == true || rule['rule'] == 'required'),
       );
 
-      return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        child: RadioInputField(
-          caption: field.caption?.toString() ?? '',
-          help: field.help?.toString() ?? '',
-          fieldName: field.name ?? '',
-          options: radioOptions,
-          onChanged: (value) {
-            // if (!mounted) return;
-            // setState(() {
-            _values[field.name ?? field.defaultValue] = value;
-            // });
-          },
-          initialValue: _values[field.name ?? field.defaultValue],
-          isRequired: isRequired,
+      return Container(
+        color: Colors.white,
+        child: Padding(
+          padding: FormSpacing.pagePadding,
+          child: RadioInputField(
+            caption: field.caption?.toString() ?? '',
+            help: field.help?.toString() ?? '',
+            fieldName: field.name ?? '',
+            options: radioOptions,
+            onChanged: (value) {
+              _values[field.name ?? field.defaultValue] = value;
+            },
+            initialValue: _values[field.name ?? field.defaultValue],
+            isRequired: isRequired,
+          ),
         ),
       );
     }
-
-    // final fieldModel = Field(
-    //   name: fieldName,
-    //   caption: fieldMap['caption']?.toString() ?? '',
-    //   help: fieldMap['help']?.toString() ?? '',
-    //   type: fieldType,
-    //   placeHolder: fieldMap['placeHolder']?.toString() ?? '',
-    //   defaultValue: fieldMap['defaultValue']?.toString() ?? '',
-    //   showId: false,
-    //   radioValues: [],
-    //   order: fieldMap['order'] ?? 0,
-    //   selectEndpoint: selectEndpoint,
-    //   options: _convertOptions(fieldMap['options']),
-    //   rules: _convertRules(fieldMap['rules']),
-    //   icon: null,
-    //   idValue: 0,
-    // );
 
     dynamic initialValue = _values[field.name] ?? field.defaultValue;
 
@@ -520,12 +362,10 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
 
     if (showWithoutBorder) {
       return Padding(
-        padding: const EdgeInsets.only(bottom: 20),
+        padding: FormSpacing.pagePadding,
         child: FieldRenderer(
           field: field,
           onChanged: (value) {
-            // if (!mounted) return;
-            // setState(() {
             if (field.type == 'treeoption' && value is Map) {
               _values[field.name ?? field.defaultValue] = value['value'];
               _values['${field.name ?? field.defaultValue}_label'] =
@@ -546,10 +386,10 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
       );
     } else {
       return Padding(
-        padding: const EdgeInsets.only(bottom: 16),
+        padding: FormSpacing.pagePadding,
         child: Container(
-          padding: EdgeInsets.all(12),
-          decoration: BoxDecoration(color: Colors.white),
+          padding: FormSpacing.fieldPadding,
+          decoration: BoxDecoration(color: context.colors.main),
           child: FieldRenderer(
             field: field,
             onChanged: (value) {
@@ -569,20 +409,31 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: _buildAppBar(),
-      endDrawer: _buildDrawer(),
-      body: SafeArea(
+    return SafeArea(
+      child: Container(
+        color: Colors.white,
         child: Form(
           key: _formKey,
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-            itemCount: _formConfigs.length,
-            itemBuilder: (context, index) {
-              final item = _formConfigs[index];
-              return _buildFormFields(item, index);
-            },
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  padding: FormSpacing.pagePadding,
+                  itemCount: _formConfigs.length,
+                  itemBuilder: (context, index) {
+                    final field = _formConfigs[index];
+                    return _buildFormFields(field, index);
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: ElevatedButton(
+                  onPressed: () async => await submitForm(),
+                  child: const Text('ذخیره'),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -627,17 +478,65 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
       return '';
     }
   }
+
+  Future<void> submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    _formKey.currentState!.save(); // ذخیره مقادیر فرم در _values
+
+    // ارسال داده به والد
+    if (widget.onSubmit != null) {
+      try {
+        await widget.onSubmit!(_values);
+      } catch (e) {
+        ModernToast().showToast(
+          context,
+          Text('خطا'),
+          Text(e.toString()),
+          ToastificationType.error,
+        );
+      }
+    }
+  }
+
+  Map<String, dynamic> prepareErpPayload(Map<String, dynamic> formData) {
+    final data = Map<String, dynamic>.from(formData);
+
+    if (data['BirthLocationId'] is Map) {
+      data['BirthLocationId'] = data['BirthLocationId']['Id'];
+    }
+
+    if (data['ForeignLocationId'] is Map) {
+      data['ForeignLocationId'] = data['ForeignLocationId']['Id'];
+    }
+
+    return data;
+  }
 }
 
 Widget paddedIcon(String assetPath) {
   const double iconSize = 40;
-  return Padding(
-    padding: const EdgeInsets.only(top: 0),
+  return SizedBox(
     child: Image.asset(
       assetPath,
       width: iconSize,
       height: iconSize,
       package: 'resources_package',
     ),
+  );
+}
+
+class FormSpacing {
+  static const double horizontal = 16;
+  static const double vertical = 12;
+  static const double fieldGap = 16;
+
+  static const EdgeInsets pagePadding = EdgeInsets.symmetric(
+    horizontal: horizontal,
+    vertical: vertical,
+  );
+
+  static const EdgeInsets fieldPadding = EdgeInsets.symmetric(
+    vertical: fieldGap,
   );
 }

@@ -10,6 +10,7 @@ import 'package:ui_components_package/erp_app_componenets/common/loadings/circle
 import '../../../../index.dart';
 import '../../../../src/erp_notifier.dart';
 import '../bloc/menu_bloc.dart';
+import '../bloc/menu_event.dart';
 import '../bloc/menu_state.dart';
 
 class MenuPage extends StatefulWidget {
@@ -32,6 +33,8 @@ class _MenuPageState extends State<MenuPage> {
 
     searchFocusNode.addListener(() {
       setState(() {
+        super.initState();
+        context.read<MenuBloc>().add(LoadMenuEvent());
         isFocused = searchFocusNode.hasFocus;
       });
     });
@@ -66,7 +69,7 @@ class _MenuPageState extends State<MenuPage> {
       body: BlocBuilder<MenuBloc, MenuState>(
         builder: (context, state) {
           if (state is MenuTokenNeedState) {
-            final notifier = sl<AppNotifier>();
+            final notifier = sl<ErpAppNotifier>();
             notifier.signOut(context, force: true);
 
             return const Center(child: Text('لطفا دوباره وارد شوید!'));

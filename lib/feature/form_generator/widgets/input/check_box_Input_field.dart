@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:resources_package/Resources/Theme/theme_manager.dart';
+import 'package:ui_components_package/extensions.dart';
 import '../../validation/rule_mapper.dart';
 import '../common/field_title.dart';
 import 'package:shared_core/index.dart';
+
 class CheckboxInputField extends StatefulWidget {
   final Field field;
   final ValueChanged<dynamic> onChanged;
@@ -58,11 +61,10 @@ class _CheckboxInputFieldState extends State<CheckboxInputField> {
     final caption = _sanitizeText(widget.field.caption);
 
     return SizedBox(
-
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
+        textDirection: context.isRtl ? TextDirection.rtl : TextDirection.ltr,
         children: [
-
           Checkbox(
             value: _isChecked,
             onChanged: (bool? value) {
@@ -81,7 +83,7 @@ class _CheckboxInputFieldState extends State<CheckboxInputField> {
               isRequired: isRequired,
             ),
 
-          SizedBox(width: 8),
+          // SizedBox(width: 8),
         ],
       ),
     );

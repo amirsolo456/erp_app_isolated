@@ -3,7 +3,7 @@ import 'package:erp_app/feature/default_page/pages/default_page.dart';
 import 'package:erp_app/feature/form_generator/bloc/base_bloc/erp_form_generator_resolver.dart';
 import 'package:erp_app/feature/form_generator/widgets/dynamic_form_generator.dart';
 import 'package:erp_app/feature/list_generator/presentation/bloc/base_bloc/erp_list_generator_resolver.dart';
-import 'package:erp_app/feature/profile/profile.dart';
+import 'package:erp_app/feature/profile/profile_page.dart';
 import 'package:erp_app/micro_app/erp_events.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -42,37 +42,7 @@ class ErpAppNotifier
   Map<String, bool> get isFormGeneratorActive =>
       Map.from(_moduleState.isFormRoute);
 
-  // ErpAppNotifier() {
-  //   _registerErpEvents();
-  //   _pageBuilders = {
-  //     NavButtonTabBarMode.erpProfileTabMode: (_) => ProfilePage(),
-  //     NavButtonTabBarMode.erpNotFound: (_) => NotFoundPage(),
-  //     NavButtonTabBarMode.erpMenuTabMode: (_) => MenuPage(),
-  //     NavButtonTabBarMode.erpNewTabMode: (_) => AddNewPage(),
-  //     NavButtonTabBarMode.erpOpenedTabMode: (_) => OpenedPage(items: []),
-  //     NavButtonTabBarMode.erpDefaultTabMode: (_) => DefaultPage(),
-  //     NavButtonTabBarMode.erpGenericListTabMode: (args) {
-  //       if (args != null) {
-  //         return ErpListGeneratorResolver(
-  //           route: getListRoute.toString().toLowerCase(),
-  //         ).getPage(args: args);
-  //       }
-  //       return Text('ERP parent nav: erpDashboardTabMode');
-  //     },
-  //     NavButtonTabBarMode.erpGenericFormTabMode: (args) {
-  //       if (args != null) {
-  //         return ErpFormGeneratorResolver(
-  //           route: getListRoute.toString().toLowerCase(),
-  //         ).getPage(args: args);
-  //       }
-  //       return Text('ERP parent nav: erpDashboardTabMode');
-  //     },
-  //     NavButtonTabBarMode.skeletion: (_) => Text('ERP parent nav: skeletion'),
-  //     NavButtonTabBarMode.erpDashboardTabMode: (_) =>
-  //         Text('ERP parent nav: erpDashboardTabMode'),
-  //   };
-  // }
-
+  bool _isLoading = false;
   ErpAppsCoreEnum? _activeModule;
   dynamic _modulePayload;
   static final Map<String, bool> _defValue = {'first': false};
@@ -82,18 +52,6 @@ class ErpAppNotifier
 
   // ignore: prefer_final_fields
   Map<String, bool> _isFormRoute = _defValue;
-
-  // Map<String, bool> get isListGeneratorActive => _isListRoute;
-  //
-  // Map<String, bool> get isFormGeneratorActive => Map.from(_isFormRoute);
-  //
-  // ErpAppsCoreEnum? get activeModule => _activeModule;
-  //
-  // dynamic get modulePayload => _modulePayload;
-
-  // ErpAppNotifier() {
-  //   _registerErpEvents();
-  // }
 
   void _registerErpEvents() {
     final openModuleSubscription = CustomEventBus.on<OpenErpModuleEvent>((
@@ -106,23 +64,22 @@ class ErpAppNotifier
       closeModule();
     });
 
-    // CustomEventBus.on<OpenErpModuleEvent>((event) {
-    //   openModule(event.module, payload: event.payload);
-    // });
-    //
-    // CustomEventBus.on<ErpCloseEvent>((event) {
-    //   closeModule();
-    // });
   }
 
   void setArguments(
     PageType pageType, {
+      AppBarsMode? appBar,
     NavButtonTabBarMode? tab,
     ErpAppsCoreEnum? active,
     String? route,
     Map<String, dynamic>? args,
   }) {
-    _moduleState = ModuleState(activeModule: active, args: args ?? {});
+    _moduleState = ModuleState(
+      selectedHeaderTab: appBar ?? _mapTabToAppBarMode(tab ?? NavButtonTabBarMode.erpNotFound),
+      selectedTab: tab ?? NavButtonTabBarMode.erpNotFound,
+      activeModule: active,
+      args: args ?? {},
+    );
     notifyListeners();
   }
 
@@ -176,18 +133,46 @@ class ErpAppNotifier
   }
 
   Widget getErpPage(
-    NavButtonTabBarMode tab, {
+    ModuleState module, {
     bool forceRefresh = false,
     Map<String, dynamic>? args,
   }) {
-    // You could use forceRefresh here if needed
-    return _pageResolver.resolvePage(tab, args: args);
+    try {
+      // setLoading(true);
+
+      return _pageResolver.resolvePage(module.selectedTab, args: args);
+    } finally {
+
+    }
   }
 
-  // Optional: Add cleanup method
-  void dispose() {
-    // Dispose any subscriptions if stored
+  void changeErpPage(
+    PageType pageType, {
+      AppBarsMode? appBar,
+    NavButtonTabBarMode? tab,
+    String? route,
+    Map<String, dynamic>? args,
+  }) {
+    setArguments(
+      pageType,
+      appBar: appBar ?? _mapTabToAppBarMode(selectedTab),
+      tab: tab,
+      active: ErpAppsCoreEnum.erpDashboard,
+      args: null,
+      route: 'NavButton',
+    );
+
+    notifyListeners();
   }
+
+  void setLoading(bool loading) {
+    _isLoading = loading;
+
+    // notifyListeners();
+  }
+
+  @override
+  bool get isLoading => _isLoading;
   //
   // void openModule(ErpAppsCoreEnum module, {dynamic payload}) {
   //   _activeModule = module;

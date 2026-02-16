@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:micro_app_core/index.dart';
 import 'package:shared_core/data/auth/menu/response_data.dart' as prefix0;
+import 'package:ui_components_package/erp_app_componenets/common/loadings/circle_loading.dart';
 
 import '../../micro_app/erp_events.dart';
 import '../auth/menu/bloc/menu_bloc.dart';
@@ -85,6 +86,12 @@ class _AddNewPageState extends State<AddNewPage> {
           if (state is MenuLoadingState) {
             return const Center(
               child: CircularProgressIndicator(color: Colors.black),
+            );
+          }
+
+          if (state is MenuInitial) {
+            return const Center(
+              child: CircleLoading( ),
             );
           }
 

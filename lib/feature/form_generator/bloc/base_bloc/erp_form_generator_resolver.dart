@@ -3,9 +3,14 @@ import 'package:erp_app/core/network/injection_container.dart';
 import 'package:erp_app/feature/form_generator/widgets/dynamic_form_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:micro_app_core/index.dart';
+import 'package:services_package/Interfaces/backend_api_services/iapi_service.dart';
+import 'package:services_package/api_client_service.dart';
 import 'package:services_package/auth/toolbar/toolbar_service.dart';
+import 'package:services_package/com/person/person_service.dart';
 import 'package:shared_core/data/auth/toolbar/toolbar.dart';
-
+import 'package:toastification/toastification.dart';
+import 'package:ui_components_package/erp_app_componenets/common/toast/toast.dart';
+import 'package:shared_core/data/com/person/person.dart' as person;
 import 'erp_form_generator_inject.dart';
 
 class ErpFormGeneratorResolver extends ErpChildMicroApp {
@@ -67,6 +72,9 @@ class ErpGenBootstrapPage extends StatelessWidget {
           type: args?['type'] ?? -1,
           systemId: args?['systemId'] ?? 106,
           repoId: args?['repoId'] ?? 106045,
+          onSubmit: (value) async {
+            await onSubmitNewData(value, context);
+          },
         );
       },
     );
@@ -87,5 +95,48 @@ class ErpGenBootstrapPage extends StatelessWidget {
     );
 
     return result!.toJson((value) => value.toJson()).toString();
+  }
+
+  Future<bool> onSubmitNewData(
+    Map<String, dynamic> values,
+    BuildContext context,
+  ) async {
+    var b = false;
+    try {
+      values['RepoViewId'] = 30044;
+      values['SystemId'] = 106;
+      values['ShowMode'] = 10;
+      final result = await sl<ApiClient>().sendObjectRequestAsync(
+        'api/com/select/person',
+        HttpMethods.post,
+        values,
+        true,
+        null,
+        person.Response.fromJson,
+      );
+      if (result!.customResult) {
+        ModernToast().showToast(
+          context,
+          Text('موفق'),
+          Text('عملیات با موفقیت انجام شد.'),
+          ToastificationType.success,
+        );
+      } else {
+        ModernToast().showToast(
+          context,
+          Text('خطا'),
+          Text(result.error ?? '...'),
+          ToastificationType.error,
+        );
+      }
+    } catch (e) {
+      ModernToast().showToast(
+        context,
+        Text('خطا'),
+        Text(e.toString()),
+        ToastificationType.error,
+      );
+    }
+    return b;
   }
 }

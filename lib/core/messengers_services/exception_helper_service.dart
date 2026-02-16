@@ -14,7 +14,7 @@ class ExceptionHelperService implements IMessengerHelperService {
     String message, {
     BuildContext? context,
   }) async {
-    // نمایش اسنک‌بار به کاربر
+
     if (context != null) {
       final scaffoldMessenger = ScaffoldMessenger.of(context);
       scaffoldMessenger.showSnackBar(

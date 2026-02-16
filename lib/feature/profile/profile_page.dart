@@ -107,7 +107,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
             child: Column(
               children: [
-                //مشخصات کاربری
                 ListTile(
                   title: Text(loc!.usersTitle, style: itemsProfileStyle),
                   horizontalTitleGap: 10,
@@ -116,7 +115,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 Divider(height: 10, color: Color(0xFFB1B1B1)),
 
-                //تغییر رمز عبور
                 ListTile(
                   title: Text(
                     loc!.userPasswordChange,
@@ -167,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   horizontalTitleGap: 10,
                   leading: userSignOut,
-                  onTap: () async => {await onSignoutPressed(context)},
+                  onTap: () => onSignOutPressed(context),
                 ),
               ],
             ),
@@ -183,9 +181,11 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Future<void> onSignoutPressed(BuildContext context) async {
+  void onSignOutPressed(BuildContext context) {
     final cacheProvider = Provider.of<AppNotifier>(context, listen: false);
-    await cacheProvider.signOut(context, force: true);
+    cacheProvider.changeToLogout();
+    // final cacheProvider = Provider.of<AppNotifier>(context, listen: false);
+    // await cacheProvider.signOut(context, force: true);
 
     // clearToken();
 

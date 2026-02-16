@@ -40,28 +40,28 @@ class FieldTitle extends StatelessWidget {
             ),
           ),
 
-          if (help != null && help!.isNotEmpty)
-            Padding(
-              //Ehsan
-              padding: const EdgeInsets.only(right: 1),
-              child: Tooltip(
-                message: help!,
-                child: Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: CircleAvatar(
-                    radius: 15,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.help_outline,
-                      size: 20,
-                      color: Colors.grey[500],
-                    ),
-                  ),
-                ),
-              ),
-
-              //Ehsan
-            ),
+          // if (help != null && help!.isNotEmpty)
+          //   // Padding(
+          //   //   //Ehsan
+          //   //   padding: const EdgeInsets.only(right: 1),
+          //   //   child: Tooltip(
+          //   //     message: help!,
+          //   //     child: Directionality(
+          //   //       textDirection: TextDirection.ltr,
+          //   //       child: CircleAvatar(
+          //   //         radius: 15,
+          //   //         backgroundColor: Colors.white,
+          //   //         child: Icon(
+          //   //           Icons.help_outline,
+          //   //           size: 20,
+          //   //           color: Colors.grey[500],
+          //   //         ),
+          //   //       ),
+          //   //     ),
+          //   //   ),
+          //
+          //     //Ehsan
+          //   ),
         ],
       ),
     );

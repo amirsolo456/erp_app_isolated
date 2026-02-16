@@ -1,12 +1,13 @@
 
 import 'package:flutter/material.dart';
+import 'package:shared_core/data/auth/toolbar/toolbar.dart';
 import '../common/field_title.dart';
 
 class RadioInputField extends StatefulWidget {
   final String caption;
   final String help;
   final String fieldName;
-  final List<Map<String, dynamic>> options;
+  final List<RadioValues> options;
   final ValueChanged<dynamic> onChanged;
   final dynamic initialValue;
   final bool isRequired;
@@ -34,7 +35,7 @@ class _RadioInputFieldState extends State<RadioInputField> {
     _selectedValue = widget.initialValue;
     for (var i = 0; i < widget.options.length; i++) {
       final option = widget.options[i];
-      print('   ${i + 1}. ${option['caption']}: ${option['value']} (type: ${option['value']?.runtimeType})');
+
     }
   }
 
@@ -56,8 +57,8 @@ class _RadioInputFieldState extends State<RadioInputField> {
           spacing: 15,
           runSpacing: 8,
           children: widget.options.map((option) {
-            final caption = option['caption']?.toString() ?? '';
-            final value = option['value'];
+            final caption = option.caption.toString();
+            final value = option.value;
             final isSelected = _selectedValue == value;
 
             return GestureDetector(
@@ -106,6 +107,7 @@ class _RadioInputFieldState extends State<RadioInputField> {
                     Text(
                       caption,
                       style: TextStyle(
+                        fontFamily: 'IRANSansRegular',
                         fontSize: 16,
                         color: Colors.black,
                         fontWeight: FontWeight.w700,

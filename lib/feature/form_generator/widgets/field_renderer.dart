@@ -4,8 +4,9 @@ import 'input/text_input_field.dart';
 import 'input/select_input_field.dart';
 import 'input/date_input_field.dart';
 import 'input/select_option_field.dart';
-import 'input/tree_option_field.dart'; // این خط را اضافه کنید
+import 'input/tree_option_field.dart';
 import 'package:shared_core/index.dart';
+
 class FieldRenderer extends StatelessWidget {
   final Field field;
   final ValueChanged<dynamic> onChanged;
@@ -25,12 +26,7 @@ class FieldRenderer extends StatelessWidget {
       case 'textarea':
       case 'number':
       case 'password':
-
-
-        return
-
-
-          TextInputField(
+        return TextInputField(
           field: field,
           onChanged: onChanged,
           initialValues: initialValues,
@@ -38,9 +34,7 @@ class FieldRenderer extends StatelessWidget {
 
       case 'select':
       case 'dropdown':
-        return
-
-          SelectInputField(
+        return SelectInputField(
           field: field,
           onChanged: onChanged,
           initialValues: initialValues,
@@ -62,14 +56,11 @@ class FieldRenderer extends StatelessWidget {
         );
 
       case 'treeoption': // اضافه کردن case جدید
-        return
-
-        TreeOptionField(
+        return TreeOptionField(
           field: field,
           onChanged: onChanged,
           initialValues: initialValues,
         );
-
 
       case 'checkbox':
         return CheckboxInputField(
@@ -80,16 +71,13 @@ class FieldRenderer extends StatelessWidget {
 
       case 'selectoption': // اضافه کردن case جدید
 
-
-        return
-
-          SelectOptionField(
+        return SelectOptionField(
           field: field,
           onChanged: onChanged,
           initialValues: initialValues,
         );
 
-    // انواع فیلدهای دیگر
+      // انواع فیلدهای دیگر
       case 'email':
         return TextInputField(
           field: field,
@@ -104,11 +92,8 @@ class FieldRenderer extends StatelessWidget {
           initialValues: initialValues,
         );
 
-
       case 'info':
         return SizedBox();
-
-
 
       default:
         return Container(
