@@ -71,6 +71,7 @@ class ErpGenBootstrapPage extends StatelessWidget {
       type: 2,
       systemId: args?['systemId'] ?? 106,
       repoId: args?['repoId'] ?? 106045,
+      // id: 0
     );
 
     final result = await toolbarService.get(

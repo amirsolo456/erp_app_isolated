@@ -72,7 +72,9 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
 
     try {
       final newState = await sl<ToolbarService>().get(
-        Request(repoId: 106045, systemId: 106, type: 2, id: 0),
+        Request(repoId: 106045, systemId: 106, type: 2
+            // , id: 0
+        ),
         Response.fromJson,
       );
       final data = newState?.data ?? [];
@@ -717,3 +719,42 @@ Widget paddedIcon(String assetPath) {
     ),
   );
 }
+
+
+class UserInfoPositionDivider {
+  static const double top = 0;
+
+  static const double left = 0;
+
+  static const double right = 0;
+
+  static const double bottom = 0;
+
+}
+
+
+class UserInfoPositionButton {
+  static const double top = 20;
+
+  static const double left = 20;
+
+  static const double right = 20;
+
+  static const double bottom = 120;
+
+}
+
+
+class UserInfoPositionButtonOnAvatar {
+  static const double top = 130;
+
+  static const double left = 0;
+
+  static const double right = 0;
+
+  static const double bottom = 0;
+
+}
+
+
+

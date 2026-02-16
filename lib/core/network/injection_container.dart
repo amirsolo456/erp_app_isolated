@@ -12,6 +12,7 @@ import 'package:resources_package/Resources/Theme/theme_manager.dart';
 import 'package:services_package/Interfaces/front_helper_services/isnackbar_service.dart'
     as snack_bar;
 import 'package:services_package/Repo_ViewId/repo_view_id.dart';
+import 'package:services_package/auth/user/user_info/user_info_service.dart';
 
 import 'package:shared_core/base_response.dart';
 import 'package:shared_core/base_request.dart';
@@ -172,6 +173,15 @@ class InjectionContainer {
         () => UserExistService(apiClient: sl<ApiClient>()),
       );
     }
+
+    if (!sl.isRegistered<UserInfoService>()) {
+      sl.registerLazySingleton<UserInfoService>(
+            () => UserInfoService(sl<ApiClient>()),
+      );
+    }
+
+
+
 
     // -------------------------
     // 6. Repositories / Helpers / Messenger

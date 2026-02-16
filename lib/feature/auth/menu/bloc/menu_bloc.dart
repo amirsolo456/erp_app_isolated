@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:micro_app_core/services/custom_event_bus/custom_event_bus.dart';
+import '../../../../core/network/injection_container.dart';
 import 'package:micro_app_core/services/routing/routes.dart';
 import 'package:models_package/base/api_settings.dart';
 import 'package:services_package/auth/menu/menu_service.dart';
@@ -32,7 +33,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     try {
       print('[MenuBloc] calling getMenuUseCase.get');
       final menus = await getMenuUseCase.get(
-        Request(menuType: 1, defaults: sl<ApiSettings>().appDefaults),
+        Request(menuType: 1 ),
             (json) => Response.fromJson(json),
       );
 
@@ -88,7 +89,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       //
       // print('[MenuBloc] navigation -> /signOut');
       final menus = await getMenuUseCase.get(
-        Request(menuType: 1, defaults: sl<ApiSettings>().appDefaults),
+        Request(menuType: 1 ),
             (json) => Response.fromJson(json),
       );
 

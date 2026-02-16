@@ -4,7 +4,6 @@ import 'package:erp_app/feature/form_generator/bloc/base_bloc/erp_form_generator
 import 'package:erp_app/feature/form_generator/widgets/dynamic_form_generator.dart';
 import 'package:erp_app/feature/list_generator/presentation/bloc/base_bloc/erp_list_generator_resolver.dart';
 import 'package:erp_app/feature/profile/profile.dart';
-import 'package:erp_app/feature/user_info/user_info.dart';
 import 'package:erp_app/micro_app/erp_events.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ import 'package:micro_app_commons/features/not_found/presentation/not_found_page
 import 'package:micro_app_core/index.dart';
 import 'package:models_package/index.dart';
 import '../feature/auth/menu/pages/menu_page.dart';
+import '../feature/auth/user_info/pages/user_info.dart';
 import '../feature/open_page/open_page.dart';
 
 class ErpAppNotifier

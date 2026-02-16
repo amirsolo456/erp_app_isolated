@@ -30,10 +30,7 @@ class FieldRenderer extends StatelessWidget {
       case 'password':
 
 
-        return
-
-
-          TextInputField(
+        return TextInputField(
           field: field,
           onChanged: onChanged,
           initialValues: initialValues,
