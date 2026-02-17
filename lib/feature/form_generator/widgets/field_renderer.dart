@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'input/check_box_Input_field.dart';
-import 'input/text_input_field.dart';
-import 'input/select_input_field.dart';
-import 'input/date_input_field.dart';
-import 'input/select_option_field.dart';
-import 'input/tree_option_field.dart';
 import 'package:shared_core/index.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/date_input_field.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/select_input_field.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/select_option_field.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/text_input_field.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/selection_box/check_box_Input_field.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/selection_box/tree_option_field.dart';
 
 class FieldRenderer extends StatelessWidget {
   final Field field;

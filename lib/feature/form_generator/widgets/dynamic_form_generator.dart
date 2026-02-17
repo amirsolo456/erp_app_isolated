@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:micro_app_core/index.dart';
 import 'package:models_package/base/drawer_item_model.dart';
+import 'package:models_package/base/radio_values_model.dart';
 import 'package:resources_package/Resources/Assets/assets_manager.dart';
 import 'package:resources_package/Resources/Assets/icons_manager.dart';
 import 'package:services_package/auth/toolbar/toolbar_service.dart';
@@ -14,7 +15,6 @@ import 'package:toastification/toastification.dart';
 import 'package:ui_components_package/extensions.dart';
 import 'package:ui_components_package/index.dart';
 import 'field_renderer.dart';
-import 'input/radio_Input_field.dart';
 import 'package:shared_core/data/auth/toolbar/toolbar.dart';
 
 class DynamicFormGenerator extends StatefulWidget {
@@ -287,7 +287,7 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     }
 
     if (field.type == 'radio') {
-      final radioOptions = (field.radioValues as List<RadioValues>?) ?? [];
+      final radioOptions = (field.radioValues as List<RadioValuesModel>?) ?? [];
 
       final rules = field.rules as List? ?? [];
       final isRequired = rules.any(

@@ -4,7 +4,6 @@ import 'dart:async';
 
 import 'package:erp_app/feature/form_generator/bloc/base_bloc/erp_form_generator_events.dart';
 import 'package:erp_app/feature/form_generator/bloc/base_bloc/erp_form_generator_resolver.dart';
-import 'package:erp_app/feature/profile/profile_page.dart';
 import 'package:erp_app/main.dart';
 import 'package:erp_app/micro_app/erp_events.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +18,7 @@ import '../feature/auth/menu/pages/menu_page.dart';
 import '../feature/default_page/pages/default_page.dart';
 import '../feature/list_generator/presentation/bloc/base_bloc/erp_list_generator_resolver.dart';
 import '../feature/open_page/open_page.dart';
+import '../feature/profile/profile.dart';
 import '../src/advance_router.dart';
 import '../core/network/injection_container.dart';
 import 'erp_inject.dart';
