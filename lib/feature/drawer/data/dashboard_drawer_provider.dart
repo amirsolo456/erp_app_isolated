@@ -2,14 +2,19 @@ import 'package:models_package/index.dart';
 import 'package:services_package/index.dart';
 
 
-List<DrawerItem> _items = [];
+
 
 /// ---------- پیاده‌سازی چند ماژول نمونه ----------
 class DashboardDrawerProvider implements IDrawerItemProvider {
+  List<DrawerItem> _items = [];
   DashboardDrawerProvider() {
     _items = [];
   }
 
+
+  void clear(){
+    _items = [];
+  }
 
   @override
   List<DrawerItem> getItems() => _items;

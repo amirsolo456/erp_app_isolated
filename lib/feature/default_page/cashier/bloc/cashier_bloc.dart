@@ -1,10 +1,10 @@
 // ignore_for_file: unused_import
 
 import 'package:bloc/bloc.dart';
+import 'package:services_package/repo_view_id/repo_view_ids.dart';
 import 'package:shared_core/data/default/trh/select/cashier/response_data.dart' as prefix0;
 import 'package:shared_core/data/default/trh/select/cashier/response.dart' as prefix0;
 import 'package:shared_core/data/default/trh/select/cashier/request.dart' as prefix0;
-import 'package:services_package/Repo_ViewId/repo_view_id.dart';
 import 'package:services_package/default/trh/select/cashier_service.dart';
 
 import 'cashier_event.dart';
@@ -25,7 +25,7 @@ class CashierBloc extends Bloc<CashierEvent, CashierState> {
     emit(const CashierLoading());
     try {
       final Cashier = await getCashierUseCase.get(
-        prefix0.Request(repoViewId: AppConstants().cashierRepoViewId),
+        prefix0.Request(repoViewId: RepoViewIds.cashRepoId,),
         (json) => prefix0.Response.fromJson(json),
       );
 

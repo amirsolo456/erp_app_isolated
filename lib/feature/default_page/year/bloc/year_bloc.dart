@@ -1,8 +1,8 @@
 // ignore_for_file: unused_import
 
 import 'package:bloc/bloc.dart';
-import 'package:services_package/Repo_ViewId/repo_view_id.dart';
 import 'package:services_package/default/com/select/year_service.dart';
+import 'package:services_package/index.dart';
 import 'package:shared_core/data/default/com/select/year/request.dart'
     as prefix0;
 import 'package:shared_core/data/default/com/select/year/response.dart'
@@ -30,7 +30,7 @@ class YearBloc extends Bloc<SelectYearEvent, YearState> {
     try {
       final selectYears = await getSelectYearUseCase.get(
         prefix0.Request(
-          repoViewId: AppConstants().yearRepoViewId,
+          repoViewId:RepoViewIds.yearId,
           showMode: ShowMode ?? 10,
         ),
         (json) => prefix0.Response.fromJson(json),

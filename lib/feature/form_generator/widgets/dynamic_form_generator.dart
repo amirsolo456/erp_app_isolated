@@ -4,6 +4,7 @@ import 'package:erp_app/index.dart';
 import 'package:flutter/material.dart' hide View;
 import 'package:flutter_svg/svg.dart';
 import 'package:micro_app_core/index.dart';
+import 'package:models_package/base/api_settings.dart';
 import 'package:models_package/base/drawer_item_model.dart';
 import 'package:models_package/base/field_model.dart';
 import 'package:models_package/base/radio_values_model.dart';
@@ -20,6 +21,8 @@ import 'field_renderer.dart';
 import 'package:shared_core/data/auth/toolbar/toolbar.dart';
 import 'package:shared_core/data/base_data/areas/areas.dart' as a;
 import 'package:shared_core/data/base_data/cities/cities.dart' as c;
+
+bool builded = false;
 
 class DynamicFormGenerator extends StatefulWidget {
   final Future Function(Map<String, dynamic> values)? onSubmit;
@@ -52,9 +55,11 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
   Map<String, dynamic>? _parsedJson;
   List<FieldModel> _formConfigs = [];
   List<ResponseData>? _data;
-  DashboardDrawerProvider dashboardDrawerProvider = DashboardDrawerProvider();
+  DashboardDrawerProvider dashboardDrawerProvider =
+      sl<DashboardDrawerProvider>();
   List<View> _allConfigs = [];
   bool isLoaded = false;
+
   List<c.ResponseData> cities = [];
   List<a.ResponseData> countries = [];
 
@@ -62,7 +67,8 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
   void initState() {
     super.initState();
 
-    dashboardDrawerProvider = DashboardDrawerProvider();
+    // dashboardDrawerProvider.clear();
+
     _values.clear();
     // _values.addAll(widget.initialValues);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -76,7 +82,7 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     }
 
     await _loadData();
-    isLoaded = true;
+    builded = isLoaded = true;
     for (var key in widget.initialValues.keys) {
       if (widget.initialValues[key] is bool) {
         _values[key] = widget.initialValues[key];
@@ -112,8 +118,8 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
             .toList();
       });
 
-      cities = (await sl<CitiesService>().getCities()).data!.toList();
-      countries = (await sl<AreasService>().getAreas()).data!.toList();
+      // cities = (await sl<CitiesService>().getCities()).data!.toList();
+      // countries = (await sl<AreasService>().getAreas()).data!.toList();
     } catch (e) {
       ModernToast().showToast(
         context,
@@ -125,6 +131,10 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
       setState(() {
         sl<ErpAppNotifier>().setLoading(false);
       });
+
+      if (builded) {
+        return;
+      }
       var counter = 0;
       if (_data == null || _data!.first.list == null) {
         return;
@@ -373,7 +383,17 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
         field.type == 'checkbox' ||
         field.type == 'treeoption' ||
         field.type == 'selectoption';
-
+    if (field.selectEndpoint != null) {
+      if (field.selectEndpoint!.endpoint != null) {
+        final items = sl<SelectService>().createAsync(
+          field.selectEndpoint!.endpoint!,
+          a.Request(
+            defaults: sl<ApiSettings>().appDefaults,
+            repoViewId: field.selectEndpoint!.repoViewId! as int,
+          ),
+        );
+      }
+    }
     if (showWithoutBorder) {
       return Padding(
         padding: FormSpacing.pagePadding,

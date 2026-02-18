@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:erp_app/feature/default_page/place/bloc/place_event.dart';
 import 'package:erp_app/feature/default_page/place/bloc/place_state.dart';
-import 'package:services_package/Repo_ViewId/repo_view_id.dart';
 import 'package:services_package/default/mng/select/place_service.dart';
+import 'package:services_package/repo_view_id/repo_view_ids.dart';
 import 'package:shared_core/data/default/mng/select/place/request.dart'
     as prefix0;
 import 'package:shared_core/data/default/mng/select/place/response.dart'
@@ -24,7 +24,7 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     emit(const PlaceLoading());
     try {
       final places = await getPlaceUseCase.get(
-        prefix0.Request(repoViewId: AppConstants().placeRepoViewId),
+        prefix0.Request(repoViewId: RepoViewIds.placeId ),
         (json) => prefix0.Response.fromJson(json),
       );
 

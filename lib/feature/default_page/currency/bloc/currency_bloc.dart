@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:services_package/index.dart';
 import 'package:shared_core/data/default/com/select/currency/request.dart' as prefix0;
 import 'package:shared_core/data/default/com/select/currency/response.dart' as prefix0;
-import 'package:services_package/Repo_ViewId/repo_view_id.dart';
 import 'package:services_package/default/com/select/currency_service.dart';
 
 import 'currency_event.dart';
@@ -22,7 +22,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     emit(const CurrencyLoading());
     try {
       final selectCurrencys = await getSelectCurrencyUseCase.get(
-        prefix0.Request(repoViewId: AppConstants().yearRepoViewId, showMode: 10),
+        prefix0.Request(repoViewId: RepoViewIds.yearId, showMode: 10),
         (json) => prefix0.Response.fromJson(json),
       );
 

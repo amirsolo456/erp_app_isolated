@@ -3,8 +3,8 @@ import 'package:erp_app/feature/list_generator/presentation/pages/generic_list_p
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:micro_app_commons/app_notifier.dart';
-import 'package:services_package/Repo_ViewId/repo_view_id.dart';
 import 'package:services_package/com/person/person_service.dart';
+import 'package:services_package/index.dart';
 import 'package:shared_core/data/com/person/request.dart' as prefix0;
 import 'package:shared_core/data/com/person/response.dart' as prefix0;
 import 'package:shared_core/data/com/person/response_data.dart' as prefix0;
@@ -31,7 +31,7 @@ class _PersonListPageState extends State<PersonListPage> {
   @override
   void initState() {
     super.initState();
-    repoViewId = AppConstants().personListRepoViewId;
+    repoViewId = RepoViewIds.personId;
     _fetchData();
   }
 
