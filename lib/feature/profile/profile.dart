@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:micro_app_commons/app_notifier.dart';
-import 'package:micro_app_core/index.dart';
 import 'package:provider/provider.dart';
 import 'package:resources_package/l10n/app_localizations.dart';
 import 'package:resources_package/l10n/app_localizations_en.dart';
@@ -13,7 +12,6 @@ import 'package:ui_components_package/erp_app_componenets/common/loadings/circle
 import 'package:ui_components_package/extensions.dart';
 
 import '../../core/network/injection_container.dart';
-import '../../micro_app/erp_events.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

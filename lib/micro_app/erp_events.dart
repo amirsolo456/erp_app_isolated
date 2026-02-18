@@ -10,6 +10,7 @@ import 'package:micro_app_core/services/routing/route_events.dart';
 class ErpShownEvent extends RouteEvent {}
 
 class ErpCloseEvent extends RouteEvent {}
+class ErpUserInfoEvent extends RouteEvent {}
 
 class ErpFormGeneratorEvent extends RouteEvent {
   final int repoId;
@@ -50,6 +51,7 @@ class ErpEvents {
     int sys,
     int type,
   ) => ErpListGeneratorEvent(repo, sys, type);
+  static  ErpUserInfoEvent erpUserInfoEvent() => ErpUserInfoEvent();
 
   static ErpCloseEvent close() => ErpCloseEvent();
 

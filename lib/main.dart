@@ -3,7 +3,6 @@
 import 'dart:io';
 
 import 'package:erp_app/feature/default_page/pages/default_bloc.dart';
-import 'package:erp_app/feature/drawer/data/dashboard_drawer_provider.dart';
 import 'package:erp_app/index.dart';
 import 'package:erp_app/src/content_wrapper.dart';
 import 'package:erp_app/src/erp_notifier.dart';
@@ -12,7 +11,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:micro_app_commons/app_notifier.dart';
-import 'package:models_package/Base/enums.dart' hide SessionKeys, SessionKeysExt;
 import 'package:models_package/index.dart' hide SessionKeysExt, SessionKeys;
 import 'package:provider/provider.dart';
 import 'package:resources_package/Resources/Theme/theme_manager.dart';
@@ -47,8 +45,6 @@ import 'feature/default_page/year/bloc/year_bloc.dart';
 import 'feature/default_page/year/bloc/year_event.dart';
 import 'feature/list_generator/data/models/generic_list_entity_state.dart';
 import 'feature/profile/profile_bloc.dart';
-import 'package:services_package/Interfaces/front_helper_services/drawer/drawer_registery.dart';
-import '../feature/drawer/data/permission_service.dart';
 
 final apiClient = sl<ApiClient>();
 

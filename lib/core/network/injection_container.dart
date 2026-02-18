@@ -16,6 +16,8 @@ import 'package:services_package/api_client_service.dart';
 import 'package:services_package/api_service.dart';
 import 'package:services_package/auth/menu/menu_service.dart';
 import 'package:services_package/auth/toolbar/toolbar_service.dart';
+import 'package:services_package/base_data/areas/areas_service.dart';
+import 'package:services_package/base_data/cities/cities_service.dart';
 import 'package:services_package/com/person/person_service.dart';
 import 'package:services_package/default/com/select/currency_service.dart';
 import 'package:services_package/default/com/select/year_service.dart';
@@ -267,12 +269,14 @@ class InjectionContainer {
     if (!sl.isRegistered<DefaultBloc>()) {
       sl.registerFactory(() => DefaultBloc(sl<ApiSettings>()));
     }
-    //
-    // if (!sl.isRegistered<LanguageBloc>()) {
-    //   sl.registerFactory(
-    //     () => LanguageBloc(getLanguageUseCase: sl<LanguageService>()),
-    //   );
-    // }
+
+    if (!sl.isRegistered<AreasService>()) {
+      sl.registerFactory(() => AreasService(apiClient: sl<ApiClient>(),apiSettings: sl<ApiSettings>()));
+    }
+
+    if (!sl.isRegistered<CitiesService>()) {
+      sl.registerFactory(() => CitiesService(sl<ApiClient>(),sl<ApiSettings>()));
+    }
 
     // Defaults: Place / Year / Language / Cashier / Currency
     if (!sl.isRegistered<PlaceService>()) {

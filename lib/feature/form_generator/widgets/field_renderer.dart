@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_core/index.dart';
+import 'package:models_package/base/field_model.dart';
+import 'package:services_package/base_data/areas/areas_service.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/date_input_field.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/select_input_field.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/select_option_field.dart';
@@ -7,8 +8,10 @@ import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/text_inp
 import 'package:ui_components_package/erp_app_componenets/mobile/selection_box/check_box_Input_field.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/selection_box/tree_option_field.dart';
 
+import '../../../core/network/injection_container.dart';
+
 class FieldRenderer extends StatelessWidget {
-  final Field field;
+  final FieldModel field;
   final ValueChanged<dynamic> onChanged;
   final Map<String, dynamic> initialValues;
 
@@ -40,13 +43,6 @@ class FieldRenderer extends StatelessWidget {
           initialValues: initialValues,
         );
 
-      // case 'radio':
-      //   return RadioInputField(
-      //     field: field,
-      //     onChanged: onChanged,
-      //     initialValues: initialValues,
-      //   );
-
       case 'date':
       case 'datetime':
         return DateInputField(
@@ -55,7 +51,8 @@ class FieldRenderer extends StatelessWidget {
           initialValues: initialValues,
         );
 
-      case 'treeoption': // اضافه کردن case جدید
+      case 'treeoption':
+
         return TreeOptionField(
           field: field,
           onChanged: onChanged,

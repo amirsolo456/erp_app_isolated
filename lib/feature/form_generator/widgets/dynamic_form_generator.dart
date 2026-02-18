@@ -3,19 +3,23 @@ import 'package:erp_app/feature/drawer/data/dashboard_drawer_provider.dart';
 import 'package:erp_app/index.dart';
 import 'package:flutter/material.dart' hide View;
 import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:micro_app_core/index.dart';
 import 'package:models_package/base/drawer_item_model.dart';
+import 'package:models_package/base/field_model.dart';
 import 'package:models_package/base/radio_values_model.dart';
 import 'package:resources_package/Resources/Assets/assets_manager.dart';
 import 'package:resources_package/Resources/Assets/icons_manager.dart';
 import 'package:services_package/auth/toolbar/toolbar_service.dart';
+import 'package:services_package/base_data/areas/areas_service.dart';
+import 'package:services_package/base_data/cities/cities_service.dart';
 import 'package:services_package/index.dart';
 import 'package:toastification/toastification.dart';
 import 'package:ui_components_package/extensions.dart';
 import 'package:ui_components_package/index.dart';
 import 'field_renderer.dart';
 import 'package:shared_core/data/auth/toolbar/toolbar.dart';
+import 'package:shared_core/data/base_data/areas/areas.dart' as a;
+import 'package:shared_core/data/base_data/cities/cities.dart' as c;
 
 class DynamicFormGenerator extends StatefulWidget {
   final Future Function(Map<String, dynamic> values)? onSubmit;
@@ -42,16 +46,17 @@ class DynamicFormGenerator extends StatefulWidget {
   State<DynamicFormGenerator> createState() => _DynamicFormGeneratorState();
 }
 
-bool isLoaded = false;
-
 class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, dynamic> _values = {};
   Map<String, dynamic>? _parsedJson;
-  List<Field> _formConfigs = [];
+  List<FieldModel> _formConfigs = [];
   List<ResponseData>? _data;
   DashboardDrawerProvider dashboardDrawerProvider = DashboardDrawerProvider();
   List<View> _allConfigs = [];
+  bool isLoaded = false;
+  List<c.ResponseData> cities = [];
+  List<a.ResponseData> countries = [];
 
   @override
   void initState() {
@@ -85,7 +90,7 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     });
     try {
       final newState = await sl<ToolbarService>().get(
-        Request(repoId: 106045, systemId: 106, type: 2),
+        Request(repoId: widget.repoId, systemId: widget.systemId, type: 2),
         Response.fromJson,
       );
       _data = newState?.data ?? [];
@@ -102,8 +107,13 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
       if (viewFormConfig == null) return;
 
       setState(() {
-        _formConfigs = viewFormConfig.fields;
+        _formConfigs = viewFormConfig.fields
+            .map((field) => FieldModel.fromField(field))
+            .toList();
       });
+
+      cities = (await sl<CitiesService>().getCities()).data!.toList();
+      countries = (await sl<AreasService>().getAreas()).data!.toList();
     } catch (e) {
       ModernToast().showToast(
         context,
@@ -122,8 +132,8 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
 
       dashboardDrawerProvider.addNEWItem(
         DrawerTittle(
-          order: counter,
           icon: SizedBox(),
+          order: counter,
           title: 'نمایش',
           routeKey: 'title',
         ),
@@ -278,7 +288,7 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     );
   }
 
-  Widget _buildFormFields(Field field, int index) {
+  Widget _buildFormFields(FieldModel field, int index) {
     final indicesToSkip = <int>{};
 
     if (field.type == 'noshow') {
@@ -287,7 +297,11 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     }
 
     if (field.type == 'radio') {
-      final radioOptions = (field.radioValues as List<RadioValuesModel>?) ?? [];
+      final radioOptions =
+          (field.radioValues
+              .map((e) => RadioValuesModel.fromRadioValues(e))
+              .toList()) ??
+          [];
 
       final rules = field.rules as List? ?? [];
       final isRequired = rules.any(
@@ -365,6 +379,7 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
         padding: FormSpacing.pagePadding,
         child: FieldRenderer(
           field: field,
+
           onChanged: (value) {
             if (field.type == 'treeoption' && value is Map) {
               _values[field.name ?? field.defaultValue] = value['value'];
@@ -381,7 +396,8 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
             }
             // });
           },
-          initialValues: {field.name ?? field.defaultValue: initialValue ?? ''},
+          initialValues: _mapCitiesToSelectItems()
+              .first, //?? {field.name ?? field.defaultValue: initialValue ?? ''},
         ),
       );
     } else {
@@ -405,6 +421,17 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
         ),
       );
     }
+  }
+
+  List<Map<String, dynamic>> _mapCitiesToSelectItems() {
+    return cities.map((city) {
+      return {
+        'id': city.id,
+        'title': city.title, // یا city.title اگر اسمش اینه
+        'displayTitle': city.displayTitle, // اختیاری
+        'city': city, // اگر بعداً کل آبجکت رو خواستی
+      };
+    }).toList();
   }
 
   @override
@@ -482,9 +509,7 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
   Future<void> submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
-    _formKey.currentState!.save(); // ذخیره مقادیر فرم در _values
-
-    // ارسال داده به والد
+    _formKey.currentState!.save();
     if (widget.onSubmit != null) {
       try {
         await widget.onSubmit!(_values);
