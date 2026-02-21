@@ -31,23 +31,29 @@ class _ErpContentWrapperState extends State<ErpContentWrapper>
 
   @override
   Widget build(BuildContext context) {
+
     return Consumer<ErpAppNotifier>(
       builder: (context, notifier, child) {
         if (notifier.isLoading) {
           return const Center(child: CircleLoading());
         }
 
-        final dt = notifier.moduleState; // ه
+        // final dt = notifier.moduleState; // ه
         return Scaffold(
           backgroundColor: context.colors.main,
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
-            child: ErpAppBar(mode: dt.selectedHeaderTab),
+            child: ErpAppBar(mode: notifier.getMod(notifier.moduleState.selectedTab)),
           ),
-          body: notifier.getErpPage(dt, args: dt.args),
+          body: notifier.getErpPage(ModuleState(
+            args: notifier.moduleState.args,
+            selectedHeaderTab: notifier.mapTabToAppBarMode(notifier.moduleState.selectedTab),
+              selectedTab: notifier.moduleState.selectedTab
+          ),),
           bottomNavigationBar: AppNavigationButton(
             selectedTab: notifier.selectedTab,
-            onTabSelected: (value) => notifier.changeErpPage(
+            onTabSelected: (NavButtonTabBarMode value) => notifier.changeErpPage(
+              appBar: notifier.mapTabToAppBarMode(value),
               PageType.tabBar,
               route: null,
               tab: value,

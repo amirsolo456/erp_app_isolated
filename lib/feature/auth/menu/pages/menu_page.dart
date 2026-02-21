@@ -6,9 +6,8 @@ import 'package:models_package/index.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_core/data/auth/menu/response_data.dart';
 import 'package:ui_components_package/erp_app_componenets/common/loadings/circle_loading.dart';
-
+import 'package:erp_app/core/network/injection_container.dart';
 import '../../../../index.dart';
-import '../../../../src/erp_notifier.dart';
 import '../bloc/menu_bloc.dart';
 import '../bloc/menu_event.dart';
 import '../bloc/menu_state.dart';
@@ -30,14 +29,17 @@ class _MenuPageState extends State<MenuPage> {
   @override
   void initState() {
     super.initState();
-
-    searchFocusNode.addListener(() {
-      setState(() {
-        super.initState();
-        context.read<MenuBloc>().add(LoadMenuEvent());
-        isFocused = searchFocusNode.hasFocus;
+    if (sl<MenuBloc>().state is !MenuLoadedState) {  // یا چک کن قبلاً لود شده یا نه
+      searchFocusNode.addListener(() {
+        setState(() {
+          super.initState();
+          context.read<MenuBloc>().add(LoadMenuEvent());
+          isFocused = searchFocusNode.hasFocus;
+        });
       });
-    });
+      // context.read<MenuBloc>().add(LoadMenuEvent());
+    }
+
   }
 
   void filterMenus(List<ResponseData> menus, String query) {

@@ -74,7 +74,7 @@ class ErpAppNotifier
     Map<String, dynamic>? args,
   }) {
     _moduleState = ModuleState(
-      selectedHeaderTab: appBar ?? _mapTabToAppBarMode(tab ?? NavButtonTabBarMode.erpNotFound),
+      selectedHeaderTab: appBar ?? mapTabToAppBarMode(tab ?? NavButtonTabBarMode.erpNotFound),
       selectedTab: tab ?? NavButtonTabBarMode.erpNotFound,
       activeModule: active,
       args: args ?? {},
@@ -82,11 +82,11 @@ class ErpAppNotifier
     notifyListeners();
   }
 
-  AppBarsMode getMod() {
-    return _mapTabToAppBarMode(selectedTab);
+  AppBarsMode getMod(NavButtonTabBarMode? tab) {
+    return mapTabToAppBarMode(tab ?? selectedTab);
   }
 
-  AppBarsMode _mapTabToAppBarMode(NavButtonTabBarMode tab) {
+  AppBarsMode mapTabToAppBarMode(NavButtonTabBarMode tab) {
     final modeMap = <NavButtonTabBarMode, AppBarsMode>{
       NavButtonTabBarMode.erpGenericFormTabMode: AppBarsMode.erpGenericForm,
       NavButtonTabBarMode.erpMenuTabMode: AppBarsMode.erpMenuMode,
@@ -134,12 +134,12 @@ class ErpAppNotifier
   Widget getErpPage(
     ModuleState module, {
     bool forceRefresh = false,
-    Map<String, dynamic>? args,
+    // Map<String, dynamic>? args,
   }) {
     try {
       // setLoading(true);
 
-      return _pageResolver.resolvePage(module.selectedTab, args: args);
+      return _pageResolver.resolvePage(module.selectedTab, args: module.args);
     } finally {
 
     }
@@ -154,7 +154,7 @@ class ErpAppNotifier
   }) {
     setArguments(
       pageType,
-      appBar: appBar ?? _mapTabToAppBarMode(selectedTab),
+      appBar: appBar ?? mapTabToAppBarMode(selectedTab),
       tab: tab,
       active: ErpAppsCoreEnum.erpDashboard,
       args: null,

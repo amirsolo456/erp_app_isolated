@@ -4,23 +4,18 @@ import 'package:erp_app/index.dart';
 import 'package:flutter/material.dart' hide View;
 import 'package:flutter_svg/svg.dart';
 import 'package:micro_app_core/index.dart';
-import 'package:models_package/base/api_settings.dart';
 import 'package:models_package/base/drawer_item_model.dart';
 import 'package:models_package/base/field_model.dart';
 import 'package:models_package/base/radio_values_model.dart';
 import 'package:resources_package/Resources/Assets/assets_manager.dart';
 import 'package:resources_package/Resources/Assets/icons_manager.dart';
 import 'package:services_package/auth/toolbar/toolbar_service.dart';
-import 'package:services_package/base_data/areas/areas_service.dart';
-import 'package:services_package/base_data/cities/cities_service.dart';
 import 'package:services_package/index.dart';
 import 'package:toastification/toastification.dart';
 import 'package:ui_components_package/extensions.dart';
 import 'package:ui_components_package/index.dart';
 import 'field_renderer.dart';
-import 'package:shared_core/data/auth/toolbar/toolbar.dart';
-import 'package:shared_core/data/base_data/areas/areas.dart' as a;
-import 'package:shared_core/data/base_data/cities/cities.dart' as c;
+import 'package:shared_core/data/auth/toolbar/toolbar.dart' hide sl;
 
 bool builded = false;
 
@@ -52,25 +47,22 @@ class DynamicFormGenerator extends StatefulWidget {
 class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, dynamic> _values = {};
+
   Map<String, dynamic>? _parsedJson;
-  List<FieldModel> _formConfigs = [];
+  List<FieldModel> _formFieldConfigs = [];
   List<ResponseData>? _data;
   DashboardDrawerProvider dashboardDrawerProvider =
       sl<DashboardDrawerProvider>();
   List<View> _allConfigs = [];
+  List<View> _formConfigs = [];
+  int selectedIndex = 0;
   bool isLoaded = false;
-
-  List<c.ResponseData> cities = [];
-  List<a.ResponseData> countries = [];
 
   @override
   void initState() {
     super.initState();
 
-    // dashboardDrawerProvider.clear();
-
     _values.clear();
-    // _values.addAll(widget.initialValues);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _initializeRadioValues();
     });
@@ -107,13 +99,18 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
       }
       _allConfigs = _data!.first.list!.listProp;
 
-      final form = _allConfigs.first;
-      final viewFormConfig = View(config: form.config).formConfig;
+      _formConfigs = _allConfigs;
+      final viewFormConfig = View(
+        config: _formConfigs.first.config,
+        type: _formConfigs.first.type,
+        id: _formConfigs.first.id,
+        desc: _formConfigs.first.desc,
+      ).formConfig;
 
       if (viewFormConfig == null) return;
 
       setState(() {
-        _formConfigs = viewFormConfig.fields
+        _formFieldConfigs = viewFormConfig.fields
             .map((field) => FieldModel.fromField(field))
             .toList();
       });
@@ -123,7 +120,10 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
     } catch (e) {
       ModernToast().showToast(
         context,
-        Text('خطا'),
+        Text(
+          'خطا',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
         Text(e.toString()),
         ToastificationType.error,
       );
@@ -383,23 +383,11 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
         field.type == 'checkbox' ||
         field.type == 'treeoption' ||
         field.type == 'selectoption';
-    if (field.selectEndpoint != null) {
-      if (field.selectEndpoint!.endpoint != null) {
-        final items = sl<SelectService>().createAsync(
-          field.selectEndpoint!.endpoint!,
-          a.Request(
-            defaults: sl<ApiSettings>().appDefaults,
-            repoViewId: field.selectEndpoint!.repoViewId! as int,
-          ),
-        );
-      }
-    }
+
     if (showWithoutBorder) {
       return Padding(
         padding: FormSpacing.pagePadding,
         child: FieldRenderer(
-          field: field,
-
           onChanged: (value) {
             if (field.type == 'treeoption' && value is Map) {
               _values[field.name ?? field.defaultValue] = value['value'];
@@ -407,17 +395,41 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
                   value['label'];
               _values['${field.name ?? field.defaultValue}_path'] =
                   value['path'];
+              final en = View(config: _formConfigs.first.config).formConfig;
+              final endPoint = field.selectEndpoint;
+              field.selectEndpoint = SelectEndPoint(
+                endPoint?.repoViewId ?? 0,
+                en?.addEndpoint ?? '',
+                en?.addEndpoint,
+                endPoint?.endpoint,
+              );
+
+              _values['selectEndPoint'] = View(
+                config: _formConfigs[selectedIndex].config,
+              ).formConfig;
             } else if (field.type == 'selectoption' && value is Map) {
               _values[field.name ?? field.defaultValue] = value['value'];
               _values['${field.name ?? field.defaultValue}_label'] =
                   value['label'];
+              final en = View(config: _formConfigs.first.config).formConfig;
+              final endPoint = field.selectEndpoint;
+              field.selectEndpoint = SelectEndPoint(
+                endPoint?.repoViewId ?? 0,
+                en?.addEndpoint ?? '',
+                en?.addEndpoint,
+                endPoint?.endpoint,
+              );
+
+              _values['selectEndPoint'] = View(
+                config: _formConfigs[selectedIndex].config,
+              ).formConfig;
             } else {
               _values[field.name ?? field.defaultValue] = value;
             }
             // });
           },
-          initialValues: _mapCitiesToSelectItems()
-              .first, //?? {field.name ?? field.defaultValue: initialValue ?? ''},
+          field: field,
+          initialValues: _values,
         ),
       );
     } else {
@@ -430,9 +442,9 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
             field: field,
             onChanged: (value) {
               if (!mounted) return;
-              // setState(() {
-              _values[field.name ?? field.defaultValue] = value;
-              // });
+
+                _values[field.name ?? field.defaultValue] = value;
+
             },
             initialValues: {
               field.name ?? field.defaultValue: initialValue ?? '',
@@ -441,17 +453,6 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
         ),
       );
     }
-  }
-
-  List<Map<String, dynamic>> _mapCitiesToSelectItems() {
-    return cities.map((city) {
-      return {
-        'id': city.id,
-        'title': city.title, // یا city.title اگر اسمش اینه
-        'displayTitle': city.displayTitle, // اختیاری
-        'city': city, // اگر بعداً کل آبجکت رو خواستی
-      };
-    }).toList();
   }
 
   @override
@@ -466,9 +467,9 @@ class _DynamicFormGeneratorState extends State<DynamicFormGenerator> {
               Expanded(
                 child: ListView.builder(
                   padding: FormSpacing.pagePadding,
-                  itemCount: _formConfigs.length,
+                  itemCount: _formFieldConfigs.length,
                   itemBuilder: (context, index) {
-                    final field = _formConfigs[index];
+                    final field = _formFieldConfigs[index];
                     return _buildFormFields(field, index);
                   },
                 ),

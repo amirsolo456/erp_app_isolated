@@ -13,8 +13,6 @@ import 'package:services_package/Interfaces/front_helper_services/isnackbar_serv
 import 'package:services_package/api_service.dart';
 import 'package:services_package/auth/menu/menu_service.dart';
 import 'package:services_package/auth/toolbar/toolbar_service.dart';
-import 'package:services_package/base_data/areas/areas_service.dart';
-import 'package:services_package/base_data/cities/cities_service.dart';
 import 'package:services_package/com/person/person_service.dart';
 import 'package:services_package/default/com/select/currency_service.dart';
 import 'package:services_package/default/com/select/year_service.dart';
