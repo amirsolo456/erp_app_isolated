@@ -20,7 +20,7 @@ class FieldRenderer extends StatelessWidget {
   final FieldModel field;
   final ValueChanged<dynamic> onChanged;
   final Map<String, dynamic> initialValues;
-  static final Map<int, List<SelectResponseData>> _treeOptionCache = {};
+  static final Map<int, Select> _treeOptionCache = {};
 
   const FieldRenderer({
     Key? key,
@@ -63,16 +63,18 @@ class FieldRenderer extends StatelessWidget {
           field: field,
           onChanged: onChanged,
           initialValues: initialValues,
-          onNodeExpand: (int repoId) async {
-            if (_treeOptionCache.containsKey((int c) => c == repoId)) {
-              return _treeOptionCache[repoId]!;
-            } else {
+          onNodeExpand: (int repoId, bool? isForce) async {
+            if ((_treeOptionCache == null || _treeOptionCache[repoId] == null )|| (isForce != null && isForce == true)) {
               final items = await _loadChildrenForNode(
                 context,
                 field.selectEndpoint!,
               );
               _treeOptionCache[repoId] = items; // ذخیره در cache
               return items;
+            } else if (_treeOptionCache[repoId] != null) {
+              return _treeOptionCache[repoId]!;
+            } else {
+              return Select(selectData: []);
             }
           },
         );
@@ -89,26 +91,23 @@ class FieldRenderer extends StatelessWidget {
           field: field,
           onChanged: onChanged,
           initialValues: initialValues,
-          onNodeExpand: (int repoId) async {
-            if (_treeOptionCache.containsKey((int c) => c == repoId)) {
-              return _treeOptionCache[repoId]!;
-            } else {
+          onNodeExpand: (int repoId,bool? isForce) async {
+            if ( (_treeOptionCache == null || _treeOptionCache[repoId] == null )|| (isForce != null && isForce == true)) {
               final items = await _loadChildrenForNode(
                 context,
                 field.selectEndpoint!,
               );
               _treeOptionCache[repoId] = items; // ذخیره در cache
               return items;
+            } else if (_treeOptionCache[repoId] != null) {
+              return _treeOptionCache[repoId]!;
+            } else {
+              return Select(selectData: []);
             }
           },
-          // onNodeExpand: () =>
-          //     _loadChildrenForNode(
-          //       context,
-          //       field.selectEndpoint ?? sel.SelectEndPoint(0, '', '', ''),
-          //     ),
         );
 
-      // انواع فیلدهای دیگر
+
       case 'email':
         return TextInputField(
           field: field,
@@ -140,7 +139,7 @@ class FieldRenderer extends StatelessWidget {
     return '$fieldName::${parentId ?? 'root'}';
   }
 
-  Future<List<SelectResponseData>> _loadChildrenForNode(
+  Future<Select> _loadChildrenForNode(
     BuildContext context,
     sel.SelectEndPoint arguments,
   ) async {
@@ -149,7 +148,7 @@ class FieldRenderer extends StatelessWidget {
 
       final endpoint = arguments;
       if (endpoint == null || endpoint.endpoint == null) {
-        return [];
+        return Select(selectData: []);
       }
 
       final requestBody = SelectRequest(
@@ -171,7 +170,7 @@ class FieldRenderer extends StatelessWidget {
         ToastificationType.error,
       );
 
-      return [];
+      return Select(selectData: []);
     }
   }
 }
