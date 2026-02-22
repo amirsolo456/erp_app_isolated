@@ -14,11 +14,9 @@ class NavigatorButtonHandler extends StatelessWidget {
   final Function(NavButtonTabBarMode)? onTabSelected;
   final String? currentLocal;
 
-  // مخصوص save (async support)
   final String? text;
   final Future<void> Function()? onPressed;
 
-  // navigator constructor — مشخص و ساده
   const NavigatorButtonHandler.navigator({
     super.key,
     required Function(NavButtonTabBarMode) onTabSelected,
