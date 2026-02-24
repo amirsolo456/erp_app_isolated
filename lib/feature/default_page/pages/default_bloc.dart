@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:micro_app_commons/app_notifier.dart';
@@ -42,7 +41,7 @@ class DefaultBloc extends Bloc<DefaultEvent, DefaultState> {
       sl<StorageService>().saveLanguage(
         LanguageModel(languageCode: event.languageId),
       );
-      sl<AppNotifier>().setCurrentLocal(Locale(event.languageId));
+      // sl<AppNotifier>().setCurrentLocal(Locale(event.languageId));
       emit(newState);
     });
 

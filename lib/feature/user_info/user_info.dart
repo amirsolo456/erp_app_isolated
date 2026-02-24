@@ -17,10 +17,10 @@ class _UserInfoState extends State<UserInfo> {
       body: SafeArea(child:
       Column(
         children: [
-          Text("data"),
+          Text('data'),
 
           buildCustomDivider(),
-          Text("data")
+          Text('data')
 
         ],
       )

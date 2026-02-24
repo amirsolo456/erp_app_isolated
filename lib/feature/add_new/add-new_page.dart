@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:micro_app_core/index.dart';
+import 'package:resources_package/extensions.dart';
 import 'package:shared_core/data/auth/menu/response_data.dart' as prefix0;
 import 'package:ui_components_package/erp_app_componenets/common/loadings/circle_loading.dart';
 
@@ -146,7 +147,7 @@ class _LeafMenuTile extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFFF4F4F4),
+          color:  context.appColors.aryanScaffoldColor,
           borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
         margin: const EdgeInsets.symmetric(vertical: 2),

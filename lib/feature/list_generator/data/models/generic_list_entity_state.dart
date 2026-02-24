@@ -168,7 +168,7 @@ class GenericListEntityState<
     try {
       loading = true;
       error = null;
-      final service = await sl<ApiService<T, D, C>>();
+      final service = sl<ApiService<T, D, C>>();
       final newResponse = await service.get(_request, null);
       response = newResponse;
       fetchData = newResponse?.data ?? [];

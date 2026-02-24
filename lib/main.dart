@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:erp_app/feature/default_page/pages/default_bloc.dart';
 import 'package:erp_app/index.dart';
 import 'package:erp_app/src/content_wrapper.dart';
-import 'package:erp_app/src/erp_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -15,7 +14,6 @@ import 'package:models_package/index.dart' hide SessionKeysExt, SessionKeys;
 import 'package:provider/provider.dart';
 import 'package:resources_package/Resources/Theme/theme_manager.dart';
 import 'package:resources_package/l10n/app_localizations.dart';
-import 'package:services_package/api_client_service.dart';
 import 'package:services_package/auth/menu/menu_service.dart';
 import 'package:services_package/com/person/person_service.dart';
 import 'package:services_package/default/com/select/currency_service.dart';
@@ -178,9 +176,8 @@ Widget buildERPApp({required Map<String, dynamic> loginData}) {
           create: (_) => LanguageButtonStandAloneCubit(
             initialLocale: AppTheme.local.value,
             storage: storageService,
-            onLocalChange: (s) async {
-              await storageService.saveLanguage(LanguageModel(languageCode: s));
-            },
+             notifier: sl<AppNotifier>(),
+
           ),
         ),
         // BlocProvider<LanguageBloc>(

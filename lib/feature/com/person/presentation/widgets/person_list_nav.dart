@@ -41,7 +41,7 @@ final personFieldConfigs = <String, FieldDisplayConfig<Person>>{
     valueGetter: (person) => person.email,
     cellBuilder: (value) => InkWell(
       onTap: () => launchUrl(
-        Uri(path: 'mailto:${value}'),
+        Uri(path: 'mailto:$value'),
         mode: LaunchMode.platformDefault,
       ),
       child: Text(value, style: const TextStyle(color: Colors.blue)),

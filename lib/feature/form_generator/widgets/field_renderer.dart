@@ -11,7 +11,6 @@ import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/select_o
 import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/text_input_field.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/selection_box/check_box_Input_field.dart';
 import 'package:ui_components_package/erp_app_componenets/mobile/tree_view/tree_option_field.dart';
-import 'package:shared_core/data/base_data/select_request.dart';
 import '../../../core/network/injection_container.dart';
 import 'package:shared_core/data/base_data/base_data.dart';
 import 'package:shared_core/data/auth/toolbar/toolbar.dart' as sel;
@@ -64,7 +63,8 @@ class FieldRenderer extends StatelessWidget {
           onChanged: onChanged,
           initialValues: initialValues,
           onNodeExpand: (int repoId, bool? isForce) async {
-            if ((_treeOptionCache == null || _treeOptionCache[repoId] == null )|| (isForce != null && isForce == true)) {
+            if ((_treeOptionCache[repoId] == null || _treeOptionCache[repoId] == []) ||
+                (isForce != null && isForce == true)) {
               final items = await _loadChildrenForNode(
                 context,
                 field.selectEndpoint!,
@@ -91,8 +91,10 @@ class FieldRenderer extends StatelessWidget {
           field: field,
           onChanged: onChanged,
           initialValues: initialValues,
-          onNodeExpand: (int repoId,bool? isForce) async {
-            if ( (_treeOptionCache == null || _treeOptionCache[repoId] == null )|| (isForce != null && isForce == true)) {
+          onNodeExpand: (int repoId, bool? isForce) async {
+            if ((_treeOptionCache[repoId] == null ||
+                    _treeOptionCache[repoId] == []) ||
+                (isForce != null && isForce == true)) {
               final items = await _loadChildrenForNode(
                 context,
                 field.selectEndpoint!,
@@ -106,7 +108,6 @@ class FieldRenderer extends StatelessWidget {
             }
           },
         );
-
 
       case 'email':
         return TextInputField(
@@ -147,13 +148,13 @@ class FieldRenderer extends StatelessWidget {
       // فرض: selectEndpoint ساختار دارد → repoViewId, endpoint و ...
 
       final endpoint = arguments;
-      if (endpoint == null || endpoint.endpoint == null) {
+      if (endpoint.endpoint == null) {
         return Select(selectData: []);
       }
 
       final requestBody = SelectRequest(
         defaults: sl<ApiSettings>().appDefaults,
-        repoViewId: endpoint.repoViewId as int,
+        repoViewId: endpoint.repoViewId,
       );
 
       final items = await sl<SelectService>().createAsync(
@@ -165,7 +166,7 @@ class FieldRenderer extends StatelessWidget {
     } catch (e) {
       ModernToast().showToast(
         context,
-        Text("خطا در بارگذاری زیرمجموعه‌ها"),
+        Text('خطا در بارگذاری زیرمجموعه‌ها'),
         Text('a'),
         ToastificationType.error,
       );

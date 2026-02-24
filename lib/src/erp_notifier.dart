@@ -1,17 +1,9 @@
-import 'package:erp_app/feature/add_new/add-new_page.dart';
-import 'package:erp_app/feature/default_page/pages/default_page.dart';
-import 'package:erp_app/feature/form_generator/bloc/base_bloc/erp_form_generator_resolver.dart';
-import 'package:erp_app/feature/form_generator/widgets/dynamic_form_generator.dart';
-import 'package:erp_app/feature/list_generator/presentation/bloc/base_bloc/erp_list_generator_resolver.dart';
 import 'package:erp_app/micro_app/erp_events.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:micro_app_commons/app_notifier.dart';
-import 'package:micro_app_commons/features/not_found/presentation/not_found_page.dart';
 import 'package:micro_app_core/index.dart';
 import 'package:models_package/index.dart';
-import '../feature/auth/menu/pages/menu_page.dart';
-import '../feature/open_page/open_page.dart';
 import '../micro_app/erp_resolver.dart';
 
 bool _first = false;
@@ -157,7 +149,7 @@ class ErpAppNotifier
       appBar: appBar ?? mapTabToAppBarMode(selectedTab),
       tab: tab,
       active: ErpAppsCoreEnum.erpDashboard,
-      args: null,
+      args: args,
       route: 'NavButton',
     );
 
