@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:micro_app_core/index.dart';
+import 'package:micro_app_core/services/routing/routes.dart';
 import 'package:models_package/base/api_settings.dart';
 import 'package:models_package/base/field_model.dart';
+import 'package:models_package/base/select_response_data_model.dart'; // ← مهم: اضافه کردن
 import 'package:services_package/index.dart';
 import 'package:services_package/select_service/select_service.dart';
 import 'package:toastification/toastification.dart';
@@ -19,14 +22,15 @@ class FieldRenderer extends StatelessWidget {
   final FieldModel field;
   final ValueChanged<dynamic> onChanged;
   final Map<String, dynamic> initialValues;
+
   static final Map<int, Select> _treeOptionCache = {};
 
   const FieldRenderer({
-    Key? key,
+    super.key,
     required this.field,
     required this.onChanged,
     required this.initialValues,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -63,18 +67,22 @@ class FieldRenderer extends StatelessWidget {
           onChanged: onChanged,
           initialValues: initialValues,
           onNodeExpand: (int repoId, bool? isForce) async {
-            if ((_treeOptionCache[repoId] == null || _treeOptionCache[repoId] == []) ||
+            if ((_treeOptionCache[repoId] == null ||
+                    _treeOptionCache[repoId] == []) ||
                 (isForce != null && isForce == true)) {
               final items = await _loadChildrenForNode(
                 context,
                 field.selectEndpoint!,
               );
               _treeOptionCache[repoId] = items; // ذخیره در cache
-              return items;
+              return await _mapToSelectResponseDataModel(items.data ?? []);
             } else if (_treeOptionCache[repoId] != null) {
-              return _treeOptionCache[repoId]!;
+              return await _mapToSelectResponseDataModel(
+                _treeOptionCache[repoId]?.data ?? [],
+              );
+              ;
             } else {
-              return Select(selectData: []);
+              return _mapToSelectResponseDataModel([]);
             }
           },
         );
@@ -86,7 +94,7 @@ class FieldRenderer extends StatelessWidget {
           initialValues: initialValues,
         );
 
-      case 'selectoption': // اضافه کردن case جدید
+      case 'selectoption':
         return SelectOptionField(
           field: field,
           onChanged: onChanged,
@@ -100,22 +108,19 @@ class FieldRenderer extends StatelessWidget {
                 field.selectEndpoint!,
               );
               _treeOptionCache[repoId] = items; // ذخیره در cache
-              return items;
+              return await _mapToSelectResponseDataModel(items.data ?? []);
             } else if (_treeOptionCache[repoId] != null) {
-              return _treeOptionCache[repoId]!;
+              return await _mapToSelectResponseDataModel(
+                _treeOptionCache[repoId]?.data ?? [],
+              );
+              ;
             } else {
-              return Select(selectData: []);
+              return _mapToSelectResponseDataModel([]);
             }
           },
         );
 
       case 'email':
-        return TextInputField(
-          field: field,
-          onChanged: onChanged,
-          initialValues: initialValues,
-        );
-
       case 'phone':
         return TextInputField(
           field: field,
@@ -124,30 +129,78 @@ class FieldRenderer extends StatelessWidget {
         );
 
       case 'info':
-        return SizedBox();
+        return const SizedBox.shrink();
+
       default:
         return Container(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Text(
             'نوع فیلد ناشناخته: ${field.type} - نام: ${field.name}',
-            style: TextStyle(color: Colors.red),
+            style: const TextStyle(color: Colors.red),
           ),
         );
     }
   }
 
-  String _buildCacheKey(String fieldName, int parentId) {
-    return '$fieldName::${parentId ?? 'root'}';
+  // متد کمکی برای ساخت callback سازگار با SelectResponseDataModel
+  Future<Future<List<SelectResponseDataModel>> Function(int, bool?)>
+  _buildTreeNodeExpandCallback(
+    BuildContext context,
+    int repoid,
+    bool? force,
+  ) async {
+    try {
+      return (int repoId, bool? isForce) async {
+        if ((_treeOptionCache[repoId] == null ||
+                _treeOptionCache[repoId]!.selectData == null) ||
+            (isForce == true)) {
+          final selectObj = await _loadChildrenForNode(
+            context,
+            field.selectEndpoint!,
+          );
+
+          _treeOptionCache[repoId] = selectObj;
+
+          return _mapToSelectResponseDataModel(selectObj.selectData ?? []);
+        }
+
+        return _mapToSelectResponseDataModel(
+          _treeOptionCache[repoId]!.selectData ?? [],
+        );
+      };
+    } catch (e) {
+      ModernToast().showToast(
+        context,
+        const Text('خطا در بارگذاری داده‌ها'),
+        Text(e.toString()),
+        ToastificationType.error,
+      );
+      return (int repoId, bool? isForce) async =>
+          _mapToSelectResponseDataModel([]);
+    }
+  }
+
+  // تابع تبدیل – اینجا نوع مدل را می‌سازیم
+  List<SelectResponseDataModel> _mapToSelectResponseDataModel(
+    List<SelectResponseData> items,
+  ) {
+    return items.map((item) {
+      return SelectResponseDataModel(
+        id: item.id ?? 0,
+        title: item.title,
+        displayTitle: item.displayTitle ?? item.title,
+        subItems: item.subItems != null
+            ? _mapToSelectResponseDataModel(item.subItems!) // بازگشتی
+            : null,
+      );
+    }).toList();
   }
 
   Future<Select> _loadChildrenForNode(
     BuildContext context,
-    sel.SelectEndPoint arguments,
+    sel.SelectEndPoint endpoint,
   ) async {
     try {
-      // فرض: selectEndpoint ساختار دارد → repoViewId, endpoint و ...
-
-      final endpoint = arguments;
       if (endpoint.endpoint == null) {
         return Select(selectData: []);
       }
@@ -157,20 +210,37 @@ class FieldRenderer extends StatelessWidget {
         repoViewId: endpoint.repoViewId,
       );
 
-      final items = await sl<SelectService>().createAsync(
-        field.selectEndpoint!.endpoint!,
+      final response = await sl<SelectService>().createAsync(
+        endpoint.endpoint!,
         requestBody,
       );
 
-      return items;
-    } catch (e) {
-      ModernToast().showToast(
-        context,
-        Text('خطا در بارگذاری زیرمجموعه‌ها'),
-        Text('a'),
-        ToastificationType.error,
-      );
+      if (response.error != null) {
+        if (context.mounted) {
+          ModernToast().showToast(
+            context,
+            const Text('خطا در بارگذاری داده‌ها'),
+            Text(response.error.toString()),
+            ToastificationType.error,
+          );
+        }
 
+        CustomEventBus.emit(
+          RouteEvents.loginEvents.loginModuleUserLoggedOutEvent(),
+        );
+      }
+
+      return response;
+    } catch (e, stack) {
+      debugPrint('Error loading tree nodes: $e\n$stack');
+      if (context.mounted) {
+        ModernToast().showToast(
+          context,
+          const Text('خطا در بارگذاری زیرمجموعه‌ها'),
+          Text(e.toString()),
+          ToastificationType.error,
+        );
+      }
       return Select(selectData: []);
     }
   }
