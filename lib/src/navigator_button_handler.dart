@@ -21,6 +21,7 @@ class NavigatorButtonHandler extends StatelessWidget {
   // navigator constructor — مشخص و ساده
   const NavigatorButtonHandler.navigator({
     super.key,
+    required NavButtonTypesEnum navButtonType,
     required Function(NavButtonTabBarMode) onTabSelected,
     required String currentLocal,
     this.selectedTab,
