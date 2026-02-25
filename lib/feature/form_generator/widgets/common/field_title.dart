@@ -9,7 +9,7 @@ class FieldTitle extends StatelessWidget {
     super.key,
     required this.caption,
     this.help,
-    required this.isRequired ,
+    required this.isRequired,
   });
 
   @override
@@ -18,20 +18,17 @@ class FieldTitle extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
         children: [
-
-
-             Padding(
-              padding: EdgeInsets.only(right: isRequired ? 4:0),
-
-
-               child: Text(
-                 (isRequired && caption != "مشارکت مدنی") ? " * " : "",
-                 style: TextStyle(
-                   color: Colors.blue,
-                   fontSize: 14,
-                   fontWeight: FontWeight.bold,
-                 ),
-               ),
+          if (isRequired && caption != "مشارکت مدنی")
+            Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: Text(
+                " * ",
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
 
           Text(
@@ -42,7 +39,6 @@ class FieldTitle extends StatelessWidget {
               color: Colors.black,
             ),
           ),
-
         ],
       ),
     );
