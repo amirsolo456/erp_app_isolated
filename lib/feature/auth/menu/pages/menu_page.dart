@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,6 +7,8 @@ import 'package:models_package/index.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_core/data/auth/menu/response_data.dart';
 import 'package:ui_components_package/erp_app_componenets/common/loadings/circle_loading.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/search_box.dart';
+
 import '../../../../index.dart';
 import '../bloc/menu_bloc.dart';
 import '../bloc/menu_event.dart';
@@ -28,17 +31,14 @@ class _MenuPageState extends State<MenuPage> {
   @override
   void initState() {
     super.initState();
-    if (sl<MenuBloc>().state is! MenuLoadedState) {
-      // یا چک کن قبلاً لود شده یا نه
-      searchFocusNode.addListener(() {
-        setState(() {
-          super.initState();
-          context.read<MenuBloc>().add(LoadMenuEvent());
-          isFocused = searchFocusNode.hasFocus;
-        });
+
+    searchFocusNode.addListener(() {
+      setState(() {
+        super.initState();
+        context.read<MenuBloc>().add(LoadMenuEvent());
+        isFocused = searchFocusNode.hasFocus;
       });
-      // context.read<MenuBloc>().add(LoadMenuEvent());
-    }
+    });
   }
 
   void filterMenus(List<ResponseData> menus, String query) {
@@ -93,45 +93,16 @@ class _MenuPageState extends State<MenuPage> {
                   : TextDirection.rtl,
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isFocused ? Colors.white : Colors.grey[100],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isFocused ? Colors.black12 : Colors.white,
-                        ),
-                      ),
-                      child: TextField(
-                        controller: searchController,
-                        focusNode: searchFocusNode,
-                        // textDirection: TextDirection.rtl,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontFamily: 'IRanSans',
-                        ),
-                        decoration: const InputDecoration(
-                          hintText: 'جستجو',
-                          hintStyle: TextStyle(color: Colors.black54),
+                  SearchBox(
 
-                          // مهم! باید صفر شود تا صد در صد رنگ پس‌زمینه از Container گرفته شود
-                          filled: false,
 
-                          // fillColor: Colors.red,
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                        ),
-                        onChanged: (value) => filterMenus(state.menus, value),
-                      ),
-                    ),
+                    controller: searchController,
+                    focusNode: searchFocusNode,
+
+                    onChanged: (value) => filterMenus(state.menus, value),
                   ),
                   Expanded(
                     child: ListView.builder(
-                      padding: EdgeInsets.zero,
                       itemCount: filteredMenus.length,
                       itemBuilder: (context, index) {
                         return _MenuTile(filteredMenus[index]);
@@ -149,91 +120,109 @@ class _MenuPageState extends State<MenuPage> {
   }
 }
 
-class _MenuTile extends StatelessWidget {
+class _MenuTile extends StatefulWidget {
   final ResponseData item;
+  final double level;
 
-  const _MenuTile(this.item);
+  const _MenuTile(this.item, {this.level = 0});
+
+  @override
+  State<_MenuTile> createState() => _MenuTileState();
+}
+
+class _MenuTileState extends State<_MenuTile> {
+  bool isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
-    final hasChildren = item.subMenus.isNotEmpty;
+    final hasChildren = widget.item.subMenus.isNotEmpty;
     final notifier = Provider.of<ErpAppNotifier>(context);
-    final Widget titleWidget = Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (item.icon!.isNotEmpty)
-          SvgPicture.string(item.icon ?? '', width: 18, height: 18),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            item.menuDesc ?? '',
-            // textDirection: TextDirection.rtl,
-            style: const TextStyle(fontSize: 14),
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            if (hasChildren) {
+              setState(() {
+                isExpanded = !isExpanded;
+              });
+            } else {
+              final link =
+                  widget.item.appLink ?? widget.item.webLink ?? '';
+              notifier.changePage(
+                PageType.listGenerator,
+                route: '/GenericList/$link',
+                tab: null,
+              );
+            }
+          },
+          child: Container(
+            // color: Colors.red,
+            height: 40,
+            padding: EdgeInsets.only(
+              left: 8 ,
+              right: 8+ (widget.level * 12),
+            ),
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                children: [
+                  if (widget.item.icon?.isNotEmpty == true)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: SvgPicture.string(
+                        widget.item.icon!,
+                        width: 21,
+                        height: 21,
+                      ),
+                    ),
+                  // SizedBox(width: 5,),
+
+                  Expanded(
+                    child: Text(
+                      widget.item.menuDesc ?? '',
+                      style:  TextStyle(
+                        fontFamily: 'IRANSansX',
+                        fontSize: 15,
+                        height: 1.0,
+                        color: Color(0xff585858),
+                        fontWeight: FontWeight.w600
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (hasChildren)
+                    Icon(
+                      isExpanded
+                          ? Icons.keyboard_arrow_down
+                          : Icons.keyboard_arrow_left,
+                      size: 16,
+                    ),
+                ],
+              ),
+            ),
           ),
         ),
+
+        /// 🔽 زیرمنوها
+        if (hasChildren && isExpanded)
+          Column(
+            children: widget.item.subMenus
+                .map(
+                  (e) => _MenuTile(
+                e,
+                level: widget.level + 1,
+              ),
+            )
+                .toList(),
+          ),
       ],
     );
-
-    if (!hasChildren) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: ListTile(
-          splashColor: Colors.transparent,
-          dense: true,
-          visualDensity: const VisualDensity(vertical: -3),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-          title: titleWidget,
-          onTap: () {
-            final link = item.appLink ?? item.webLink ?? '';
-            // final cleanLink = link.startsWith('/') ? link.substring(1) : link;
-            notifier.changeErpPage(
-              appBar: AppBarsMode.erpGenericList,
-              tab: NavButtonTabBarMode.erpGenericListTabMode,
-              args: {
-                'RepoViewId': item.repoId,
-                'SystemId': item.systemId,
-                'Url': item.webLink,
-              },
-
-              PageType.listGenerator,
-              route: '/GenericList/$link',
-
-            );
-          },
-        ),
-      );
-    } else {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Theme(
-          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-          child: ExpansionTile(
-            tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-            childrenPadding: const EdgeInsets.only(right: 20, bottom: 2),
-            splashColor: Colors.transparent,
-            controlAffinity: ListTileControlAffinity.trailing,
-            collapsedIconColor: Colors.black,
-            iconColor: Colors.black,
-            dense: true,
-            visualDensity: const VisualDensity(vertical: -3),
-            title: Row(
-              children: [
-                Expanded(child: titleWidget),
-                const SizedBox(width: 10),
-              ],
-            ),
-            children: item.subMenus.map((e) => _MenuTile(e)).toList(),
-          ),
-        ),
-      );
-    }
-
-    /// -------------------------
-    /// با زیرمنو
-    /// -------------------------
   }
 }
-
 String addQueryParams(String url, Map<String, String>? extraParams) {
   if (extraParams == null || extraParams.isEmpty) {
     return url;

@@ -9,7 +9,7 @@ class FieldTitle extends StatelessWidget {
     super.key,
     required this.caption,
     this.help,
-    this.isRequired = false,
+    required this.isRequired ,
   });
 
   @override

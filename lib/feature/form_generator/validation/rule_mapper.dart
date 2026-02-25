@@ -37,11 +37,17 @@ class RuleMapper {
 
   // متد کمکی برای بررسی required بودن
   static bool isRequired(List<Rule> rules) {
+    if (rules == null || rules.isEmpty) return false;
+
     for (final rule in rules) {
       if (rule.name?.toLowerCase() == 'required' || rule.required == true) {
         return true;
       }
     }
-    return false;
+
+    return rules.any((rule) =>
+    rule.required == true ||
+        rule.name?.toLowerCase() == 'required' ||
+        rule.type.toLowerCase() == 'required');
   }
 }

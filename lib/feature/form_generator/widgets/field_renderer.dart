@@ -45,20 +45,22 @@ class FieldRenderer extends StatelessWidget {
           initialValues: initialValues,
         );
 
-      case 'dropdown':
       case 'select':
-        return SelectInputField(
-          field: field,
-          onChanged: onChanged,
-          initialValues: initialValues,
-        );
+      case 'dropdown':
+        return Text("data");
+
+        //   SelectInputField(
+        //   field: field,
+        //   onChanged: onChanged,
+        //   // initialValues: initialValues,
+        // );
 
       case 'date':
       case 'datetime':
         return DateInputField(
           field: field,
           onChanged: onChanged,
-          initialValues: initialValues,
+          // initialValues: initialValues,
         );
 
       case 'treeoption':
@@ -75,9 +77,9 @@ class FieldRenderer extends StatelessWidget {
                 field.selectEndpoint!,
               );
               _treeOptionCache[repoId] = items; // ذخیره در cache
-              return await _mapToSelectResponseDataModel(items.data ?? []);
+              return _mapToSelectResponseDataModel(items.data ?? []);
             } else if (_treeOptionCache[repoId] != null) {
-              return await _mapToSelectResponseDataModel(
+              return _mapToSelectResponseDataModel(
                 _treeOptionCache[repoId]?.data ?? [],
               );
               ;
@@ -108,9 +110,9 @@ class FieldRenderer extends StatelessWidget {
                 field.selectEndpoint!,
               );
               _treeOptionCache[repoId] = items; // ذخیره در cache
-              return await _mapToSelectResponseDataModel(items.data ?? []);
+              return _mapToSelectResponseDataModel(items.data ?? []);
             } else if (_treeOptionCache[repoId] != null) {
-              return await _mapToSelectResponseDataModel(
+              return _mapToSelectResponseDataModel(
                 _treeOptionCache[repoId]?.data ?? [],
               );
               ;
@@ -120,7 +122,14 @@ class FieldRenderer extends StatelessWidget {
           },
         );
 
+      // انواع فیلدهای دیگر
       case 'email':
+        return TextInputField(
+          field: field,
+          onChanged: onChanged,
+          initialValues: initialValues,
+        );
+
       case 'phone':
         return TextInputField(
           field: field,

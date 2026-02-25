@@ -1,11 +1,12 @@
-// ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:micro_app_core/index.dart';
+import 'package:micro_app_core/services/custom_event_bus/custom_event_bus.dart';
 import 'package:resources_package/extensions.dart';
 import 'package:shared_core/data/auth/menu/response_data.dart' as prefix0;
 import 'package:ui_components_package/erp_app_componenets/common/loadings/circle_loading.dart';
-
+import 'package:ui_components_package/erp_app_componenets/mobile/Inputs/search_box.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/list_scroll/list_scroll.dart';
+import 'package:ui_components_package/erp_app_componenets/mobile/Lists/menu_Item/menu_Item.dart';
 import '../../micro_app/erp_events.dart';
 import '../auth/menu/bloc/menu_bloc.dart';
 import '../auth/menu/bloc/menu_event.dart';
@@ -21,6 +22,7 @@ class AddNewPage extends StatefulWidget {
 class _AddNewPageState extends State<AddNewPage> {
   final TextEditingController searchController = TextEditingController();
   final FocusNode searchFocusNode = FocusNode();
+  final ScrollController _scrollController = ScrollController();
 
   List<prefix0.ResponseData> _leafMenus = [];
   List<prefix0.ResponseData> _filteredMenus = [];
@@ -91,9 +93,7 @@ class _AddNewPageState extends State<AddNewPage> {
           }
 
           if (state is MenuInitial) {
-            return const Center(
-              child: CircleLoading( ),
-            );
+            return const Center(child: CircleLoading());
           }
 
           if (state is MenuErrorState) {
@@ -111,18 +111,23 @@ class _AddNewPageState extends State<AddNewPage> {
 
             return Column(
               children: [
-                _SearchBox(
+                SearchBox(
                   controller: searchController,
                   focusNode: searchFocusNode,
-                  isFocused: isFocused,
                   onChanged: _onSearch,
+                  // isFocused: isFocused,
                 ),
+
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: _filteredMenus.length,
-                    itemBuilder: (context, index) {
-                      return _LeafMenuTile(_filteredMenus[index]);
-                    },
+                  child: ListScroll(
+                    controller: _scrollController,
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: _filteredMenus.length,
+                      itemBuilder: (context, index) {
+                        return MenuItem(_filteredMenus[index]);
+                      },
+                    ),
                   ),
                 ),
               ],
@@ -147,7 +152,7 @@ class _LeafMenuTile extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
-          color:  context.appColors.aryanScaffoldColor,
+          color: context.colors.scaffoldColor,
           borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
         margin: const EdgeInsets.symmetric(vertical: 2),
